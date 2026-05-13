@@ -125,6 +125,9 @@ write_env_file() {
 export WINEPREFIX='$WINEPREFIX'
 export METAEDITOR_PATH='$mt5_dir/metaeditor64.exe'
 EOF
+    if [[ -n "${SUDO_USER:-}" ]]; then
+        chown "$SUDO_USER" "$env_file"
+    fi
     log "Environment file written to $env_file"
     log "  source $env_file  # to load in your shell"
 }
