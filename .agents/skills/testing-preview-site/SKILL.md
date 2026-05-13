@@ -10,6 +10,7 @@ description: Test the vibecodekit-mql5-ea preview site and CLI tools end-to-end.
 - Python 3 with pytest installed
 - Preview site deployed to devinapps.com (static HTML, no backend)
 - Repo cloned at `/home/ubuntu/repos/vibecodekit-mql5-ea`
+- Install: `pip install -e ".[dev]"`
 
 ## Devin Secrets Needed
 
@@ -29,23 +30,50 @@ Run these from the repo root:
 cd /home/ubuntu/repos/vibecodekit-mql5-ea
 
 # Full test suite
-python -m pytest tests/ -v
-# Expected: 81 passed, 2 skipped (Wine/MetaEditor deps), 0 failed
-
-# Anti-drift audit
-python scripts/audit-plan-v5.py --post-phase=A
-# Expected: ✓ Post-phase A PASSED
+pytest tests/ -q
+# Expected: 107 passed, 2 skipped (Wine/MetaEditor deps), 0 failed
 
 # Lint CLI on fixture
-PYTHONPATH=scripts python -m vibecodekit_mql5.lint tests/fixtures/ap_01_no_sl.mq5
+mql5-lint tests/fixtures/ap_01_no_sl.mq5
 # Expected: AP-01 detected, exit code 1
 
 # Build presets count
-PYTHONPATH=scripts python -c "from vibecodekit_mql5.build import list_presets; print(len(list_presets()))"
+python -c "import sys; sys.path.insert(0,'scripts'); from vibecodekit_mql5.build import list_presets; print(len(list_presets()))"
 # Expected: 17
 ```
 
-### 2. Preview Site (Browser — Record This)
+### 2. Permission Pipeline Testing
+
+```bash
+# Test permission orchestrator
+python -c "
+import sys; sys.path.insert(0, 'scripts')
+from vibecodekit_mql5.permission.orchestrator import run_permission_pipeline
+import json
+r = run_permission_pipeline('scaffolds/stdlib/netting/EAName.mq5', mode='PERSONAL')
+print(json.dumps(r, indent=2))
+"
+# Note: layer4 requires >= 15/17 PASS (not 10). Scaffold gets ~12 so layer4 will fail.
+```
+
+### 3. Forge Fitness Evaluation
+
+```bash
+# Test evaluate_fitness with backtest JSON keys
+python -c "
+import sys; sys.path.insert(0, 'scripts')
+from vibecodekit_mql5.forge_pr import evaluate_fitness
+cfg = {'primary': 'profit_factor', 'secondary': 'sharpe_ratio',
+       'constraints': {'max_drawdown_pct': 30, 'min_trades': 100}}
+# Use maximal_drawdown_pct (the key from real backtest JSON output)
+metrics = {'profit_factor': 1.52, 'sharpe_ratio': 1.34,
+           'maximal_drawdown_pct': 10.23, 'total_trades': 728}
+print(evaluate_fitness(metrics, cfg))
+# Expected: positive score (e.g. 1.448), NOT -1.0
+"
+```
+
+### 4. Preview Site (Browser — Record This)
 
 Maximize browser before recording:
 ```bash
@@ -55,34 +83,25 @@ wmctrl -r :ACTIVE: -b add,maximized_vert,maximized_horz
 
 #### Navigation Test
 - Click each of the 9 tabs: Overview, 6 Phases, MQL5 Libraries, CLI Tools, 19 Scaffolds, Anti-Patterns, Tests, Try It, Architecture
-- Verify each tab switches content correctly (JS `show()` function toggles section visibility)
-
-#### Overview Stats
-- Verify 6 stat cards show correct values (these may change as project grows)
-- Current expected: 145 Files, 5785 LOC, 81 Tests, 19 Scaffolds, 7 Libraries, 18 CLI Commands
+- Verify each tab switches content correctly
 
 #### Scaffold Generator ("Try It" tab)
-1. Select preset (e.g., "stdlib"), stack (e.g., "netting"), type EA name
+1. Select preset, stack, type EA name
 2. Click "Generate Scaffold"
-3. Verify output contains:
-   - EA name in header (`{name}.mq5 — {preset} EA ({stack})`)
-   - 3 includes: CPipNormalizer.mqh, CRiskGuard.mqh, CMagicRegistry.mqh
-   - Strategy placeholder: `YOUR {PRESET_UPPER} STRATEGY LOGIC HERE`
-   - EA name used in copyright, riskGuard.Init, magicReg.Reserve
-4. Change preset and regenerate — verify output updates
+3. Verify output contains EA name, 3 includes, strategy placeholder
 
 #### Lint Checker ("Try It" tab)
-1. Default code has 3 violations: `trade.Buy(0.1, ...)` (no SL), `50 * 0.0001` (hardcoded pip), `OrderSend(req, res)` (raw OrderSend)
+1. Default code has 3 violations
 2. Click "Run Lint Check"
-3. Verify output: AP-01 (No stop-loss), AP-15 (Raw OrderSend), AP-20 (Hardcoded pip), "3 critical, 0 warnings"
-4. Replace with clean code (e.g., `void OnTick() { Print("hello"); }`)
-5. Click "Run Lint Check" again
-6. Verify output: `0 critical, 0 warnings — PASS`
+3. Verify: AP-01, AP-15, AP-20 detected, "3 critical, 0 warnings"
 
 ## Common Issues
 
-- The 2 skipped tests require Wine + MetaEditor (Windows environment) — this is expected on Linux
+- The 2 skipped tests require Wine + MetaEditor — expected on Linux
 - Scaffold AP-05 warnings (> 6 inputs) are expected for templates
 - The preview site is purely client-side JS — no API calls, no backend
-- `PYTHONPATH=scripts` is required when running CLI tools as Python modules
+- `PYTHONPATH=scripts` or `pip install -e .` required for CLI module imports
 - No CI runners may be configured on new repos — check Settings → Actions
+- Backtest JSON output uses `maximal_drawdown_pct` key, but internal BacktestMetrics dataclass uses `max_drawdown_pct` — evaluate_fitness handles both
+- Layer4 permission threshold is >= 15/17 PASS (matching trader_check.py standalone CLI)
+- CAsyncTradeManager uses CTrade::Result() to get MqlTradeResult.request_id for async tracking (not ResultOrder())
