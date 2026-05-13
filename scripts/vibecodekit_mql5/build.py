@@ -15,8 +15,19 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCAFFOLDS_DIR = REPO_ROOT / "scaffolds"
 
-PRESETS = ["stdlib", "wizard-composable", "portfolio-basket", "ml-onnx"]
-STACKS = ["netting", "hedging", "python-bridge"]
+def _discover_presets() -> list[str]:
+    """Discover available presets from scaffolds directory."""
+    if not SCAFFOLDS_DIR.exists():
+        return []
+    return sorted(d.name for d in SCAFFOLDS_DIR.iterdir() if d.is_dir())
+
+
+def _discover_stacks(preset: str) -> list[str]:
+    """Discover available stacks for a given preset."""
+    preset_dir = SCAFFOLDS_DIR / preset
+    if not preset_dir.exists():
+        return []
+    return sorted(d.name for d in preset_dir.iterdir() if d.is_dir())
 
 
 def list_presets() -> list[dict[str, list[str]]]:
@@ -55,8 +66,9 @@ def render_scaffold(preset: str, stack: str, ea_name: str, output: Path) -> Path
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="MQL5 EA scaffold builder")
-    parser.add_argument("--preset", choices=PRESETS, help="Scaffold preset")
-    parser.add_argument("--stack", choices=STACKS, default="netting")
+    available = _discover_presets()
+    parser.add_argument("--preset", choices=available, help="Scaffold preset")
+    parser.add_argument("--stack", default="netting", help="Stack variant")
     parser.add_argument("--name", default="MyEA", help="EA name (replaces EAName)")
     parser.add_argument("--output", type=Path, default=Path("."), help="Output dir")
     parser.add_argument("--list", action="store_true", help="List available presets")
