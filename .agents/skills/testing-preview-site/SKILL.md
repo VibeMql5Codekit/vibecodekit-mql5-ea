@@ -11,6 +11,7 @@ description: Test the vibecodekit-mql5-ea preview site and CLI tools end-to-end.
 - Preview site deployed to devinapps.com (static HTML, no backend)
 - Repo cloned at `/home/ubuntu/repos/vibecodekit-mql5-ea`
 - Install: `pip install -e ".[dev]"`
+- For mobile testing: `pip install playwright && python -m playwright install chromium`
 
 ## Devin Secrets Needed
 
@@ -19,6 +20,8 @@ None — no secrets required for testing. The preview site is public and CLI too
 ## Preview Site URL
 
 The preview site is deployed as a static frontend. Check for the deployment URL in PR comments or use the `deploy` tool with `command="frontend"` pointing to the preview directory.
+
+**CDN Cache Workaround:** After deploying, the CDN may serve stale content. Append `?nocache=<unique-param>` to the URL to force fresh content (e.g. `?nocache=fix1`). Verify with curl that your CSS changes are present before testing.
 
 ## Test Procedure
 
@@ -85,7 +88,7 @@ python -c "
 import yaml
 for p in ['trader','risk-auditor','broker-engineer','strategy-architect','devops','perf-analyst']:
     d = yaml.safe_load(open(f'docs/rri-personas/{p}.yaml'))
-    print(f'{p}: {len(d[\"questions\"])} questions')
+    print(f'{p}: {len(d["questions"])} questions')
 "
 # Expected: all 6 show 25
 
@@ -124,7 +127,7 @@ for mode, cost, expected in [('PERSONAL',10,False),('TEAM',30,True),('TEAM',100,
     r = check_cost_gate(mode, cost)
     print(f'{mode} \${cost}: allowed={r[\"allowed\"]} (expected {expected})')
 "
-# Expected: PERSONAL always blocked, TEAM ≤$50 ok, ENTERPRISE ≤$500 ok
+# Expected: PERSONAL always blocked, TEAM <=$50 ok, ENTERPRISE <=$500 ok
 ```
 
 ### 6. Phase E — Polish & Ship
@@ -206,19 +209,74 @@ wmctrl -r :ACTIVE: -b add,maximized_vert,maximized_horz
 2. Click "Run Lint Check"
 3. Verify: AP-01, AP-15, AP-20 detected, "3 critical, 0 warnings"
 
+### 9. Mobile Responsive Testing (Playwright CDP)
+
+Use Playwright to simulate mobile viewport and programmatically verify no overflow:
+
+```python
+import asyncio
+from playwright.async_api import async_playwright
+
+async def main():
+    async with async_playwright() as p:
+        browser = await p.chromium.connect_over_cdp("http://localhost:29229")
+        context = browser.contexts[0]
+        page = context.pages[0]
+        
+        await page.goto("<PREVIEW_URL>?nocache=<unique>")
+        await page.wait_for_load_state("networkidle")
+        await page.set_viewport_size({"width": 375, "height": 812})
+        await asyncio.sleep(1)
+        
+        # Click target tab (e.g. CLI)
+        await page.locator("nav button", has_text="Công cụ CLI").click()
+        await asyncio.sleep(1)
+        
+        # Programmatic overflow check
+        result = await page.evaluate("""() => {
+            const body = document.body;
+            const html = document.documentElement;
+            return {
+                hasHorizontalScroll: body.scrollWidth > body.clientWidth || html.scrollWidth > html.clientWidth,
+                bodyWidth: body.scrollWidth,
+                viewportWidth: window.innerWidth
+            };
+        }""")
+        print(result)
+        # Expected: hasHorizontalScroll = false, bodyWidth <= viewportWidth
+
+asyncio.run(main())
+```
+
+**Key tabs to test at 375px:**
+- CLI tab: 12 cards with `<pre><code>` blocks — longest is `mql5-build --preset stdlib --stack netting --name MyEA`
+- Architecture tab: 2 large ASCII diagrams in `<pre>` blocks
+- Any tab with tables: should be wrapped in `<div class="table-wrap">` for horizontal scroll
+
+**Desktop regression check (1280px):** Verify card grid shows multi-column layout (not forced single-column).
+
+## Bilingual (VI/EN) Testing
+
+- Click VI/EN toggle buttons in header
+- All elements with class `i18n` should switch language (including nav buttons)
+- Verify scaffold generator and lint checker output text switches language
+
 ## Common Issues
 
 - The 2 skipped tests require Wine + MetaEditor — expected on Linux
 - Scaffold AP-05 warnings (> 6 inputs) are expected for templates
 - The preview site is purely client-side JS — no API calls, no backend
 - `PYTHONPATH=scripts` or `pip install -e .` required for CLI module imports
-- No CI runners may be configured on new repos — check Settings → Actions
+- No CI runners may be configured on new repos — check Settings > Actions
 - Backtest JSON output uses `maximal_drawdown_pct` key, but internal BacktestMetrics dataclass uses `max_drawdown_pct` — evaluate_fitness handles both
 - Layer4 permission threshold is >= 15/17 PASS (matching trader_check.py standalone CLI)
 - CAsyncTradeManager uses CTrade::Result() to get MqlTradeResult.request_id for async tracking (not ResultOrder())
 - Phase C: RRI personas have 25 questions each (expanded from 12)
 - Phase D: onnx_export validates opset 11-20, rejects outside range
-- Phase D: cloud_optimize cost gates: PERSONAL=blocked, TEAM≤$50, ENTERPRISE≤$500
+- Phase D: cloud_optimize cost gates: PERSONAL=blocked, TEAM<=$50, ENTERPRISE<=$500
 - Phase E: 12 scripts (scan, vision, blueprint, tip, survey, doctor, audit, canary, ship, refine, install, second_opinion) all 51-100 LOC
 - Phase E: mt5-bridge has 10 tools (4 original + 6 new), algo-forge has 6 tools (3 original + 3 new)
 - 44 CLI entry points registered in pyproject.toml
+- CDN caching: After deploying preview site updates, append `?nocache=<unique>` to URL to bypass edge cache. Verify CSS changes are present with `curl -s <URL> | grep '<css-property>'` before testing.
+- Mobile overflow: CSS grid items default to `min-width: auto` — cards with long `<pre>` content need `min-width: 0; overflow: hidden` to prevent expanding beyond viewport.
+- Playwright CDP: Connect to `http://localhost:29229` for programmatic browser control. Use `set_viewport_size` for mobile simulation rather than Chrome DevTools device toolbar.
