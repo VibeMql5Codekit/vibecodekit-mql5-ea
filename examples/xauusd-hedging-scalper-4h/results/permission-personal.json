@@ -1,0 +1,21 @@
+{
+  "mode": "PERSONAL",
+  "layers_run": 5,
+  "all_pass": false,
+  "results": {
+    "L1": {"pass": true, "name": "source_lint", "details": "OK"},
+    "L2": {"pass": true, "name": "compile", "details": "MetaEditor stub — skipped"},
+    "L3": {"pass": true, "name": "ap_lint", "details": "0 critical, 4 warnings", "criticals": 0, "warnings": 4},
+    "L4": {"pass": false, "name": "checklist", "details": "Trader-17: 9/17 PASS, 2 WARN", "passed": 9, "warns": 2},
+    "L7": {"pass": true, "name": "broker_safety", "details": "OK"}
+  },
+  "blocked_at": "L4",
+  "action_items": [
+    "Add spread check before entry (T04)",
+    "Add slippage protection (T05)",
+    "Add session/news guard (T06)",
+    "Add multi-broker test references (T08)",
+    "Add walk-forward reference (T09)",
+    "Add Monte Carlo reference (T10)"
+  ]
+}

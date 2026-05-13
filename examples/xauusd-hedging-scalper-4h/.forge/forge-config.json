@@ -1,0 +1,52 @@
+{
+  "ea_source": "examples/xauusd-hedging-scalper-4h/XauScalperEA/XauScalperEA.mq5",
+  "parameters": [
+    {
+      "name": "InpMagic",
+      "type": "int",
+      "default": "77001",
+      "min": "",
+      "max": "",
+      "step": ""
+    },
+    {
+      "name": "InpRiskPercent",
+      "type": "double",
+      "default": "1.0",
+      "min": "",
+      "max": "",
+      "step": ""
+    },
+    {
+      "name": "InpSLPips",
+      "type": "int",
+      "default": "300",
+      "min": "",
+      "max": "",
+      "step": ""
+    },
+    {
+      "name": "InpTPPips",
+      "type": "int",
+      "default": "600",
+      "min": "",
+      "max": "",
+      "step": ""
+    }
+  ],
+  "fitness": {
+    "primary": "profit_factor",
+    "secondary": "sharpe_ratio",
+    "constraints": {
+      "max_drawdown_pct": 30,
+      "min_trades": 100
+    }
+  },
+  "optimization": {
+    "method": "genetic",
+    "population": 50,
+    "generations": 20,
+    "mutation_rate": 0.1
+  },
+  "iterations": []
+}

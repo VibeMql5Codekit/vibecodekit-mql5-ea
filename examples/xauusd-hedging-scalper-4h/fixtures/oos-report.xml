@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Strategy name="XauScalperEA" symbol="XAUUSD" period="H4" mode="hedging">
+  <Summary>
+    <TotalTrades>132</TotalTrades>
+    <ProfitFactor>1.72</ProfitFactor>
+    <SharpeRatio>1.45</SharpeRatio>
+    <RecoveryFactor>3.50</RecoveryFactor>
+    <MaximalDrawdownPct>9.80</MaximalDrawdownPct>
+    <NetProfit>4220.50</NetProfit>
+    <WinRate>55.3</WinRate>
+    <TestPeriod>2024.09.01 - 2024.12.31 (OOS)</TestPeriod>
+  </Summary>
+  <Trades>
+    <Trade ticket="1" type="sell" profit="165.40" />
+    <Trade ticket="2" type="buy" profit="-88.20" />
+    <Trade ticket="3" type="sell" profit="290.60" />
+    <Trade ticket="4" type="buy" profit="72.50" />
+    <Trade ticket="5" type="sell" profit="-55.80" />
+    <Trade ticket="6" type="buy" profit="130.10" />
+    <Trade ticket="7" type="sell" profit="-45.20" />
+    <Trade ticket="8" type="buy" profit="175.60" />
+    <Trade ticket="9" type="sell" profit="88.40" />
+    <Trade ticket="10" type="buy" profit="-62.30" />
+  </Trades>
+</Strategy>

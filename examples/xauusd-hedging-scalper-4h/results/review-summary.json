@@ -1,0 +1,39 @@
+{
+  "ea_name": "XauScalperEA",
+  "reviews": {
+    "multi_specialist": {
+      "mode": "ENTERPRISE",
+      "architect": 1,
+      "security": 0,
+      "performance": 1,
+      "a11y": 0,
+      "ux": 1,
+      "dx": 1,
+      "risk": 1,
+      "total_warnings": 0
+    },
+    "cso_audit": {
+      "total_checks": 10,
+      "passed": 9,
+      "failed": 1,
+      "failed_items": ["S09: Unsafe array access (no bounds check)"]
+    },
+    "eng_review": {
+      "total_invariants": 8,
+      "passed": 7,
+      "warnings": 1,
+      "warning_items": ["error_handling"]
+    },
+    "ceo_review": {
+      "mode": "HOLD",
+      "loc": 95,
+      "inputs": 4,
+      "issues": 0
+    },
+    "investigate": {
+      "symptom": "EA only trades during Asian session",
+      "patterns_found": 2,
+      "findings": ["magic_collision", "no_error_check"]
+    }
+  }
+}

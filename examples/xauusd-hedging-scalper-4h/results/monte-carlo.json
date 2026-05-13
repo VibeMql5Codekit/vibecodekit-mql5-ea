@@ -1,0 +1,12 @@
+{
+  "ea_name": "XauScalperEA",
+  "runs": 10000,
+  "trades": 412,
+  "dd_50th": 7.82,
+  "dd_75th": 10.45,
+  "dd_95th": 13.67,
+  "actual_max_dd": 8.45,
+  "dd95_ratio": 1.62,
+  "gate": "WARN",
+  "notes": "DD95/actual ratio 1.62 > 1.5 threshold. Consider reducing position size or adding spread filter."
+}
