@@ -32,6 +32,8 @@ SYMPTOM_HINTS = {
 
 
 def investigate(path: Path, symptom: str = "") -> dict:
+    if not path.exists():
+        return {"file": str(path), "error": f"File not found: {path}"}
     content = path.read_text(encoding="utf-8", errors="replace")
     findings = []
     for pid, desc, pattern in BUG_PATTERNS:

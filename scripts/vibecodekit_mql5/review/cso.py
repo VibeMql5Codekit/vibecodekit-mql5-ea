@@ -27,6 +27,8 @@ SECURITY_CHECKS = [
 
 
 def run_cso_audit(path: Path) -> dict:
+    if not path.exists():
+        return {"file": str(path), "error": f"File not found: {path}"}
     content = path.read_text(encoding="utf-8", errors="replace")
     findings = []
     for sid, desc, pattern in SECURITY_CHECKS:

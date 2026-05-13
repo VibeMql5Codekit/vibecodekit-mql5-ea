@@ -24,6 +24,8 @@ def check_cost_gate(mode: str, budget: float) -> dict:
         return {"allowed": False, "reason": f"Unknown mode: {mode}"}
     if not policy["allowed"]:
         return {"allowed": False, "reason": policy["reason"]}
+    if budget < 0:
+        return {"allowed": False, "reason": "Budget cannot be negative"}
     if budget > policy["max_budget_usd"]:
         return {
             "allowed": False,
