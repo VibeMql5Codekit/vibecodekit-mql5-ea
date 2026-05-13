@@ -1,0 +1,10 @@
+name: "${persona}"
+role: "${persona}"
+description: "RRI persona for MQL5 EA development"
+questions:
+  - id: 1
+    text: "Placeholder question 1"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 2
+    text: "Placeholder question 2"
+    mode: ["TEAM", "ENTERPRISE"]
