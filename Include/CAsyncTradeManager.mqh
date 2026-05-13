@@ -46,7 +46,9 @@ public:
         if(!m_trade.Buy(lots, symbol, price, sl, tp, comment))
             return 0;
 
-        ulong req_id = m_trade.ResultOrder();
+        MqlTradeResult res;
+        m_trade.Result(res);
+        ulong req_id = res.request_id;
         AddRequest(req_id);
         return req_id;
     }
@@ -58,7 +60,9 @@ public:
         if(!m_trade.Sell(lots, symbol, price, sl, tp, comment))
             return 0;
 
-        ulong req_id = m_trade.ResultOrder();
+        MqlTradeResult res;
+        m_trade.Result(res);
+        ulong req_id = res.request_id;
         AddRequest(req_id);
         return req_id;
     }
@@ -71,9 +75,9 @@ public:
 
         for(int i = 0; i < m_count; i++)
         {
-            if(m_requests[i].request_id == result.request_id ||
-               m_requests[i].order == result.order)
+            if(m_requests[i].request_id == result.request_id)
             {
+                m_requests[i].order   = result.order;
                 m_requests[i].retcode = result.retcode;
                 if(result.retcode == TRADE_RETCODE_DONE)
                     m_requests[i].status = ASYNC_FILLED;
@@ -116,7 +120,7 @@ private:
     {
         ArrayResize(m_requests, m_count + 1);
         m_requests[m_count].request_id = req_id;
-        m_requests[m_count].order      = req_id;
+        m_requests[m_count].order      = 0;
         m_requests[m_count].status     = ASYNC_PENDING;
         m_requests[m_count].retcode    = 0;
         m_requests[m_count].sent_time  = TimeCurrent();

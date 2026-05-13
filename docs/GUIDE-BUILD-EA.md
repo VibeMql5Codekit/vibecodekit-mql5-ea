@@ -353,7 +353,7 @@ import json; print(json.dumps(result, indent=2))
 | L1 | source_lint | `#property strict`, copyright, file length, mixed tabs/spaces |
 | L2 | compile | MetaEditor compile (skip nếu không cài Wine) |
 | L3 | ap_lint | 13 anti-pattern (CRITICAL = block) |
-| L4 | checklist | Trader-17 checklist (≥10/17 PASS) |
+| L4 | checklist | Trader-17 checklist (≥15/17 PASS) |
 | L5 | methodology | Required libs (CPipNormalizer, CRiskGuard, CMagicRegistry) |
 | L6 | quality_matrix | 8×8 matrix scoring (avg ≥ 40%) |
 | L7 | broker_safety | Pip normalization, spread checks, margin modes |
@@ -823,7 +823,7 @@ Thêm vào `.claude/mcp.json` hoặc `.cursor/mcp.json`:
 | `AP-20 CRITICAL: Hardcoded pip` | Dùng `_Point * 10` | Thay bằng `pipNorm.Pips(N)` |
 | `AP-01 CRITICAL: No stop-loss` | `trade.Buy()` thiếu SL | Thêm SL parameter `!= 0` |
 | `Permission L6 FAIL: avg < 40%` | EA thiếu nhiều best practices | Thêm error handling, documentation, risk control |
-| `Permission L4 FAIL: <10/17` | Trader checklist thiếu | Review 17 items trong `docs/references/59-trader-checklist.md` |
+| `Permission L4 FAIL: <15/17` | Trader checklist thiếu | Review 17 items trong `docs/references/59-trader-checklist.md` |
 | `ModuleNotFoundError` | PYTHONPATH chưa set | `export PYTHONPATH=scripts` hoặc `pip install -e .` |
 
 ### Lint false positives

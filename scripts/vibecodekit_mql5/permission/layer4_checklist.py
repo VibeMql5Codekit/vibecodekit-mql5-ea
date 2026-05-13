@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def check(ea_path: str, **kwargs: object) -> dict:
-    """Run Trader-17 checklist. Fail if PASS count < 15."""
+    """Run Trader-17 checklist. Require ≥ 15/17 PASS."""
     from vibecodekit_mql5.trader_check import check_ea_source
 
     p = Path(ea_path)
@@ -18,7 +18,7 @@ def check(ea_path: str, **kwargs: object) -> dict:
     passed = sum(1 for v in results.values() if v == "PASS")
     warns = sum(1 for v in results.values() if v == "WARN")
 
-    ok = passed >= 10
+    ok = passed >= 15
     return {"pass": ok, "layer": 4, "name": "checklist",
             "details": f"Trader-17: {passed}/17 PASS, {warns} WARN",
             "passed": passed, "warns": warns}
