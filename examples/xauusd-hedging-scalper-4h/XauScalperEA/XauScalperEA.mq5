@@ -59,8 +59,8 @@ void OnTick()
     if(CopyBuffer(hEmaSlow, 0, 0, 3, slow) < 3) return;
     if(CopyBuffer(hRsi, 0, 0, 2, rsi)     < 2) return;
 
-    bool crossUp   = fast[1] > slow[1] && fast[2] <= slow[2];
-    bool crossDown = fast[1] < slow[1] && fast[2] >= slow[2];
+    bool crossUp   = fast[2] > slow[2] && fast[1] <= slow[1];
+    bool crossDown = fast[2] < slow[2] && fast[1] >= slow[1];
     bool rsiOK_buy  = rsi[1] > 30.0 && rsi[1] < 70.0;
     bool rsiOK_sell = rsi[1] > 30.0 && rsi[1] < 70.0;
 
