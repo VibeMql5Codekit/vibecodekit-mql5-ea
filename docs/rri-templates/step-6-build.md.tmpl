@@ -1,0 +1,19 @@
+# Step 6: BUILD — Implementation
+
+## Objective
+Implement TIPs in dependency order, running tests after each.
+
+## Rules
+- Each Python script < 200 LOC
+- Each MQL5 Include < 200 LOC
+- No master /mql5 router
+- No dead code from VCK-HU (query_loop, tool_executor, intent_router)
+- Run `pytest tests/` after each TIP
+- Run `mql5-lint` on every new .mq5 file
+
+## Checklist per TIP
+- [ ] Code implemented
+- [ ] Unit tests written
+- [ ] Lint passes
+- [ ] LOC verified < ceiling
+- [ ] Anti-drift audit passes

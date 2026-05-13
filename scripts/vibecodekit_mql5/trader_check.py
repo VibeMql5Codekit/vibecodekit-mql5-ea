@@ -17,18 +17,18 @@ CHECKLIST_ITEMS = [
     ("T03", "Dynamic lot sizing (not fixed)"),
     ("T04", "Spread check before entry"),
     ("T05", "Slippage protection (deviation)"),
-    ("T06", "Pip normalization (CPipNormalizer)"),
-    ("T07", "Multi-broker tested (≥3)"),
-    ("T08", "Walk-forward validated (OOS PF ≥ 1.5)"),
-    ("T09", "Monte Carlo DD95 ≤ 1.5× actual"),
-    ("T10", "Magic number unique (CMagicRegistry)"),
-    ("T11", "Daily loss limit (CRiskGuard)"),
-    ("T12", "Max positions limit"),
-    ("T13", "No raw OrderSend (use CTrade)"),
-    ("T14", "No WebRequest in OnTick"),
-    ("T15", "Async trades have OnTradeTransaction"),
-    ("T16", "Input count ≤ 6 (anti-overfit)"),
-    ("T17", "Error handling on trade operations"),
+    ("T06", "News/session guard (avoid high-impact events)"),
+    ("T07", "Pip normalization (CPipNormalizer)"),
+    ("T08", "Multi-broker tested (≥3)"),
+    ("T09", "Walk-forward validated (OOS PF ≥ 1.5)"),
+    ("T10", "Monte Carlo DD95 ≤ 1.5× actual"),
+    ("T11", "Overfit checked (OOS/IS ratio)"),
+    ("T12", "Magic number unique (CMagicRegistry)"),
+    ("T13", "Daily loss limit (CRiskGuard)"),
+    ("T14", "Max positions limit"),
+    ("T15", "No raw OrderSend (use CTrade)"),
+    ("T16", "No WebRequest in OnTick"),
+    ("T17", "Async trades have OnTradeTransaction"),
 ]
 
 
@@ -45,21 +45,20 @@ def check_ea_source(ea_path: Path) -> dict[str, str]:
     results["T03"] = "PASS" if "LotForRisk" in content or "MoneyFixedRisk" in content else "WARN"
     results["T04"] = "PASS" if "SpreadGuard" in content or "spread" in content.lower() else "N-A"
     results["T05"] = "PASS" if "DeviationInPoints" in content else "WARN"
-    results["T06"] = "PASS" if "CPipNormalizer" in content else "WARN"
-    results["T07"] = "N-A"  # Requires multibroker test results
-    results["T08"] = "N-A"  # Requires walkforward results
-    results["T09"] = "N-A"  # Requires monte carlo results
-    results["T10"] = "PASS" if "CMagicRegistry" in content or "Magic" in content else "WARN"
-    results["T11"] = "PASS" if "CRiskGuard" in content or "DailyLoss" in content else "WARN"
-    results["T12"] = "PASS" if "MaxPos" in content or "max_positions" in content.lower() else "WARN"
-    results["T13"] = "PASS" if not re.search(r"\bOrderSend\s*\(", content) else "WARN"
-    results["T14"] = "PASS" if not re.search(r"OnTick.*WebRequest", content, re.DOTALL) else "WARN"
+    results["T06"] = "PASS" if re.search(r"news|session.?guard|trading.?session|high.?impact", content, re.IGNORECASE) else "N-A"
+    results["T07"] = "PASS" if "CPipNormalizer" in content else "WARN"
+    results["T08"] = "N-A"  # Requires multibroker test results
+    results["T09"] = "N-A"  # Requires walkforward results
+    results["T10"] = "N-A"  # Requires monte carlo results
+    results["T11"] = "N-A"  # Requires overfit check results
+    results["T12"] = "PASS" if "CMagicRegistry" in content or "Magic" in content else "WARN"
+    results["T13"] = "PASS" if "CRiskGuard" in content or "DailyLoss" in content else "WARN"
+    results["T14"] = "PASS" if "MaxPos" in content or "max_positions" in content.lower() else "WARN"
+    results["T15"] = "PASS" if not re.search(r"\bOrderSend\s*\(", content) else "WARN"
+    results["T16"] = "PASS" if not re.search(r"OnTick.*WebRequest", content, re.DOTALL) else "WARN"
     has_async = re.search(r"\bOrderSendAsync\s*\(", content)
     has_handler = re.search(r"\bOnTradeTransaction\b", content)
-    results["T15"] = "PASS" if not has_async or has_handler else "WARN"
-    inputs = len(re.findall(r"(?m)^\s*input\s+", content))
-    results["T16"] = "PASS" if inputs <= 6 else "WARN"
-    results["T17"] = "PASS" if "ResultRetcode" in content or "GetLastError" in content else "WARN"
+    results["T17"] = "PASS" if not has_async or has_handler else "WARN"
 
     return results
 

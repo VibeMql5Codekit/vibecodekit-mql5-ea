@@ -48,6 +48,51 @@ public:
         return true;
     }
 
+    bool Check(int magic_to_check)
+    {
+        if(magic_to_check == m_magic && m_magic > 0) return true;
+        string search_pattern = "*_magic.dat";
+        long   handle_find = FileFindFirst(search_pattern, m_filename, FILE_COMMON);
+        if(handle_find == INVALID_HANDLE) return false;
+        bool found = false;
+        do
+        {
+            int fh = FileOpen(m_filename, FILE_READ | FILE_TXT);
+            if(fh != INVALID_HANDLE)
+            {
+                string stored = FileReadString(fh);
+                FileClose(fh);
+                if((int)StringToInteger(stored) == magic_to_check)
+                { found = true; break; }
+            }
+        }
+        while(FileFindNext(handle_find, m_filename));
+        FileFindClose(handle_find);
+        return found;
+    }
+
+    string List()
+    {
+        string result = "";
+        string fname;
+        long handle_find = FileFindFirst("*_magic.dat", fname, FILE_COMMON);
+        if(handle_find == INVALID_HANDLE) return result;
+        do
+        {
+            int fh = FileOpen(fname, FILE_READ | FILE_TXT);
+            if(fh != INVALID_HANDLE)
+            {
+                string stored = FileReadString(fh);
+                FileClose(fh);
+                if(result != "") result += ";";
+                result += fname + "=" + stored;
+            }
+        }
+        while(FileFindNext(handle_find, fname));
+        FileFindClose(handle_find);
+        return result;
+    }
+
     void Release()
     {
         if(m_filename != "")

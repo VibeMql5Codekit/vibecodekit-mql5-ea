@@ -41,3 +41,30 @@ def run_permission_pipeline(ea_path: str, mode: str = "TEAM") -> dict:
 
     return {"mode": mode, "layers_run": len(results),
             "all_pass": all_pass, "results": results}
+
+
+def main() -> int:
+    import argparse
+    import json
+    import sys
+    parser = argparse.ArgumentParser(description="7-layer permission pipeline")
+    parser.add_argument("--ea", required=True, help=".mq5 file to check")
+    parser.add_argument("--mode", default="TEAM", choices=list(MODE_LAYERS.keys()))
+    parser.add_argument("--json", action="store_true")
+    args = parser.parse_args()
+
+    result = run_permission_pipeline(args.ea, args.mode)
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        status = "PASS" if result["all_pass"] else "FAIL"
+        print(f"Permission [{args.mode}]: {status} ({result['layers_run']} layers)")
+        for k, v in result["results"].items():
+            icon = "+" if v.get("pass") else "X"
+            print(f"  [{icon}] {k}: {v.get('details', '')[:60]}")
+    return 0 if result["all_pass"] else 1
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(main())

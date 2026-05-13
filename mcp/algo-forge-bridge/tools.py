@@ -71,6 +71,61 @@ def handle_suggest_params(params: dict) -> dict:
             "suggestions": suggestions}
 
 
+def handle_clone(params: dict) -> dict:
+    """Clone an existing EA into a forge workspace for iteration."""
+    ea = Path(params.get("ea_path", ""))
+    if not ea.exists():
+        return {"error": f"EA not found: {ea}"}
+    ws = Path(params.get("workspace", ".forge/clone"))
+    ws.mkdir(parents=True, exist_ok=True)
+    import shutil
+    dst = ws / ea.name
+    shutil.copy2(ea, dst)
+    return {"status": "ok", "cloned": str(ea), "workspace": str(ws), "target": str(dst)}
+
+
+def handle_commit(params: dict) -> dict:
+    """Commit current best candidate as the new baseline."""
+    ws = Path(params["workspace"])
+    candidate_id = params.get("candidate_id", "best")
+    history_path = ws / "history.json"
+    history = json.loads(history_path.read_text()) if history_path.exists() else []
+    entry = {"generation": len(history) + 1, "candidate": candidate_id, "status": "committed"}
+    history.append(entry)
+    history_path.write_text(json.dumps(history, indent=2))
+    return {"status": "ok", "generation": entry["generation"], "candidate": candidate_id}
+
+
+def handle_repo_list(params: dict) -> dict:
+    """List all forge workspaces."""
+    forge_root = Path(params.get("root", ".forge"))
+    if not forge_root.exists():
+        return {"status": "ok", "workspaces": [], "count": 0}
+    workspaces = []
+    for ws_dir in forge_root.iterdir():
+        if ws_dir.is_dir():
+            config = ws_dir / "forge-config.json"
+            workspaces.append({"name": ws_dir.name, "has_config": config.exists(), "path": str(ws_dir)})
+    return {"status": "ok", "workspaces": workspaces, "count": len(workspaces)}
+
+
+TOOLS.extend([
+    {"name": "clone", "description": "Clone an EA into a forge workspace for iteration",
+     "inputSchema": {"type": "object",
+                     "properties": {"ea_path": {"type": "string"}, "workspace": {"type": "string"}},
+                     "required": ["ea_path"]}},
+    {"name": "commit", "description": "Commit best candidate as new baseline",
+     "inputSchema": {"type": "object",
+                     "properties": {"workspace": {"type": "string"}, "candidate_id": {"type": "string"}},
+                     "required": ["workspace"]}},
+    {"name": "repo_list", "description": "List all forge workspaces",
+     "inputSchema": {"type": "object",
+                     "properties": {"root": {"type": "string"}}}},
+])
+
 HANDLERS = {"init_workspace": handle_init_workspace,
             "evaluate": handle_evaluate,
-            "suggest_params": handle_suggest_params}
+            "suggest_params": handle_suggest_params,
+            "clone": handle_clone,
+            "commit": handle_commit,
+            "repo_list": handle_repo_list}
