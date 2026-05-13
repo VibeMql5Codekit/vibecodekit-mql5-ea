@@ -17,9 +17,10 @@ input double InpRiskPercent  = 1.0;
 input int    InpSLPips       = 50;
 input int    InpTPPips       = 100;
 input double InpDailyLoss    = 5.0;
-input int    InpMaxPos       = 3;
 input string InpModelURL     = "http://127.0.0.1:8000/predict";
-input int    InpTimeout      = 5000;
+
+const int    MaxPositions    = 3;
+const int    RequestTimeout  = 5000;
 
 CTrade         trade;
 CPipNormalizer pipNorm;
@@ -28,7 +29,7 @@ CRiskGuard     riskGuard;
 int OnInit()
 {
     if(!pipNorm.Init(_Symbol)) return INIT_FAILED;
-    if(!riskGuard.Init(InpDailyLoss, InpMaxPos, InpMagic, "EAName"))
+    if(!riskGuard.Init(InpDailyLoss, MaxPositions, InpMagic, "EAName"))
         return INIT_FAILED;
     trade.SetExpertMagicNumber(InpMagic);
     EventSetTimer(60);
@@ -60,7 +61,7 @@ void OnTimer()
     string result_headers;
     StringToCharArray(body, data);
 
-    int res = WebRequest("POST", InpModelURL, headers, InpTimeout, data,
+    int res = WebRequest("POST", InpModelURL, headers, RequestTimeout, data,
                          result, result_headers);
     if(res != 200) return;
 
