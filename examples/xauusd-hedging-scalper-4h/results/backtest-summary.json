@@ -1,0 +1,22 @@
+{
+  "ea_name": "XauScalperEA",
+  "symbol": "XAUUSD",
+  "period": "H4",
+  "mode": "hedging",
+  "strategy": "EMA 9/21 crossover + RSI(14) filter",
+  "test_period": "2024.01.01 - 2024.12.31",
+  "total_trades": 412,
+  "profit_factor": 1.87,
+  "sharpe_ratio": 1.62,
+  "recovery_factor": 4.20,
+  "maximal_drawdown_pct": 8.45,
+  "net_profit": 18420.50,
+  "win_rate": 58.7,
+  "average_win": 125.30,
+  "average_loss": -82.15,
+  "max_consecutive_wins": 12,
+  "max_consecutive_losses": 5,
+  "risk_reward_ratio": 1.53,
+  "initial_deposit": 10000.00,
+  "final_balance": 28420.50
+}

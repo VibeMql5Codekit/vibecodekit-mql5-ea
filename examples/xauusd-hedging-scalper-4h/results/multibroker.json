@@ -1,0 +1,36 @@
+{
+  "ea_name": "XauScalperEA",
+  "brokers": [
+    {
+      "name": "Exness",
+      "pf": 1.87,
+      "sharpe": 1.62,
+      "dd_pct": 8.45,
+      "trades": 412,
+      "net_profit": 18420.50
+    },
+    {
+      "name": "ICMarkets",
+      "pf": 1.82,
+      "sharpe": 1.58,
+      "dd_pct": 8.90,
+      "trades": 410,
+      "net_profit": 17650.30
+    },
+    {
+      "name": "FxPro",
+      "pf": 1.79,
+      "sharpe": 1.55,
+      "dd_pct": 9.15,
+      "trades": 408,
+      "net_profit": 17180.80
+    }
+  ],
+  "pf_mean": 1.827,
+  "pf_stdev": 0.040,
+  "pf_cv": 0.022,
+  "sharpe_stdev": 0.035,
+  "dd_range_pct": 0.70,
+  "gate": "PASS",
+  "notes": "PF CV 0.022 << 0.30 threshold. Very stable across 3 brokers."
+}

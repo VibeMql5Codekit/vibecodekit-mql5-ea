@@ -1,0 +1,17 @@
+{
+  "ea_name": "XauScalperEA",
+  "is_period": "2024.01.01 - 2024.08.31",
+  "oos_period": "2024.09.01 - 2024.12.31",
+  "is_pf": 2.10,
+  "oos_pf": 1.72,
+  "pf_ratio": 0.819,
+  "is_sharpe": 1.78,
+  "oos_sharpe": 1.45,
+  "is_trades": 280,
+  "oos_trades": 132,
+  "is_dd_pct": 7.20,
+  "oos_dd_pct": 9.80,
+  "dd_diff_pct": 2.60,
+  "gate": "PASS",
+  "notes": "OOS PF 1.72 >= 1.5 threshold. PF ratio 0.819 >= 0.5. Healthy decay."
+}
