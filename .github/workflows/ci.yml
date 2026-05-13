@@ -25,9 +25,11 @@ jobs:
       
       - name: Install Wine + MetaEditor
         run: |
-          sudo bash scripts/setup-wine-metaeditor.sh
+          sudo WINEPREFIX=/home/runner/.wine-mql5 \
+               bash scripts/setup-wine-metaeditor.sh
         env:
           WINEPREFIX: /home/runner/.wine-mql5
+          DISPLAY: :99
       
       - name: Install Python deps
         run: |
@@ -56,15 +58,11 @@ jobs:
       - name: Run all phase gate tests
         run: |
           source .venv/bin/activate
-          # Run all phase gates that exist
-          for phase_dir in tests/gates/phase-*; do
-            if [ -d "$phase_dir" ]; then
-              echo "Running $phase_dir..."
-              xvfb-run -a python -m pytest "$phase_dir" -v
-            fi
-          done
+          source /home/runner/.mql5-env || true
+          xvfb-run -a python -m pytest tests/ -v
         env:
           WINEPREFIX: /home/runner/.wine-mql5
+          DISPLAY: :99
       
       - name: Upload test artifacts
         if: always()
