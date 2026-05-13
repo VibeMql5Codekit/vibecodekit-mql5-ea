@@ -1,0 +1,14 @@
+{
+  "simulations": 10000,
+  "original_max_dd": 1245.60,
+  "original_max_dd_pct": 10.23,
+  "percentiles": {
+    "p50_dd": 1102.30,
+    "p75_dd": 1456.80,
+    "p90_dd": 1789.20,
+    "p95_dd": 2012.40,
+    "p99_dd": 2534.10
+  },
+  "dd95_ratio": 1.62,
+  "verdict": "PASS — DD95/actual = 1.62 ≤ 2.0 threshold"
+}

@@ -1,0 +1,16 @@
+{
+  "method": "anchored",
+  "split_ratio": "75/25",
+  "windows": [
+    {"is_period": "2020-01 to 2022-09", "oos_period": "2022-10 to 2023-06",
+     "is_pf": 1.68, "oos_pf": 1.42, "efficiency": 0.845},
+    {"is_period": "2020-01 to 2023-03", "oos_period": "2023-04 to 2023-12",
+     "is_pf": 1.72, "oos_pf": 1.51, "efficiency": 0.878},
+    {"is_period": "2020-01 to 2023-09", "oos_period": "2023-10 to 2024-06",
+     "is_pf": 1.65, "oos_pf": 1.38, "efficiency": 0.836},
+    {"is_period": "2020-01 to 2024-03", "oos_period": "2024-04 to 2024-12",
+     "is_pf": 1.58, "oos_pf": 1.45, "efficiency": 0.918}
+  ],
+  "average_efficiency": 0.869,
+  "verdict": "PASS — avg efficiency 86.9% > 70% threshold"
+}
