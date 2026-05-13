@@ -11,13 +11,13 @@ import sys
 from pathlib import Path
 
 DIMENSIONS = [
-    "correctness", "robustness", "performance", "security",
-    "maintainability", "portability", "usability", "compliance",
+    "d_correctness", "d_risk", "d_robustness", "d_perf",
+    "d_maintainability", "d_observability", "d_broker-safety", "d_inference",
 ]
 
 AXES = [
-    "normal_market", "high_volatility", "low_liquidity", "news_event",
-    "broker_switch", "timeframe_switch", "multi_symbol", "stress_test",
+    "design", "implement", "unit-test", "integration",
+    "backtest", "walk-forward", "multi-broker", "live-canary",
 ]
 
 MODE_THRESHOLDS = {

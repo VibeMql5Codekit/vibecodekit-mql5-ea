@@ -1,0 +1,22 @@
+# Step 1: SCAN — Read-Only Repository Exploration
+
+## Objective
+Understand the codebase structure, existing patterns, and constraints before making any changes.
+
+## Artifacts
+- [ ] Directory tree listing
+- [ ] Technology stack identification (MQL5 version, broker account types)
+- [ ] Existing EA inventory (names, strategies, symbols, timeframes)
+- [ ] Include library audit (CPipNormalizer, CRiskGuard, etc.)
+- [ ] Anti-pattern baseline (current violations)
+
+## Template
+```
+PROJECT: {{project_name}}
+SCANNED: {{timestamp}}
+FILES: {{file_count}} | LOC: {{loc_count}}
+STACK: MQL5 {{mql5_version}} | MetaEditor {{metaeditor_build}}
+ACCOUNT_MODES: {{netting|hedging|both}}
+EXISTING_EAs: {{ea_list}}
+AP_BASELINE: {{ap_violations}}
+```

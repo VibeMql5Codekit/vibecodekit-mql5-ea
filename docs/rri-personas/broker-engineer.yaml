@@ -1,40 +1,129 @@
 name: broker-engineer
-role: "Broker Integration Engineer"
-description: "Ensures EA compatibility across brokers with different digit configs, spread models, and execution modes."
+role: Broker Integration Engineer
+description: Ensures EA compatibility across brokers with different digit configs,
+  spread models, and execution modes.
 questions:
-  - id: 1
-    text: "How does your broker report pip values — 5-digit, 4-digit, 3-digit, or 2-digit?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 2
-    text: "Does your broker support both netting and hedging account modes?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 3
-    text: "What spread model does your broker use — fixed, variable, or ECN raw?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 4
-    text: "How does pip normalization differ for JPY pairs vs major pairs on your platform?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 5
-    text: "Does your broker require specific slippage/deviation settings for market orders?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 6
-    text: "What execution mode does your broker use — Instant, Market, or Exchange?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 7
-    text: "Does your broker expose SYMBOL_TRADE_TICK_VALUE for all instruments?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 8
-    text: "How does your broker handle partial fills on limit orders?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 9
-    text: "Are there minimum lot size differences across your broker vs competitors?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 10
-    text: "Does your broker support XAU/XAG — and what digit configuration?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 11
-    text: "How does your broker handle symbol naming — EURUSD vs EURUSDm vs EURUSD.i?"
-    mode: ["ENTERPRISE"]
-  - id: 12
-    text: "What are the maximum allowed open positions and pending orders?"
-    mode: ["TEAM", "ENTERPRISE"]
+- id: 1
+  text: How does your broker report pip values — 5-digit, 4-digit, 3-digit, or 2-digit?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 2
+  text: Does your broker support both netting and hedging account modes?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 3
+  text: What spread model does your broker use — fixed, variable, or ECN raw?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 4
+  text: How does pip normalization differ for JPY pairs vs major pairs on your platform?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 5
+  text: Does your broker require specific slippage/deviation settings for market orders?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 6
+  text: What execution mode does your broker use — Instant, Market, or Exchange?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 7
+  text: Does your broker expose SYMBOL_TRADE_TICK_VALUE for all instruments?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 8
+  text: How does your broker handle partial fills on limit orders?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 9
+  text: Are there minimum lot size differences across your broker vs competitors?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 10
+  text: Does your broker support XAU/XAG — and what digit configuration?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 11
+  text: How does your broker handle symbol naming — EURUSD vs EURUSDm vs EURUSD.i?
+  mode:
+  - ENTERPRISE
+- id: 12
+  text: What are the maximum allowed open positions and pending orders?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 13
+  text: How do you handle broker server migration or IP changes?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 14
+  text: What latency threshold is acceptable for order execution?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 15
+  text: Do you need support for broker-specific order types (limit/stop/SL-TP)?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 16
+  text: How should the EA handle broker disconnections during open trades?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 17
+  text: What is the minimum margin level before blocking new trades?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 18
+  text: Do you need swap-free account compatibility?
+  mode:
+  - ENTERPRISE
+- id: 19
+  text: How should pip normalization handle exotic pairs (e.g., TRY, ZAR)?
+  mode:
+  - ENTERPRISE
+- id: 20
+  text: What is the maximum acceptable spread multiplier for entry?
+  mode:
+  - ENTERPRISE
+- id: 21
+  text: Do you need support for cryptocurrency CFDs with unusual digit counts?
+  mode:
+  - ENTERPRISE
+- id: 22
+  text: How should the EA validate trade server time zone differences?
+  mode:
+  - ENTERPRISE
+- id: 23
+  text: What fill policy do you prefer (FOK, IOC, Return)?
+  mode:
+  - ENTERPRISE
+- id: 24
+  text: How do you handle broker-imposed maximum lot size limits?
+  mode:
+  - ENTERPRISE
+- id: 25
+  text: Do you need support for partial fills and requotes?
+  mode:
+  - ENTERPRISE

@@ -104,3 +104,97 @@ def test_3_llm_scaffold_dirs():
     llm_dir = REPO_ROOT / "scaffolds" / "service-llm-bridge"
     for variant in ["cloud-api", "embedded-onnx-llm", "self-hosted-ollama"]:
         assert (llm_dir / variant).exists(), f"LLM scaffold {variant} missing"
+
+
+def test_onnx_export_detect_framework():
+    from vibecodekit_mql5.onnx_export import detect_framework
+    assert detect_framework(Path("model.pt")) == "pytorch"
+    assert detect_framework(Path("model.h5")) == "tensorflow"
+    assert detect_framework(Path("model.pkl")) == "sklearn"
+    assert detect_framework(Path("model.xyz")) == "unknown"
+
+
+def test_onnx_export_validate_opset():
+    from vibecodekit_mql5.onnx_export import validate_opset
+    ok, _ = validate_opset(17)
+    assert ok
+    fail, msg = validate_opset(5)
+    assert not fail
+    assert "too low" in msg
+
+
+def test_onnx_embed_generates_loader():
+    from vibecodekit_mql5.onnx_embed import generate_embed
+    with tempfile.NamedTemporaryFile(suffix=".onnx", delete=False) as f:
+        f.write(b"fake-onnx-data")
+        f.flush()
+        result = generate_embed(Path(f.name))
+    assert result["success"]
+    assert "COnnxLoader" in result["loader_code"]
+    assert "ExtModel" in result["resource_directive"]
+
+
+def test_async_build_creates_scaffold():
+    from vibecodekit_mql5.async_build import build_hft_scaffold
+    with tempfile.TemporaryDirectory() as td:
+        result = build_hft_scaffold("TestHFT", Path(td), "netting")
+        assert result["success"]
+        assert (Path(td) / "TestHFT" / "TestHFT.mq5").exists()
+        content = (Path(td) / "TestHFT" / "TestHFT.mq5").read_text()
+        assert "CAsyncTradeManager" in content
+        assert "OnTradeTransaction" in content
+
+
+def test_cloud_optimize_cost_gate():
+    from vibecodekit_mql5.cloud_optimize import check_cost_gate
+    result = check_cost_gate("PERSONAL", 10)
+    assert not result["allowed"]
+    result = check_cost_gate("TEAM", 30)
+    assert result["allowed"]
+    result = check_cost_gate("TEAM", 100)
+    assert not result["allowed"]
+    result = check_cost_gate("ENTERPRISE", 200)
+    assert result["allowed"]
+
+
+def test_method_hiding_check_detects():
+    from vibecodekit_mql5.method_hiding_check import extract_classes, check_hiding
+    code = """
+class CBase { public: int Calculate(int x) { return x; } };
+class CDerived : public CBase { public: int Calculate(int x) { return x*2; } };
+"""
+    classes = extract_classes(code)
+    assert len(classes) == 2
+    issues = check_hiding(classes)
+    assert len(issues) >= 1
+
+
+def test_ml_onnx_python_dir_exists():
+    py_dir = REPO_ROOT / "scaffolds" / "ml-onnx" / "python-bridge" / "python"
+    assert py_dir.exists()
+    assert (py_dir / "train.py").exists()
+    assert (py_dir / "export_onnx.py").exists()
+    assert (py_dir / "requirements.txt").exists()
+
+
+def test_onnx_export_not_stub():
+    path = REPO_ROOT / "scripts" / "vibecodekit_mql5" / "onnx_export.py"
+    content = path.read_text()
+    assert len(content.splitlines()) > 50
+    assert "detect_framework" in content
+
+
+def test_cloud_optimize_generates_ini():
+    from vibecodekit_mql5.cloud_optimize import generate_cloud_config
+    result = generate_cloud_config(Path("test.mq5"), "ENTERPRISE", 100, "XAUUSD", "M5")
+    assert result["success"]
+    assert "XAUUSD" in result["config_ini"]
+    assert "CloudMaxAgents" in result["config_ini"]
+
+
+def test_method_hiding_no_false_positive():
+    from vibecodekit_mql5.method_hiding_check import extract_classes, check_hiding
+    code = "class CSimple { public: void OnTick() {} };"
+    classes = extract_classes(code)
+    issues = check_hiding(classes)
+    assert len(issues) == 0

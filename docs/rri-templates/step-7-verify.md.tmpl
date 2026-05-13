@@ -1,0 +1,22 @@
+# Step 7: VERIFY — Quality Gate
+
+## Objective
+Run all verification gates before shipping.
+
+## Gates
+1. `pytest tests/ -q` — all tests pass
+2. `mql5-lint` — 0 critical AP on production code
+3. `audit-plan-v5.py --post-phase={{phase}}` — audit passes
+4. LOC ceiling — all Python scripts < 200 LOC
+5. Forbidden files check — no dropped components re-introduced
+6. Permission pipeline — EA passes required layers for target mode
+7. 8×8 quality matrix — minimum cells passing
+
+## Report Template
+```
+PHASE: {{phase}}
+TESTS: {{passed}}/{{total}} pass, {{skipped}} skip
+AUDIT: {{PASS|FAIL}}
+LOC_MAX: {{max_loc}} (ceiling: 200)
+AP_CRITICAL: {{count}} (must be 0)
+```

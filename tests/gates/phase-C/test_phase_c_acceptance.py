@@ -21,7 +21,7 @@ def test_persona_yamls_have_real_questions():
                  "strategy-architect", "devops", "perf-analyst"]:
         data = yaml.safe_load((personas_dir / f"{name}.yaml").read_text())
         assert data["name"] == name, f"{name}: wrong name field"
-        assert len(data["questions"]) == 12, f"{name}: expected 12 questions"
+        assert len(data["questions"]) == 25, f"{name}: expected 25 questions"
         for q in data["questions"]:
             assert "Placeholder" not in q["text"], f"{name} Q{q['id']}: still placeholder"
 
@@ -100,3 +100,81 @@ void OnTick() {
     warning_ids = {f.ap_id for f in warnings}
     assert "AP-04" in warning_ids or "AP-06" in warning_ids or "AP-07" in warning_ids, \
         f"Expected at least one warning AP, got: {warning_ids}"
+
+
+def test_8_rri_templates_exist():
+    tmpl_dir = REPO_ROOT / "docs" / "rri-templates"
+    assert tmpl_dir.exists(), "docs/rri-templates/ missing"
+    for i in range(1, 9):
+        files = list(tmpl_dir.glob(f"step-{i}-*.tmpl"))
+        assert len(files) >= 1, f"step-{i} template missing"
+
+
+def test_matrix_has_8x8_dimensions():
+    from vibecodekit_mql5.rri.matrix import DIMENSIONS, AXES
+    assert len(DIMENSIONS) == 8, f"Expected 8 dimensions, got {len(DIMENSIONS)}"
+    assert len(AXES) == 8, f"Expected 8 axes, got {len(AXES)}"
+
+
+def test_matrix_html_output():
+    from vibecodekit_mql5.rri.matrix import evaluate_matrix, render_html
+    result = evaluate_matrix(mode="TEAM")
+    html = render_html(result)
+    assert "<table" in html
+    assert "</table>" in html
+    assert result["total_cells"] == 64
+
+
+def test_persona_enterprise_has_25_questions():
+    personas_dir = REPO_ROOT / "docs" / "rri-personas"
+    for name in ["trader", "risk-auditor", "broker-engineer",
+                 "strategy-architect", "devops", "perf-analyst"]:
+        data = yaml.safe_load((personas_dir / f"{name}.yaml").read_text())
+        enterprise_qs = [q for q in data["questions"] if "ENTERPRISE" in q.get("mode", [])]
+        assert len(enterprise_qs) == 25, f"{name}: expected 25 ENTERPRISE, got {len(enterprise_qs)}"
+
+
+def test_review_scripts_not_stubs():
+    for mod_name in ["review", "eng_review", "ceo_review", "cso", "investigate"]:
+        mod_path = REPO_ROOT / "scripts" / "vibecodekit_mql5" / "review" / f"{mod_name}.py"
+        assert mod_path.exists(), f"{mod_name}.py missing"
+        content = mod_path.read_text()
+        assert "stub" not in content.lower(), f"{mod_name} still a stub"
+        assert len(content.splitlines()) > 20, f"{mod_name} too short"
+
+
+def test_review_7_perspectives():
+    from vibecodekit_mql5.review.review import PERSPECTIVES
+    assert len(PERSPECTIVES) == 7, f"Expected 7 perspectives, got {len(PERSPECTIVES)}"
+
+
+def test_cso_10_security_checks():
+    from vibecodekit_mql5.review.cso import SECURITY_CHECKS
+    assert len(SECURITY_CHECKS) == 10, f"Expected 10 checks, got {len(SECURITY_CHECKS)}"
+
+
+def test_eng_review_8_invariants():
+    from vibecodekit_mql5.review.eng_review import INVARIANTS
+    assert len(INVARIANTS) == 8, f"Expected 8 invariants, got {len(INVARIANTS)}"
+
+
+def test_ceo_review_4_modes():
+    from vibecodekit_mql5.review.ceo_review import CEO_MODES
+    assert len(CEO_MODES) == 4
+    assert "SCOPE_EXPANSION" in CEO_MODES
+    assert "REDUCTION" in CEO_MODES
+
+
+def test_permission_orchestrator_has_main():
+    from vibecodekit_mql5.permission.orchestrator import main
+    assert callable(main)
+
+
+def test_step_workflow_8_steps():
+    from vibecodekit_mql5.rri.step_workflow import WORKFLOW_STEPS
+    assert len(WORKFLOW_STEPS) == 8, f"Expected 8 workflow steps, got {len(WORKFLOW_STEPS)}"
+
+
+def test_orchestrator_enterprise_runs_all_7_layers():
+    from vibecodekit_mql5.permission.orchestrator import run_permission_pipeline, MODE_LAYERS
+    assert len(MODE_LAYERS["ENTERPRISE"]) == 7

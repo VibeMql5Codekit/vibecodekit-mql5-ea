@@ -89,9 +89,27 @@ public:
         m_disabled      = false;
     }
 
-    bool   IsDisabled()       const { return m_disabled; }
-    double DailyLossLimit()   const { return m_daily_loss_limit; }
-    int    MaxPositions()     const { return m_max_positions; }
-    double StartBalance()     const { return m_start_balance; }
+    bool   IsDisabled()        const { return m_disabled; }
+    double DailyLossLimit()    const { return m_daily_loss_limit; }
+    int    MaxOpenPositions()   const { return m_max_positions; }
+    double StartBalance()      const { return m_start_balance; }
+
+    bool FreezeOnDD(double dd_pct)
+    {
+        if(dd_pct <= 0) return false;
+        CAccountInfo acc;
+        double equity = acc.Equity();
+        double balance = acc.Balance();
+        if(balance <= 0) return false;
+        double current_dd = ((balance - equity) / balance) * 100.0;
+        if(current_dd >= dd_pct)
+        {
+            m_disabled = true;
+            PrintFormat("[RiskGuard] DD %.2f%% >= freeze threshold %.2f%%. EA frozen.",
+                        current_dd, dd_pct);
+            return true;
+        }
+        return false;
+    }
 };
 //+------------------------------------------------------------------+

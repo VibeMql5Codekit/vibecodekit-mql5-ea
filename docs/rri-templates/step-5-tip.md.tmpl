@@ -1,0 +1,18 @@
+# Step 5: TIP — Task Instruction Pack
+
+## Objective
+Break blueprint into implementable tasks with dependencies.
+
+## TIP Format
+```yaml
+tip_id: "TIP-{{number}}"
+title: "{{title}}"
+phase: "{{A|B|C|D|E}}"
+depends_on: [{{dep_list}}]
+estimated_minutes: {{minutes}}
+acceptance:
+  - "{{criterion_1}}"
+  - "{{criterion_2}}"
+files_touched:
+  - "{{file_path}}"
+```

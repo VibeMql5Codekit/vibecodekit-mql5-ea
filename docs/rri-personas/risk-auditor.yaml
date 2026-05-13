@@ -1,40 +1,128 @@
 name: risk-auditor
-role: "Risk Auditor / Compliance Officer"
-description: "Reviews EA code for anti-patterns, risk violations, and regulatory compliance."
+role: Risk Auditor / Compliance Officer
+description: Reviews EA code for anti-patterns, risk violations, and regulatory compliance.
 questions:
-  - id: 1
-    text: "Which anti-patterns are absolute blockers for production deployment?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 2
-    text: "How do you verify that stop-loss is set on every trade operation?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 3
-    text: "What is your policy on fixed lot sizes vs dynamic risk-based sizing?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 4
-    text: "How do you detect overfitting — what input parameter count is suspicious?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 5
-    text: "Do you require Monte Carlo simulation before any live deployment?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 6
-    text: "What dead-code patterns should be flagged during code review?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 7
-    text: "How do you audit magic number uniqueness across multi-EA portfolios?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 8
-    text: "What daily/weekly loss limits trigger automatic EA shutdown?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 9
-    text: "Do you require async trade handlers (OnTradeTransaction) for all OrderSendAsync usage?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 10
-    text: "How do you handle WebRequest calls — should they be banned from OnTick?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 11
-    text: "What is your anti-drift audit frequency — per commit, per release, or per sprint?"
-    mode: ["ENTERPRISE"]
-  - id: 12
-    text: "Do you require multi-broker testing before production sign-off?"
-    mode: ["TEAM", "ENTERPRISE"]
+- id: 1
+  text: Which anti-patterns are absolute blockers for production deployment?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 2
+  text: How do you verify that stop-loss is set on every trade operation?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 3
+  text: What is your policy on fixed lot sizes vs dynamic risk-based sizing?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 4
+  text: How do you detect overfitting — what input parameter count is suspicious?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 5
+  text: Do you require Monte Carlo simulation before any live deployment?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 6
+  text: What dead-code patterns should be flagged during code review?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 7
+  text: How do you audit magic number uniqueness across multi-EA portfolios?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 8
+  text: What daily/weekly loss limits trigger automatic EA shutdown?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 9
+  text: Do you require async trade handlers (OnTradeTransaction) for all OrderSendAsync
+    usage?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 10
+  text: How do you handle WebRequest calls — should they be banned from OnTick?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 11
+  text: What is your anti-drift audit frequency — per commit, per release, or per
+    sprint?
+  mode:
+  - ENTERPRISE
+- id: 12
+  text: Do you require multi-broker testing before production sign-off?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 13
+  text: What audit trail format is required for trade decisions?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 14
+  text: How often should anti-pattern scans run (pre-commit, CI, manual)?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 15
+  text: Are there regulatory requirements for trade logging in your jurisdiction?
+  mode:
+  - ENTERPRISE
+- id: 16
+  text: What is the maximum acceptable slippage before flagging an alert?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 17
+  text: Do you require separate risk limits per strategy vs per account?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 18
+  text: How should the system handle conflicting magic numbers across EAs?
+  mode:
+  - ENTERPRISE
+- id: 19
+  text: What is the escalation procedure when daily loss limit is breached?
+  mode:
+  - ENTERPRISE
+- id: 20
+  text: Do you need position-level or account-level drawdown monitoring?
+  mode:
+  - ENTERPRISE
+- id: 21
+  text: What correlation threshold triggers multi-EA risk reduction?
+  mode:
+  - ENTERPRISE
+- id: 22
+  text: How should margin utilization be capped across all running EAs?
+  mode:
+  - ENTERPRISE
+- id: 23
+  text: Do you require periodic stress testing against historical crises?
+  mode:
+  - ENTERPRISE
+- id: 24
+  text: What is your policy on EA parameter changes in production?
+  mode:
+  - ENTERPRISE
+- id: 25
+  text: How do you verify that risk guards are not circumvented by code changes?
+  mode:
+  - ENTERPRISE

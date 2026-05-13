@@ -1,40 +1,131 @@
 name: strategy-architect
-role: "Strategy Architect / Quant Developer"
-description: "Designs and optimizes trading strategies — scaffold selection, indicator composition, and parameter tuning."
+role: Strategy Architect / Quant Developer
+description: Designs and optimizes trading strategies — scaffold selection, indicator
+  composition, and parameter tuning.
 questions:
-  - id: 1
-    text: "What strategy archetype best fits your approach — trend, mean-reversion, breakout, or grid?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 2
-    text: "How many input parameters should a robust strategy have maximum?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 3
-    text: "Do you use multi-timeframe analysis? If yes, how do you synchronize signals?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 4
-    text: "What walk-forward ratio (IS/OOS) do you prefer — 75/25, 70/30, or custom?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 5
-    text: "Do you plan to use ONNX models for signal generation or filtering?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 6
-    text: "How do you handle portfolio correlation when running multiple EAs?"
-    mode: ["TEAM", "ENTERPRISE"]
-  - id: 7
-    text: "What fitness function do you use for optimization — PF, Sharpe, custom?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 8
-    text: "Do you use the MQL5 Wizard (CExpert framework) or prefer custom architecture?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 9
-    text: "How do you validate that a strategy is not curve-fitted to historical data?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 10
-    text: "What indicator libraries do you commonly use — built-in, iCustom, or external?"
-    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
-  - id: 11
-    text: "Do you require LLM-assisted strategy generation or analysis?"
-    mode: ["ENTERPRISE"]
-  - id: 12
-    text: "How many scaffold presets should cover your typical strategy patterns?"
-    mode: ["TEAM", "ENTERPRISE"]
+- id: 1
+  text: What strategy archetype best fits your approach — trend, mean-reversion, breakout,
+    or grid?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 2
+  text: How many input parameters should a robust strategy have maximum?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 3
+  text: Do you use multi-timeframe analysis? If yes, how do you synchronize signals?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 4
+  text: What walk-forward ratio (IS/OOS) do you prefer — 75/25, 70/30, or custom?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 5
+  text: Do you plan to use ONNX models for signal generation or filtering?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 6
+  text: How do you handle portfolio correlation when running multiple EAs?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 7
+  text: What fitness function do you use for optimization — PF, Sharpe, custom?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 8
+  text: Do you use the MQL5 Wizard (CExpert framework) or prefer custom architecture?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 9
+  text: How do you validate that a strategy is not curve-fitted to historical data?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 10
+  text: What indicator libraries do you commonly use — built-in, iCustom, or external?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 11
+  text: Do you require LLM-assisted strategy generation or analysis?
+  mode:
+  - ENTERPRISE
+- id: 12
+  text: How many scaffold presets should cover your typical strategy patterns?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 13
+  text: How do you determine optimal lookback period for indicators?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 14
+  text: What entry confirmation signals do you require (multi-timeframe)?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 15
+  text: Do you use adaptive parameters or fixed optimization windows?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 16
+  text: How do you prevent curve-fitting during optimization?
+  mode:
+  - PERSONAL
+  - TEAM
+  - ENTERPRISE
+- id: 17
+  text: What is your approach to regime detection (trending vs ranging)?
+  mode:
+  - TEAM
+  - ENTERPRISE
+- id: 18
+  text: Do you incorporate ML models for signal generation?
+  mode:
+  - ENTERPRISE
+- id: 19
+  text: How should the EA handle conflicting signals across timeframes?
+  mode:
+  - ENTERPRISE
+- id: 20
+  text: What position sizing algorithm do you prefer (fixed, Kelly, optimal f)?
+  mode:
+  - ENTERPRISE
+- id: 21
+  text: Do you need support for portfolio-level optimization?
+  mode:
+  - ENTERPRISE
+- id: 22
+  text: How do you validate strategy robustness beyond walk-forward?
+  mode:
+  - ENTERPRISE
+- id: 23
+  text: What exit strategy logic do you use (trailing, time-based, signal)?
+  mode:
+  - ENTERPRISE
+- id: 24
+  text: Do you need support for inter-market analysis?
+  mode:
+  - ENTERPRISE
+- id: 25
+  text: How should the EA handle overnight gaps in strategy logic?
+  mode:
+  - ENTERPRISE
