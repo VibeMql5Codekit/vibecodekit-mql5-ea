@@ -15,8 +15,9 @@ input double InpRiskPercent = 1.0;
 input int    InpSLPips      = 50;
 input int    InpTPPips      = 100;
 input int    InpMaxPos      = 3;
-input double InpDailyLoss   = 5.0;
 input string InpPythonURL   = "http://127.0.0.1:5000/signal";
+
+const double DailyLossLimit = 5.0;
 
 CTrade         trade;
 CPipNormalizer pipNorm;
@@ -25,14 +26,15 @@ CRiskGuard     riskGuard;
 int OnInit()
 {
     if(!pipNorm.Init(_Symbol))   return INIT_FAILED;
-    if(!riskGuard.Init(InpDailyLoss, InpMaxPos, InpMagic, "EAName"))
+    if(!riskGuard.Init(DailyLossLimit, InpMaxPos, InpMagic, "EAName"))
         return INIT_FAILED;
 
     trade.SetExpertMagicNumber(InpMagic);
+    EventSetTimer(60);
     return INIT_SUCCEEDED;
 }
 
-void OnDeinit(const int reason) {}
+void OnDeinit(const int reason) { EventKillTimer(); }
 
 void OnTimer()
 {

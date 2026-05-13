@@ -14,19 +14,15 @@
 #include <Expert\Money\MoneyFixedRisk.mqh>
 #include "CPipNormalizer.mqh"
 
-input string InpExpertName  = "EAName";
 input int    InpMagic       = 54321;
 input double InpRiskPercent = 1.0;
 input int    InpSLPips      = 50;
-
-// MACD signal params
 input int    InpMACDFast    = 12;
 input int    InpMACDSlow    = 26;
 input int    InpMACDSignal  = 9;
 
-// SAR signal params
-input double InpSARStep     = 0.02;
-input double InpSARMax      = 0.2;
+const double SARStep        = 0.02;
+const double SARMax         = 0.2;
 
 CExpert        expert;
 CPipNormalizer pipNorm;
@@ -49,14 +45,14 @@ int OnInit()
     signal.AddFilter(macd);
 
     CSignalSAR *sar = new CSignalSAR();
-    sar.Step(InpSARStep);
-    sar.Maximum(InpSARMax);
+    sar.Step(SARStep);
+    sar.Maximum(SARMax);
     signal.AddFilter(sar);
 
     // Trailing: Parabolic SAR
     CTrailingPSAR *trail = new CTrailingPSAR();
-    trail.Step(InpSARStep);
-    trail.Maximum(InpSARMax);
+    trail.Step(SARStep);
+    trail.Maximum(SARMax);
     if(!expert.InitTrailing(trail)) return INIT_FAILED;
 
     // Money: Fixed risk %

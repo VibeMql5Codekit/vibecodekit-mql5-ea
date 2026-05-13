@@ -15,9 +15,10 @@ input int    InpMagicBase    = 10000;
 input double InpRiskPercent  = 0.5;
 input int    InpSLPips       = 50;
 input int    InpTPPips       = 100;
-input double InpDailyLoss    = 5.0;
 input int    InpMaxPos       = 6;
 input string InpSymbols      = "EURUSD,GBPUSD,USDJPY";
+
+const double DailyLossLimit  = 5.0;
 
 #define MAX_SYMBOLS 10
 
@@ -30,7 +31,7 @@ int            symbolCount;
 
 int OnInit()
 {
-    if(!riskGuard.Init(InpDailyLoss, InpMaxPos, InpMagicBase, "EAName"))
+    if(!riskGuard.Init(DailyLossLimit, InpMaxPos, InpMagicBase, "EAName"))
         return INIT_FAILED;
 
     symbolCount = 0;
