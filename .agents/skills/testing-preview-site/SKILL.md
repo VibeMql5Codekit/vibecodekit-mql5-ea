@@ -42,7 +42,29 @@ python -c "import sys; sys.path.insert(0,'scripts'); from vibecodekit_mql5.build
 # Expected: 17
 ```
 
-### 2. Permission Pipeline Testing
+### 2. Scaffold Stack Validation
+
+Test that `--stack` is validated per-preset (not just accepted blindly):
+
+```bash
+# Single-stack preset with wrong default — should reject with helpful error
+mql5-build --preset dca --name Test --output /tmp/test-stack 2>&1
+# Expected: exit 2, "Invalid stack 'netting' for preset 'dca'. Available: hedging"
+
+# Single-stack preset with correct stack — should succeed
+mql5-build --preset dca --stack hedging --name Test --output /tmp/test-stack
+# Expected: exit 0, "Rendered dca/hedging"
+
+# Multi-stack preset with invalid stack — lists all valid options
+mql5-build --preset stdlib --stack nonexistent --name Bad --output /tmp/test-stack 2>&1
+# Expected: exit 2, "Available: hedging, netting, python-bridge"
+
+# Non-standard stacks (service-llm-bridge has cloud-api, embedded-onnx-llm, self-hosted-ollama)
+mql5-build --preset service-llm-bridge --stack netting --name Bad --output /tmp/test-stack 2>&1
+# Expected: exit 2, "Available: cloud-api, embedded-onnx-llm, self-hosted-ollama"
+```
+
+### 3. Permission Pipeline Testing
 
 ```bash
 # Test permission orchestrator
@@ -56,7 +78,7 @@ print(json.dumps(r, indent=2))
 # Note: layer4 requires >= 15/17 PASS (not 10). Scaffold gets ~12 so layer4 will fail.
 ```
 
-### 3. Forge Fitness Evaluation
+### 4. Forge Fitness Evaluation
 
 ```bash
 # Test evaluate_fitness with backtest JSON keys
@@ -73,7 +95,7 @@ print(evaluate_fitness(metrics, cfg))
 "
 ```
 
-### 4. Preview Site (Browser — Record This)
+### 5. Preview Site (Browser — Record This)
 
 Maximize browser before recording:
 ```bash
@@ -105,3 +127,5 @@ wmctrl -r :ACTIVE: -b add,maximized_vert,maximized_horz
 - Backtest JSON output uses `maximal_drawdown_pct` key, but internal BacktestMetrics dataclass uses `max_drawdown_pct` — evaluate_fitness handles both
 - Layer4 permission threshold is >= 15/17 PASS (matching trader_check.py standalone CLI)
 - CAsyncTradeManager uses CTrade::Result() to get MqlTradeResult.request_id for async tracking (not ResultOrder())
+- Some presets only have one stack (e.g. dca→hedging, scalping→hedging) — default `--stack netting` will fail for these. The CLI now shows available stacks in the error message.
+- service-llm-bridge uses non-standard stacks: cloud-api, embedded-onnx-llm, self-hosted-ollama (not netting/hedging/python-bridge)
