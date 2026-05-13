@@ -82,6 +82,13 @@ def main() -> int:
     if not args.preset:
         parser.error("--preset required (use --list to see options)")
 
+    valid_stacks = _discover_stacks(args.preset)
+    if valid_stacks and args.stack not in valid_stacks:
+        parser.error(
+            f"Invalid stack '{args.stack}' for preset '{args.preset}'. "
+            f"Available: {', '.join(valid_stacks)}"
+        )
+
     try:
         render_scaffold(args.preset, args.stack, args.name, args.output)
     except FileNotFoundError as e:
