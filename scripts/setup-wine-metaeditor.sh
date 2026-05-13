@@ -114,7 +114,13 @@ build_metaeditor_stub() {
 
 write_env_file() {
     local mt5_dir="$WINEPREFIX/drive_c/Program Files/MetaTrader 5"
-    local env_file="$HOME/.mql5-env"
+    local real_home
+    if [[ -n "${SUDO_USER:-}" ]]; then
+        real_home=$(getent passwd "$SUDO_USER" | cut -d: -f6)
+    else
+        real_home="$HOME"
+    fi
+    local env_file="$real_home/.mql5-env"
     cat > "$env_file" <<EOF
 export WINEPREFIX='$WINEPREFIX'
 export METAEDITOR_PATH='$mt5_dir/metaeditor64.exe'
