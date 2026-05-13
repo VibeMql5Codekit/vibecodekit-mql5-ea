@@ -1,10 +1,40 @@
-name: "${persona}"
-role: "${persona}"
-description: "RRI persona for MQL5 EA development"
+name: trader
+role: "Retail/Prop Trader"
+description: "End-user running EAs on live accounts — focuses on risk, drawdown, and profitability."
 questions:
   - id: 1
-    text: "Placeholder question 1"
+    text: "What is your maximum acceptable drawdown percentage per account?"
     mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
   - id: 2
-    text: "Placeholder question 2"
+    text: "Do you trade multiple pairs simultaneously? If yes, how do you handle correlation risk?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 3
+    text: "What is your target profit factor (PF) and Sharpe ratio for a live EA?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 4
+    text: "Do you use both netting and hedging accounts? Which brokers?"
     mode: ["TEAM", "ENTERPRISE"]
+  - id: 5
+    text: "How long should walk-forward OOS validation run before you trust an EA?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 6
+    text: "What is your max risk per trade as percentage of equity?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 7
+    text: "Do you require trailing stop or break-even logic on every EA?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 8
+    text: "How many concurrent positions should the EA allow maximum?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 9
+    text: "What daily loss limit (in % or currency) triggers EA shutdown?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 10
+    text: "Do you run EAs on VPS? What latency is acceptable?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 11
+    text: "How do you handle news events — pause EA or widen stops?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 12
+    text: "What is the minimum backtest period (years) you require before going live?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]

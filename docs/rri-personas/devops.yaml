@@ -1,10 +1,40 @@
-name: "${persona}"
-role: "${persona}"
-description: "RRI persona for MQL5 EA development"
+name: devops
+role: "DevOps / CI-CD Engineer"
+description: "Manages build pipelines, MetaEditor compilation, VPS deployment, and continuous testing."
 questions:
   - id: 1
-    text: "Placeholder question 1"
+    text: "What CI platform do you use — GitHub Actions, GitLab CI, or Jenkins?"
     mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
   - id: 2
-    text: "Placeholder question 2"
+    text: "Can you run MetaEditor (Wine) in your CI environment?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 3
+    text: "How do you handle MQL5 compilation on Linux — Wine or cross-compile?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 4
+    text: "What VPS provider do you use for live EA deployment?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 5
+    text: "How do you manage secrets (account credentials, API keys) in CI?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 6
+    text: "Do you run automated backtests in CI before merging PRs?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 7
+    text: "What is your deployment rollback strategy if an EA causes losses?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 8
+    text: "How do you monitor EA health post-deployment — logs, alerts, metrics?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 9
+    text: "Do you use Docker containers for reproducible backtest environments?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 10
+    text: "What version control strategy do you follow — trunk-based or gitflow?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 11
+    text: "How do you handle canary deployments for new EA versions?"
+    mode: ["ENTERPRISE"]
+  - id: 12
+    text: "Do you need multi-OS compilation (Windows native + Linux Wine)?"
     mode: ["TEAM", "ENTERPRISE"]

@@ -1,0 +1,12 @@
+{
+  "brokers": [
+    {"name": "FxPro", "digits": 5, "pf": 1.52, "dd_pct": 10.23, "trades": 728},
+    {"name": "Exness", "digits": 5, "pf": 1.48, "dd_pct": 11.02, "trades": 715},
+    {"name": "ICMarkets", "digits": 5, "pf": 1.55, "dd_pct": 9.87, "trades": 732}
+  ],
+  "pf_values": [1.52, 1.48, 1.55],
+  "pf_mean": 1.517,
+  "pf_stdev": 0.035,
+  "pf_cv": 0.023,
+  "stability_gate": "PASS — CV 0.023 ≤ 0.30"
+}

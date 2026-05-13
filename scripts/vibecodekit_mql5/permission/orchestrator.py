@@ -2,7 +2,7 @@
 """7-layer permission orchestrator — mode-dependent layer execution."""
 from __future__ import annotations
 
-from scripts.vibecodekit_mql5.permission import (
+from vibecodekit_mql5.permission import (
     layer1_source_lint, layer2_compile, layer3_ap_lint,
     layer4_checklist, layer5_methodology, layer6_quality_matrix,
     layer7_broker_safety,

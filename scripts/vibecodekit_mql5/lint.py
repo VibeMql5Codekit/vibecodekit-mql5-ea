@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Anti-pattern linter for MQL5 EA source files.
 
-Detects 8 critical anti-patterns (exit 1 on any).
-Phase C adds 13 best-practice AP as warnings.
+Detects 8 critical anti-patterns (exit 1 on any)
+and 5 best-practice warnings (Phase C).
 
 Usage:
     mql5-lint path/to/EA.mq5
@@ -67,6 +67,27 @@ CRITICAL_DETECTORS: list[tuple[str, str, re.Pattern[str]]] = [
 ]
 
 
+# 5 best-practice AP detectors (Phase C — warnings, not blocking)
+WARNING_DETECTORS: list[tuple[str, str, re.Pattern[str]]] = [
+    ("AP-02", "No take-profit: trade without TP target",
+     re.compile(r"""(?x)
+        (?:\.Buy|\.Sell|\.BuyLimit|\.BuyStop|\.SellLimit|\.SellStop)\s*\(
+        [^)]*,\s*[^,]+,\s*0(?:\.0+)?\s*[,)]  # TP param = 0
+     """)),
+    ("AP-04", "No trailing stop implementation",
+     re.compile(r"")),  # special: absence-check, handled below
+    ("AP-06", "No error retry on trade operations",
+     re.compile(r"")),  # special: absence-check, handled below
+    ("AP-07", "Print() used instead of PrintFormat()",
+     re.compile(r"\bPrint\s*\(\s*\"[^\"]*\"\s*\+\s*")),
+    ("AP-08", "No comment on trade operation",
+     re.compile(r"""(?x)
+        (?:\.Buy|\.Sell)\s*\(\s*[^)]*\)
+        (?!.*\.SetComment)
+     """)),
+]
+
+
 def lint_file(path: Path) -> list[Finding]:
     """Lint a single .mq5/.mqh file for anti-patterns."""
     findings: list[Finding] = []
@@ -99,6 +120,37 @@ def lint_file(path: Path) -> list[Finding]:
         for match in pattern.finditer(content):
             ln = content[:match.start()].count("\n") + 1
             findings.append(Finding(ap_id, "CRITICAL", str(path), ln, message))
+
+    # Phase C: 5 best-practice warning detectors
+    code_no_comments = re.sub(r"//[^\n]*", "", content)
+    code_no_comments = re.sub(r"/\*[\s\S]*?\*/", "", code_no_comments)
+
+    for ap_id, message, pattern in WARNING_DETECTORS:
+        if ap_id == "AP-04":
+            has_trade = re.search(r"(?:\.Buy|\.Sell)\s*\(", code_no_comments)
+            has_trail = re.search(
+                r"(?:Trailing|TrailingStop|ModifyPosition|PositionModify)",
+                code_no_comments)
+            if has_trade and not has_trail:
+                findings.append(Finding(ap_id, "WARNING", str(path), 1,
+                                        message))
+            continue
+
+        if ap_id == "AP-06":
+            has_send = re.search(
+                r"(?:\.Buy|\.Sell|OrderSend)\s*\(", code_no_comments)
+            has_retry = re.search(
+                r"(?:retry|TRADE_RETCODE_REQUOTE|Sleep\s*\(\s*\d+\s*\))",
+                code_no_comments)
+            if has_send and not has_retry:
+                findings.append(Finding(ap_id, "WARNING", str(path), 1,
+                                        message))
+            continue
+
+        for match in pattern.finditer(code_no_comments):
+            ln = code_no_comments[:match.start()].count("\n") + 1
+            findings.append(Finding(ap_id, "WARNING", str(path), ln,
+                                    message))
 
     return findings
 

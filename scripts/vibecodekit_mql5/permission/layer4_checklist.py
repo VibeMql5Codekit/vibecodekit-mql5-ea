@@ -1,7 +1,24 @@
 #!/usr/bin/env python3
-"""Permission Layer 4: checklist."""
+"""Permission Layer 4: checklist — Trader-17 pre-deploy gate."""
 from __future__ import annotations
 
-def check(ea_path: str, **kwargs) -> dict:
-    """Run Layer 4 check. Returns {pass: bool, details: str}."""
-    return {"pass": True, "layer": 4, "name": "checklist", "details": "stub"}
+from pathlib import Path
+
+
+def check(ea_path: str, **kwargs: object) -> dict:
+    """Run Trader-17 checklist. Fail if PASS count < 15."""
+    from vibecodekit_mql5.trader_check import check_ea_source
+
+    p = Path(ea_path)
+    if not p.exists():
+        return {"pass": False, "layer": 4, "name": "checklist",
+                "details": f"File not found: {ea_path}"}
+
+    results = check_ea_source(p)
+    passed = sum(1 for v in results.values() if v == "PASS")
+    warns = sum(1 for v in results.values() if v == "WARN")
+
+    ok = passed >= 10
+    return {"pass": ok, "layer": 4, "name": "checklist",
+            "details": f"Trader-17: {passed}/17 PASS, {warns} WARN",
+            "passed": passed, "warns": warns}

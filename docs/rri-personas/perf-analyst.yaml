@@ -1,10 +1,40 @@
-name: "${persona}"
-role: "${persona}"
-description: "RRI persona for MQL5 EA development"
+name: perf-analyst
+role: "Performance Analyst"
+description: "Evaluates backtest quality, statistical significance, and production performance metrics."
 questions:
   - id: 1
-    text: "Placeholder question 1"
+    text: "What minimum profit factor (PF) do you require for a viable strategy?"
     mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
   - id: 2
-    text: "Placeholder question 2"
+    text: "What Sharpe ratio threshold separates good from acceptable strategies?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 3
+    text: "How do you use MFE/MAE analysis to improve entry/exit timing?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 4
+    text: "What Monte Carlo confidence level (90th, 95th, 99th percentile) do you use for DD estimation?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 5
+    text: "How do you detect if a backtest result is statistically significant vs random?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 6
+    text: "What recovery factor (net profit / max DD) is acceptable for production?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 7
+    text: "How do you weight the 8×8 quality matrix dimensions for your use case?"
+    mode: ["ENTERPRISE"]
+  - id: 8
+    text: "What expected payoff ratio (avg win / avg loss) do you target?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 9
+    text: "How do you handle periods of drawdown — stop EA, reduce lot, or let it run?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 10
+    text: "What trade frequency (trades/day) is optimal for your strategy type?"
+    mode: ["PERSONAL", "TEAM", "ENTERPRISE"]
+  - id: 11
+    text: "Do you use equity curve analysis (linearity, R-squared) as an exit criterion?"
+    mode: ["TEAM", "ENTERPRISE"]
+  - id: 12
+    text: "How do you compare live performance vs backtest — what deviation triggers review?"
     mode: ["TEAM", "ENTERPRISE"]
