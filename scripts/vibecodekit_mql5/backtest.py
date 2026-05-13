@@ -33,6 +33,8 @@ class BacktestMetrics:
 
 def parse_report(path: Path) -> BacktestMetrics:
     """Parse a Strategy Tester XML report."""
+    if not path.exists():
+        raise FileNotFoundError(f"Report not found: {path}")
     raw = path.read_bytes()
     text = raw.decode("utf-8", errors="replace")
     text = re.sub(r'encoding="[^"]*"', 'encoding="utf-8"', text)
