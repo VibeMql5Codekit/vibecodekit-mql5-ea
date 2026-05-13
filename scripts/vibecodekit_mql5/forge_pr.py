@@ -27,7 +27,9 @@ def evaluate_fitness(metrics: dict, fitness_cfg: dict) -> float:
     max_dd = constraints.get("max_drawdown_pct", 100)
     min_trades = constraints.get("min_trades", 0)
 
-    if metrics.get("max_drawdown_pct", 100) > max_dd:
+    dd = metrics.get("max_drawdown_pct",
+                     metrics.get("maximal_drawdown_pct", 100))
+    if dd > max_dd:
         return -1.0
     if metrics.get("total_trades", 0) < min_trades:
         return -1.0
