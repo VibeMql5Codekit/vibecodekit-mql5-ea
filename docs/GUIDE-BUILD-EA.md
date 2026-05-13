@@ -942,7 +942,7 @@ mql5-async-build --name HFTScalper --output ./output --stack netting
 
 ```bash
 # Kiểm tra MQL5 class hierarchy cho method hiding bugs
-mql5-method-hiding --ea MyEA.mq5
+mql5-method-hiding-check --ea MyEA.mq5
 # Phát hiện: CDerived::Calc hides CBase::Calc (not virtual)
 ```
 
@@ -1060,7 +1060,7 @@ mql5-install --target /path/to/other-ea/ --dry-run
 | 24 | `mql5-onnx-embed` | D | Tạo ONNX embed directive |
 | 25 | `mql5-async-build` | D | HFT scaffold + CAsyncTradeManager |
 | 26 | `mql5-cloud-optimize` | D | Cloud Network cost gate |
-| 27 | `mql5-method-hiding` | D | Method hiding detection |
+| 27 | `mql5-method-hiding-check` | D | Method hiding detection |
 | 28 | `mql5-llm-context` | D | LLM bridge (3 variants) |
 | 29 | `mql5-forge-init` | D | Algo Forge workspace init |
 | 30 | `mql5-forge-pr` | D | Algo Forge evaluate + rank |
@@ -1076,8 +1076,8 @@ mql5-install --target /path/to/other-ea/ --dry-run
 | 40 | `mql5-refine` | E | Diff classifier |
 | 41 | `mql5-install` | E | Overlay installer |
 | 42 | `mql5-second-opinion` | E | AI review prompt generator |
-| 43 | `mql5-survey` | E | Preset survey tool |
-| 44 | `mql5-vision` | E | Vision document generator |
+| 43 | `mql5-deploy-vps` | B | VPS deployment helper |
+| 44 | `mql5-broker-safety` | B | Broker safety check |
 
 ---
 
