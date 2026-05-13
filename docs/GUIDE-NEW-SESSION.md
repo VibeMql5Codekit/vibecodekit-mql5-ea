@@ -35,7 +35,7 @@ và chạy test suite để xác nhận tool hoạt động:
 
 **Expected output:**
 ```
-148 passed, 2 skipped
+150 passed
 17 presets available
 ```
 
@@ -254,7 +254,7 @@ pip install -e ".[dev]"
 
 # 2. Test suite
 PYTHONPATH=scripts pytest tests/ -q
-# ✓ Expected: 148 passed, 2 skipped
+# ✓ Expected: 150 passed
 
 # 3. List presets
 mql5-build --list

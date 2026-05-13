@@ -15,6 +15,8 @@ from pathlib import Path
 
 def extract_trade_pnls(report_path: Path) -> list[float]:
     """Extract individual trade P&L from XML report."""
+    if not report_path.exists():
+        return []
     tree = ET.parse(report_path)
     root = tree.getroot()
     pnls = []

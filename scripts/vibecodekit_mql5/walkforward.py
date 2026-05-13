@@ -18,6 +18,9 @@ from vibecodekit_mql5.backtest import parse_report
 def walk_forward_check(is_path: Path, oos_path: Path,
                        min_oos_pf: float = 1.5) -> dict:
     """Compare IS vs OOS metrics. Return result dict."""
+    for p, label in [(is_path, "IS"), (oos_path, "OOS")]:
+        if not p.exists():
+            return {"error": f"{label} report not found: {p}", "overall_pass": False}
     is_m = parse_report(is_path)
     oos_m = parse_report(oos_path)
 
