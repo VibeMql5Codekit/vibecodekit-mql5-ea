@@ -24,6 +24,8 @@ PERSPECTIVES = [
 
 
 def review_file(path: Path, mode: str) -> dict:
+    if not path.exists():
+        return {"file": str(path), "error": f"File not found: {path}"}
     content = path.read_text(encoding="utf-8", errors="replace")
     loc = len(content.splitlines())
     findings: list[dict] = []

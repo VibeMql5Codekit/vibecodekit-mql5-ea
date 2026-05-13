@@ -105,7 +105,7 @@ mql5-lint --help
 
 # Chạy test suite
 pytest tests/ -q
-# Expected: 107 passed, 2 skipped
+# Expected: 148 passed, 2 skipped
 ```
 
 ### 3.4 Cài Wine + MetaEditor (tùy chọn, cho compile thật)
@@ -144,8 +144,8 @@ Output:
   trend: netting, hedging
   mean-reversion: netting
   breakout: netting
-  grid: netting
-  dca: netting
+  grid: hedging
+  dca: hedging
   scalping: netting
   ...
 ```
@@ -174,8 +174,8 @@ mql5-build --preset stdlib --stack netting --name TrendMaster --output ./my-ea/
 | `trend` | Trend-following strategy | netting, hedging |
 | `mean-reversion` | Mean-reversion strategy | netting |
 | `breakout` | Breakout strategy | netting |
-| `grid` | Grid trading | netting |
-| `dca` | Dollar-cost averaging | netting |
+| `grid` | Grid trading | hedging |
+| `dca` | Dollar-cost averaging | hedging |
 | `scalping` | Scalping strategy | netting |
 | `hedging-multi` | Multi-pair hedging | hedging |
 | `news-trading` | News event trading | netting |
@@ -886,6 +886,198 @@ Trước khi ship EA, verify:
 - [ ] Trader-17 ≥ 15/17 PASS
 - [ ] Mỗi file ≤ 200 LOC
 - [ ] Max 6 input parameters
+
+---
+
+## 13. Công cụ Phase D — Công nghệ 2024-2025
+
+### 13.1 ONNX Export & Embed
+
+```bash
+# Phát hiện framework từ file model
+mql5-onnx-export --model model.pt    # → pytorch
+mql5-onnx-export --model model.h5    # → tensorflow
+mql5-onnx-export --model model.pkl   # → sklearn
+
+# Validate opset version (cho MQL5 native ONNX)
+mql5-onnx-export --validate-opset 17  # OK (11-20)
+mql5-onnx-export --validate-opset 5   # REJECTED: quá thấp
+
+# Tạo embed directive cho EA
+mql5-onnx-embed --onnx model.onnx --ea MyML_EA.mq5
+# Output: #resource "\\Models\\model.onnx" as uchar ExtModel[]
+```
+
+### 13.2 Cloud Optimize (Cost Gate)
+
+```bash
+# Kiểm tra budget cho MQL5 Cloud Network
+mql5-cloud-optimize --ea MyEA.mq5 --mode PERSONAL --budget 10
+# → BLOCKED: Cloud Network costs real money. Use local optimization.
+
+mql5-cloud-optimize --ea MyEA.mq5 --mode TEAM --budget 30
+# → OK: 64 agents, $30
+
+mql5-cloud-optimize --ea MyEA.mq5 --mode ENTERPRISE --budget 200
+# → OK: 256 agents, $200
+```
+
+**Cost gate rules:**
+
+| Mode | Budget tối đa | Max agents | Ghi chú |
+|------|--------------|------------|----------|
+| `PERSONAL` | $0 (blocked) | — | Chỉ dùng local optimization |
+| `TEAM` | $50 | 64 | Team shared budget |
+| `ENTERPRISE` | $500 | 256 | Full cloud access |
+
+### 13.3 Async Build (HFT Scaffold)
+
+```bash
+# Tạo HFT EA skeleton với CAsyncTradeManager
+mql5-async-build --name HFTScalper --output ./output --stack netting
+# Output: CAsyncTradeManager + OnTradeTransaction handler
+```
+
+### 13.4 Method Hiding Check
+
+```bash
+# Kiểm tra MQL5 class hierarchy cho method hiding bugs
+mql5-method-hiding --ea MyEA.mq5
+# Phát hiện: CDerived::Calc hides CBase::Calc (not virtual)
+```
+
+### 13.5 LLM Bridge (3 variants)
+
+```bash
+# Cloud API (OpenAI)
+mql5-llm-context --variant cloud-api --prompt "Phân tích MACD strategy"
+
+# Self-hosted (Ollama)
+mql5-llm-context --variant self-hosted --host localhost:11434 --prompt "Review EA"
+
+# Embedded ONNX
+mql5-llm-context --variant embedded-onnx --model model.onnx --prompt "Classify regime"
+```
+
+---
+
+## 14. Công cụ Phase E — Polish & Ship
+
+### 14.1 Scan & Doctor
+
+```bash
+# Quét toàn bộ project
+mql5-scan
+# Output: 32 .mq5 files, 7 .mqh, 79 .py, 17 scaffolds, pyproject.toml OK
+
+# Kiểm tra sức khỏe project
+mql5-doctor
+# Output: 18/18 checks pass (package_importable, cli_tools, etc.)
+```
+
+### 14.2 Audit & Canary
+
+```bash
+# Chạy 50-point conformance audit
+mql5-audit
+# Output: 50/50 passed (structure, code quality, tests, docs)
+
+# Post-deploy canary monitoring
+mql5-canary --log terminal.log --ea MyEA --duration 30
+# Phân tích: error rate, trade failures, memory issues
+```
+
+### 14.3 Ship & Refine
+
+```bash
+# Ship release (tạo git tag + push)
+mql5-ship --version 1.0.0 --dry-run  # Preview
+mql5-ship --version 1.0.0            # Live
+
+# Phân loại diff changes
+mql5-refine --diff "$(git diff HEAD~1)"
+# Output: BUG_FIX / PERF / UX / DOCS / SCOPE_CREEP
+```
+
+### 14.4 Review Tools (5 loại)
+
+```bash
+# 7-specialist review (architect/security/perf/a11y/ux/dx/risk)
+mql5-review --ea MyEA.mq5 --mode FULL
+
+# CSO security audit (OWASP + STRIDE)
+mql5-cso --ea MyEA.mq5
+
+# Engineering review (8 invariants)
+mql5-eng-review --ea MyEA.mq5
+
+# CEO review (4 modes: SCOPE_EXPANSION/SELECTIVE/HOLD/REDUCTION)
+mql5-ceo-review --ea MyEA.mq5 --mode HOLD
+
+# Root-cause investigation
+mql5-investigate --ea MyEA.mq5 --symptom "EA stops trading after 3 days"
+```
+
+### 14.5 Second Opinion & Install
+
+```bash
+# Tạo prompt cho AI review (gửi tới Codex/Claude/Gemini)
+mql5-second-opinion --ea MyEA.mq5 --focus risk
+
+# Cài overlay vào project khác
+mql5-install --target /path/to/other-ea/ --dry-run
+```
+
+---
+
+## 15. Danh sách đầy đủ 44 CLI Commands
+
+| # | Command | Phase | Mô tả |
+|---|---------|-------|--------|
+| 1 | `mql5-lint` | A | Kiểm tra 13 anti-pattern |
+| 2 | `mql5-build` | A | Tạo EA scaffold từ 17 preset |
+| 3 | `mql5-compile` | A | Compile qua MetaEditor |
+| 4 | `mql5-pip-normalize` | A | Quét/fix hardcoded pip |
+| 5 | `mql5-backtest` | B | Parse Strategy Tester XML |
+| 6 | `mql5-walkforward` | B | Walk-forward IS/OOS |
+| 7 | `mql5-monte-carlo` | B | Monte Carlo DD simulation |
+| 8 | `mql5-multibroker` | B | Multi-broker stability gate |
+| 9 | `mql5-trader-check` | B | 17-point pre-deploy checklist |
+| 10 | `mql5-overfit-check` | B | IS vs OOS overfit analysis |
+| 11 | `mql5-fitness` | B | 5 fitness templates |
+| 12 | `mql5-mfe-mae` | B | MFE/MAE excursion analysis |
+| 13 | `mql5-rri-bt` | C | RRI back-testing questions |
+| 14 | `mql5-rri-rr` | C | RRI risk-reward questions |
+| 15 | `mql5-rri-chart` | C | RRI chart analysis |
+| 16 | `mql5-matrix` | C | 8×8 quality matrix |
+| 17 | `mql5-permission` | C | 7-layer permission pipeline |
+| 18 | `mql5-review` | C | 7-specialist code review |
+| 19 | `mql5-cso` | C | CSO security audit |
+| 20 | `mql5-eng-review` | C | Engineering invariants review |
+| 21 | `mql5-ceo-review` | C | CEO-mode review (4 modes) |
+| 22 | `mql5-investigate` | C | Root-cause investigation |
+| 23 | `mql5-onnx-export` | D | ONNX model export + validate |
+| 24 | `mql5-onnx-embed` | D | Tạo ONNX embed directive |
+| 25 | `mql5-async-build` | D | HFT scaffold + CAsyncTradeManager |
+| 26 | `mql5-cloud-optimize` | D | Cloud Network cost gate |
+| 27 | `mql5-method-hiding` | D | Method hiding detection |
+| 28 | `mql5-llm-context` | D | LLM bridge (3 variants) |
+| 29 | `mql5-forge-init` | D | Algo Forge workspace init |
+| 30 | `mql5-forge-pr` | D | Algo Forge evaluate + rank |
+| 31 | `mql5-scan` | E | Project scanner |
+| 32 | `mql5-vision` | E | Vision document generator |
+| 33 | `mql5-blueprint` | E | Blueprint generator |
+| 34 | `mql5-tip` | E | Task Instruction Pack |
+| 35 | `mql5-survey` | E | Preset survey |
+| 36 | `mql5-doctor` | E | Health check (18 checks) |
+| 37 | `mql5-audit` | E | 50-point conformance audit |
+| 38 | `mql5-canary` | E | Post-deploy canary monitor |
+| 39 | `mql5-ship` | E | Git tag + push release |
+| 40 | `mql5-refine` | E | Diff classifier |
+| 41 | `mql5-install` | E | Overlay installer |
+| 42 | `mql5-second-opinion` | E | AI review prompt generator |
+| 43 | `mql5-survey` | E | Preset survey tool |
+| 44 | `mql5-vision` | E | Vision document generator |
 
 ---
 

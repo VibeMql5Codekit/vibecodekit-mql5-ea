@@ -44,8 +44,15 @@ def list_presets() -> list[dict[str, list[str]]]:
 def render_scaffold(preset: str, stack: str, ea_name: str, output: Path) -> Path:
     """Copy and rename scaffold to output directory."""
     src = SCAFFOLDS_DIR / preset / stack
+    if not (SCAFFOLDS_DIR / preset).exists():
+        available = _discover_presets()
+        raise FileNotFoundError(
+            f"Preset '{preset}' not found. Available: {', '.join(available)}")
     if not src.exists():
-        raise FileNotFoundError(f"Scaffold not found: {src}")
+        available = _discover_stacks(preset)
+        raise FileNotFoundError(
+            f"Stack '{stack}' not found for preset '{preset}'. "
+            f"Available: {', '.join(available)}")
 
     dst = output / ea_name
     dst.mkdir(parents=True, exist_ok=True)

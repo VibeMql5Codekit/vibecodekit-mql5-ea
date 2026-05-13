@@ -27,7 +27,11 @@ LAYER_MAP = {
 
 def run_permission_pipeline(ea_path: str, mode: str = "TEAM") -> dict:
     """Run mode-dependent permission layers sequentially."""
-    layers = MODE_LAYERS.get(mode, MODE_LAYERS["TEAM"])
+    if mode not in MODE_LAYERS:
+        return {"mode": mode, "layers_run": 0, "all_pass": False,
+                "error": f"Invalid mode '{mode}'. Valid: {list(MODE_LAYERS.keys())}",
+                "results": {}}
+    layers = MODE_LAYERS[mode]
     results = {}
     all_pass = True
 

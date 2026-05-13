@@ -25,6 +25,10 @@ CHECKS = {
 
 
 def ceo_review(path: Path, mode: str) -> dict:
+    if not path.exists():
+        return {"file": str(path), "error": f"File not found: {path}"}
+    if mode not in CEO_MODES:
+        return {"file": str(path), "error": f"Invalid mode '{mode}'. Valid: {CEO_MODES}"}
     content = path.read_text(encoding="utf-8", errors="replace")
     loc = len(content.splitlines())
     input_count = len(re.findall(r"(?m)^\s*input\s+", content))
