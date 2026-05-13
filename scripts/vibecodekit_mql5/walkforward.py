@@ -54,6 +54,10 @@ def main() -> int:
 
     result = walk_forward_check(args.is_report, args.oos_report, args.min_pf)
 
+    if "error" in result:
+        print(f"Error: {result['error']}", file=sys.stderr)
+        return 1
+
     print(f"IS PF: {result['is_pf']:.2f}  |  OOS PF: {result['oos_pf']:.2f}")
     print(f"PF ratio (OOS/IS): {result['pf_ratio']:.3f}")
     print(f"IS Sharpe: {result['is_sharpe']:.2f}  |  OOS Sharpe: {result['oos_sharpe']:.2f}")
