@@ -31,15 +31,15 @@ cd /home/ubuntu/repos/vibecodekit-mql5-ea
 
 # Full test suite
 pytest tests/ -q
-# Expected: 107 passed, 2 skipped (Wine/MetaEditor deps), 0 failed
+# Expected: 148 passed, 2 skipped (Wine/MetaEditor deps), 0 failed
 
 # Lint CLI on fixture
 mql5-lint tests/fixtures/ap_01_no_sl.mq5
 # Expected: AP-01 detected, exit code 1
 
 # Build presets count
-python -c "import sys; sys.path.insert(0,'scripts'); from vibecodekit_mql5.build import list_presets; print(len(list_presets()))"
-# Expected: 17
+mql5-build --list
+# Expected: 17 presets listed
 ```
 
 ### 2. Scaffold Stack Validation
@@ -67,7 +67,6 @@ mql5-build --preset service-llm-bridge --stack netting --name Bad --output /tmp/
 ### 3. Permission Pipeline Testing
 
 ```bash
-# Test permission orchestrator
 python -c "
 import sys; sys.path.insert(0, 'scripts')
 from vibecodekit_mql5.permission.orchestrator import run_permission_pipeline
@@ -78,24 +77,114 @@ print(json.dumps(r, indent=2))
 # Note: layer4 requires >= 15/17 PASS (not 10). Scaffold gets ~12 so layer4 will fail.
 ```
 
-### 4. Forge Fitness Evaluation
+### 4. Phase C — Methodology Validation
 
 ```bash
-# Test evaluate_fitness with backtest JSON keys
+# RRI Personas: verify 25 questions each (was 12 before)
+python -c "
+import yaml
+for p in ['trader','risk-auditor','broker-engineer','strategy-architect','devops','perf-analyst']:
+    d = yaml.safe_load(open(f'docs/rri-personas/{p}.yaml'))
+    print(f'{p}: {len(d[\"questions\"])} questions')
+"
+# Expected: all 6 show 25
+
+# RRI Templates: verify 8 files
+ls docs/rri-templates/step-*.md.tmpl | wc -l
+# Expected: 8
+
+# Review scripts: verify not stubs
+for f in review eng_review ceo_review cso investigate; do
+  wc -l scripts/vibecodekit_mql5/review/${f}.py
+done
+# Expected: all > 30 LOC (was 13 LOC stubs)
+```
+
+### 5. Phase D — Tech 2024 Adversarial Tests
+
+```bash
+python -c "
+from vibecodekit_mql5.onnx_export import detect_framework, validate_opset
+from pathlib import Path
+# Framework detection
+for ext, expected in [('.pt','pytorch'),('.h5','tensorflow'),('.pkl','sklearn'),('.xyz','unknown')]:
+    print(f'{ext} -> {detect_framework(Path(f\"m{ext}\"))} (expected {expected})')
+# Opset validation
+for opset in [17, 5, 99]:
+    ok, msg = validate_opset(opset)
+    print(f'opset {opset}: valid={ok}, msg={msg}')
+"
+# Expected: .pt=pytorch, .h5=tensorflow, .pkl=sklearn, .xyz=unknown
+# opset 17 valid, 5 rejected 'too low', 99 rejected 'too high'
+
+# Cost gate
+python -c "
+from vibecodekit_mql5.cloud_optimize import check_cost_gate
+for mode, cost, expected in [('PERSONAL',10,False),('TEAM',30,True),('TEAM',100,False),('ENTERPRISE',200,True),('ENTERPRISE',600,False)]:
+    r = check_cost_gate(mode, cost)
+    print(f'{mode} \${cost}: allowed={r[\"allowed\"]} (expected {expected})')
+"
+# Expected: PERSONAL always blocked, TEAM ≤$50 ok, ENTERPRISE ≤$500 ok
+```
+
+### 6. Phase E — Polish & Ship
+
+```bash
+# scan.py on real repo
+python -c "
+from vibecodekit_mql5.scan import scan_project
+from pathlib import Path
+r = scan_project(Path('.'))
+print(f'mq5={r[\"mq5_count\"]}, pyproject={r[\"has_pyproject\"]}, scaffolds={len(r[\"scaffolds\"])}')
+"
+# Expected: mq5_count > 0, has_pyproject=True, scaffolds >= 17
+
+# audit.py conformance
+python -c "
+from vibecodekit_mql5.audit import run_audit
+from pathlib import Path
+r = run_audit(Path('.'))
+print(f'total={r[\"total\"]}, passed={r[\"passed\"]}')
+"
+# Expected: total >= 40, passed > 30
+
+# MCP tools count
+python -c "
+import importlib.util
+for name, path, min_count in [('mt5','mcp/mt5-bridge/tools.py',10),('forge','mcp/algo-forge-bridge/tools.py',6)]:
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    print(f'{name}: {len(mod.TOOLS)} tools (min {min_count})')
+"
+# Expected: mt5 >= 10, forge >= 6
+
+# CLI entries
+python -c "
+import tomllib
+with open('pyproject.toml', 'rb') as f:
+    cfg = tomllib.load(f)
+print(f'CLI entries: {len(cfg[\"project\"][\"scripts\"])}')
+"
+# Expected: >= 40 (was 4 before Phase E)
+```
+
+### 7. Forge Fitness Evaluation
+
+```bash
 python -c "
 import sys; sys.path.insert(0, 'scripts')
 from vibecodekit_mql5.forge_pr import evaluate_fitness
 cfg = {'primary': 'profit_factor', 'secondary': 'sharpe_ratio',
        'constraints': {'max_drawdown_pct': 30, 'min_trades': 100}}
-# Use maximal_drawdown_pct (the key from real backtest JSON output)
 metrics = {'profit_factor': 1.52, 'sharpe_ratio': 1.34,
            'maximal_drawdown_pct': 10.23, 'total_trades': 728}
 print(evaluate_fitness(metrics, cfg))
-# Expected: positive score (e.g. 1.448), NOT -1.0
 "
+# Expected: positive score (e.g. 1.448), NOT -1.0
 ```
 
-### 5. Preview Site (Browser — Record This)
+### 8. Preview Site (Browser — Record This)
 
 Maximize browser before recording:
 ```bash
@@ -127,5 +216,9 @@ wmctrl -r :ACTIVE: -b add,maximized_vert,maximized_horz
 - Backtest JSON output uses `maximal_drawdown_pct` key, but internal BacktestMetrics dataclass uses `max_drawdown_pct` — evaluate_fitness handles both
 - Layer4 permission threshold is >= 15/17 PASS (matching trader_check.py standalone CLI)
 - CAsyncTradeManager uses CTrade::Result() to get MqlTradeResult.request_id for async tracking (not ResultOrder())
-- Some presets only have one stack (e.g. dca→hedging, scalping→hedging) — default `--stack netting` will fail for these. The CLI now shows available stacks in the error message.
-- service-llm-bridge uses non-standard stacks: cloud-api, embedded-onnx-llm, self-hosted-ollama (not netting/hedging/python-bridge)
+- Phase C: RRI personas have 25 questions each (expanded from 12)
+- Phase D: onnx_export validates opset 11-20, rejects outside range
+- Phase D: cloud_optimize cost gates: PERSONAL=blocked, TEAM≤$50, ENTERPRISE≤$500
+- Phase E: 12 scripts (scan, vision, blueprint, tip, survey, doctor, audit, canary, ship, refine, install, second_opinion) all 51-100 LOC
+- Phase E: mt5-bridge has 10 tools (4 original + 6 new), algo-forge has 6 tools (3 original + 3 new)
+- 44 CLI entry points registered in pyproject.toml
