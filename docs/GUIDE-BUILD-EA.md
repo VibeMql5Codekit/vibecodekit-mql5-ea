@@ -740,7 +740,7 @@ compliance                                       ✓                            
     "L1": {"pass": true, "details": "OK"},
     "L2": {"pass": true, "details": "MetaEditor not installed — skipped"},
     "L3": {"pass": true, "details": "0 critical, 2 warnings"},
-    "L4": {"pass": true, "details": "14/17 PASS"},
+    "L4": {"pass": true, "details": "16/17 PASS"},
     "L5": {"pass": true, "details": "OK"},
     "L6": {"pass": true, "scores": {"reliability": 100, "performance": 50, ...}, "average": 68},
     "L7": {"pass": true, "details": "OK"}
@@ -883,7 +883,7 @@ Trước khi ship EA, verify:
 - [ ] Walk-forward OOS PF ≥ 1.5 (nếu có backtest data)
 - [ ] Monte Carlo DD95 ≤ 1.5× actual DD (nếu có)
 - [ ] Multi-broker CV ≤ 0.30 (nếu test 3+ brokers)
-- [ ] Trader-17 ≥ 10/17 PASS
+- [ ] Trader-17 ≥ 15/17 PASS
 - [ ] Mỗi file ≤ 200 LOC
 - [ ] Max 6 input parameters
 
