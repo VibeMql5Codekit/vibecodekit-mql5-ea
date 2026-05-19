@@ -20,6 +20,7 @@ from vibecodekit_mql5.prompt_architect.pipeline_runner import (  # noqa: E402
     run_pipeline_plan,
     validate_pipeline_plan,
 )
+from vibecodekit_mql5.prompt_architect.provider import run_llm_codegen  # noqa: E402
 from vibecodekit_mql5.prompt_architect.render import (  # noqa: E402
     render_blueprint,
     render_prompt,
@@ -247,6 +248,80 @@ def test_prompt_architect_pipeline_runner_rejects_malformed_command_syntax(tmp_p
     assert payload["all_pass"] is False
     assert payload["steps"] == []
     assert payload["errors"] == ["commands[2].command has invalid syntax: No closing quotation"]
+    assert "Traceback" not in result.stderr
+
+
+def test_prompt_architect_llm_prompt_only_adapter_writes_safe_codegen_prompt(tmp_path):
+    config = load_config(EXAMPLES / "dca-grid-propfirm.yaml")
+    summary = run_llm_codegen(config, "prompt-only")
+    assert summary["status"] == "prompt-ready"
+    assert summary["model"] == "manual-codegen-review"
+    assert "Generated code is only a draft" in summary["content"]
+    assert "mql5-build --preset dca --stack hedging" in summary["content"]
+    assert "mql5-permission" in summary["content"]
+
+    output = tmp_path / "codegen-prompt.md"
+    cmd = [
+        sys.executable,
+        "-m",
+        "vibecodekit_mql5.prompt_architect.cli",
+        "--config",
+        str(EXAMPLES / "dca-grid-propfirm.yaml"),
+        "--llm-provider",
+        "prompt-only",
+        "--llm-output",
+        str(output),
+        "--json",
+    ]
+    result = subprocess.run(
+        cmd,
+        cwd=REPO_ROOT,
+        env={"PYTHONPATH": str(SCRIPTS)},
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0
+    payload = json.loads(result.stdout)
+    assert payload["llm"] == {
+        "provider": "prompt-only",
+        "model": "manual-codegen-review",
+        "status": "prompt-ready",
+    }
+    assert "Generated code is only a draft" in output.read_text(encoding="utf-8")
+
+
+def test_prompt_architect_llm_provider_requires_env_secret_without_leaking(tmp_path):
+    output = tmp_path / "draft.md"
+    cmd = [
+        sys.executable,
+        "-m",
+        "vibecodekit_mql5.prompt_architect.cli",
+        "--config",
+        str(EXAMPLES / "dca-grid-propfirm.yaml"),
+        "--llm-provider",
+        "openai",
+        "--llm-output",
+        str(output),
+        "--json",
+    ]
+    result = subprocess.run(
+        cmd,
+        cwd=REPO_ROOT,
+        env={"PYTHONPATH": str(SCRIPTS)},
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 1
+    payload = json.loads(result.stdout)
+    assert payload["valid"] is True
+    assert payload["llm"] == {
+        "provider": "openai",
+        "model": "gpt-4o-mini",
+        "status": "error",
+        "error": "missing required environment variable: OPENAI_API_KEY",
+    }
+    assert not output.exists()
+    assert "OPENAI_API_KEY" in result.stdout
     assert "Traceback" not in result.stderr
 
 

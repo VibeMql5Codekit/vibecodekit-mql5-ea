@@ -14,7 +14,7 @@ pip install -e ".[dev]"
 ## Quick Smoke Test
 ```bash
 pytest tests/ -q
-# Expected locally: 163 passed, 2 skipped when Wine/MetaEditor smoke deps are unavailable
+# Expected locally: 168 passed, 2 skipped when Wine/MetaEditor smoke deps are unavailable
 ```
 
 ## CLI-Only Testing Evidence

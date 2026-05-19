@@ -53,6 +53,7 @@ A valid Prompt Architect run should be able to produce:
 - pipeline dry-run/execution summary for handoff into scaffold and gates
 - recommended `mql5-build` preset/stack
 - next verification commands
+- optional LLM codegen prompt/response, gated by server-side provider credentials
 
 ## Definition of ready
 
@@ -74,8 +75,13 @@ mql5-prompt-architect --config ea-settings.json --validate --json
 mql5-prompt-architect --config ea-settings.json --render-prompt prompt.md
 mql5-prompt-architect --config ea-settings.json --recommend-preset --json
 mql5-prompt-architect --config ea-settings.json --rri-plan rri-plan.md --vision vision.md --requirements requirements.yaml --blueprint blueprint.md --pipeline pipeline.json
+mql5-prompt-architect --config ea-settings.json --llm-provider prompt-only --llm-output codegen-prompt.md
+mql5-prompt-architect --config ea-settings.json --llm-provider openai --llm-output draft.md
 mql5-prompt-architect --run-pipeline pipeline.json
 mql5-prompt-architect --run-pipeline pipeline.json --execute --from-step 1 --to-step 3
 ```
 
-Provider-backed generation is out of scope for the initial deterministic implementation.
+Provider-backed generation is optional. `prompt-only` never calls a network service. Cloud
+providers read credentials only from server-side environment variables such as `OPENAI_API_KEY`
+or `GEMINI_API_KEY`; provider keys must not be passed through browser bundles, generated prompts,
+examples, logs, or committed files.

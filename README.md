@@ -103,6 +103,7 @@ mql5-permission --ea output/MyEA/MyEA.mq5 --mode PERSONAL --json
 | `mql5-investigate --ea <file.mq5> --symptom "..."` | Root-cause investigation |
 | `mql5-second-opinion --ea <file.mq5> --focus risk` | Generate external LLM review prompt |
 | `mql5-prompt-architect --config ea-settings.yaml --rri-plan rri-plan.md --pipeline pipeline.json` | Convert normalized EA settings into RRI plan and next pipeline commands |
+| `mql5-prompt-architect --config ea-settings.yaml --llm-provider prompt-only --llm-output codegen-prompt.md` | Prepare a safe optional LLM codegen prompt without network calls |
 | `mql5-prompt-architect --run-pipeline pipeline.json [--execute]` | Validate, dry-run, or execute the deterministic Prompt Architect pipeline plan |
 
 ### Advanced tech + repo tooling
