@@ -69,7 +69,12 @@ def validate_pipeline_plan(plan: dict[str, object]) -> list[str]:
             errors.append(f"commands[{expected_step - 1}].command is required")
             expected_step += 1
             continue
-        parts = shlex.split(command)
+        try:
+            parts = shlex.split(command)
+        except ValueError as exc:
+            errors.append(f"commands[{expected_step - 1}].command has invalid syntax: {exc}")
+            expected_step += 1
+            continue
         if expected_tool and (not parts or parts[0] != expected_tool):
             errors.append(
                 f"commands[{expected_step - 1}].command must start with {expected_tool}"

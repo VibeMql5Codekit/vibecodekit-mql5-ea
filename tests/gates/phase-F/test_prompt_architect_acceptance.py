@@ -216,6 +216,40 @@ def test_prompt_architect_pipeline_runner_dry_run_and_validates_allowlist():
     assert errors == ["commands[0].command must start with mql5-prompt-architect"]
 
 
+def test_prompt_architect_pipeline_runner_rejects_malformed_command_syntax(tmp_path):
+    config = load_config(EXAMPLES / "dca-grid-propfirm.yaml")
+    plan = build_pipeline_plan(config)
+    plan["commands"][2]["command"] = "mql5-build --name 'BrokenEA"
+    assert validate_pipeline_plan(plan) == [
+        "commands[2].command has invalid syntax: No closing quotation"
+    ]
+
+    pipeline = tmp_path / "pipeline.json"
+    pipeline.write_text(json.dumps(plan, indent=2), encoding="utf-8")
+    cmd = [
+        sys.executable,
+        "-m",
+        "vibecodekit_mql5.prompt_architect.cli",
+        "--run-pipeline",
+        str(pipeline),
+        "--json",
+    ]
+    result = subprocess.run(
+        cmd,
+        cwd=REPO_ROOT,
+        env={"PYTHONPATH": str(SCRIPTS)},
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 1
+    payload = json.loads(result.stdout)
+    assert payload["valid"] is False
+    assert payload["all_pass"] is False
+    assert payload["steps"] == []
+    assert payload["errors"] == ["commands[2].command has invalid syntax: No closing quotation"]
+    assert "Traceback" not in result.stderr
+
+
 def test_prompt_architect_cli_run_pipeline_dry_run(tmp_path):
     config = load_config(EXAMPLES / "dca-grid-propfirm.yaml")
     pipeline = tmp_path / "pipeline.json"
