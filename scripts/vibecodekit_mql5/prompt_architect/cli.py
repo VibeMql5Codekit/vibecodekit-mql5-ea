@@ -16,6 +16,7 @@ from vibecodekit_mql5.prompt_architect.pipeline_runner import (
     run_pipeline_plan,
     validate_pipeline_plan,
 )
+from vibecodekit_mql5.prompt_architect.provider import LLM_PROVIDERS, run_llm_codegen
 from vibecodekit_mql5.prompt_architect.recommend import recommend_preset
 from vibecodekit_mql5.prompt_architect.render import (
     render_blueprint,
@@ -46,6 +47,10 @@ def _render_if_requested(
     return printed
 
 
+def _without_content(summary: dict[str, object]) -> dict[str, object]:
+    return {key: value for key, value in summary.items() if key != "content"}
+
+
 def build_result(config_path: Path) -> tuple[dict, dict]:
     """Load a config and return validation plus recommendation."""
     config = load_config(config_path)
@@ -72,6 +77,12 @@ def main() -> int:
     parser.add_argument("--requirements", type=Path, default=None, help="Write requirements JSON")
     parser.add_argument("--blueprint", type=Path, default=None, help="Write blueprint document")
     parser.add_argument("--pipeline", type=Path, default=None, help="Write next-step pipeline JSON")
+    parser.add_argument("--llm-provider", choices=LLM_PROVIDERS, default=None,
+                        help="Prepare or run optional provider-backed codegen")
+    parser.add_argument("--llm-model", default=None, help="Provider model override")
+    parser.add_argument("--llm-endpoint", default=None, help="Provider endpoint override")
+    parser.add_argument("--llm-output", type=Path, default=None, help="Write LLM prompt/response")
+    parser.add_argument("--llm-timeout", type=int, default=30, help="Provider call timeout seconds")
     parser.add_argument("--run-pipeline", type=Path, default=None, help="Validate or run pipeline JSON")
     parser.add_argument("--execute", action="store_true", help="Execute --run-pipeline commands")
     parser.add_argument("--workdir", type=Path, default=Path("."), help="Pipeline working directory")
@@ -120,6 +131,21 @@ def main() -> int:
                 print(f"  WARN: {warning}", file=sys.stderr)
         return 1
 
+    llm_failed = False
+    llm_summary = None
+    if args.llm_provider is not None:
+        llm_summary = run_llm_codegen(
+            config,
+            args.llm_provider,
+            args.llm_model,
+            args.llm_endpoint,
+            args.llm_timeout,
+        )
+        result["llm"] = _without_content(llm_summary)
+        llm_failed = llm_summary["status"] not in {"prompt-ready", "ok"}
+        if args.llm_output is not None and not llm_failed:
+            _write(args.llm_output, str(llm_summary.get("content", "")))
+
     printed = False
     if args.json:
         print(json.dumps(result, indent=2))
@@ -149,13 +175,24 @@ def main() -> int:
         lambda item: render_pipeline_plan(item, str(args.config)),
         printed,
     )
+    if llm_summary is not None and not args.json:
+        if llm_failed:
+            print(f"LLM provider failed: {llm_summary.get('error', 'unknown error')}",
+                  file=sys.stderr)
+        else:
+            target = f" -> {args.llm_output}" if args.llm_output is not None else ""
+            print(
+                f"LLM provider {llm_summary['provider']} status: "
+                f"{llm_summary['status']}{target}"
+            )
+        printed = True
 
     if not printed and not any([args.recommend_preset, args.render_prompt, args.vision,
                                args.rri_plan, args.requirements, args.blueprint,
-                               args.pipeline]):
+                               args.pipeline, args.llm_provider]):
         print(f"Prompt Architect config valid: {args.config}")
 
-    return 0
+    return 1 if llm_failed else 0
 
 
 if __name__ == "__main__":
