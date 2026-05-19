@@ -105,7 +105,7 @@ mql5-lint --help
 
 # Chạy test suite
 pytest tests/ -q
-# Expected: 150 passed
+# Expected locally: 150 passed, 2 Wine/MetaEditor skips when unavailable
 ```
 
 ### 3.4 Cài Wine + MetaEditor (tùy chọn, cho compile thật)
@@ -983,7 +983,7 @@ mql5-audit
 # Output: 50/50 passed (structure, code quality, tests, docs)
 
 # Post-deploy canary monitoring
-mql5-canary --log terminal.log --ea MyEA --duration 30
+mql5-canary --terminal-log terminal.log --ea MyEA --duration 30
 # Phân tích: error rate, trade failures, memory issues
 ```
 
@@ -1003,7 +1003,7 @@ mql5-refine --diff "$(git diff HEAD~1)"
 
 ```bash
 # 7-specialist review (architect/security/perf/a11y/ux/dx/risk)
-mql5-review --ea MyEA.mq5 --mode FULL
+mql5-review --ea MyEA.mq5 --mode TEAM
 
 # CSO security audit (OWASP + STRIDE)
 mql5-cso --ea MyEA.mq5
@@ -1012,7 +1012,7 @@ mql5-cso --ea MyEA.mq5
 mql5-eng-review --ea MyEA.mq5
 
 # CEO review (4 modes: SCOPE_EXPANSION/SELECTIVE/HOLD/REDUCTION)
-mql5-ceo-review --ea MyEA.mq5 --mode HOLD
+mql5-ceo-review --ea MyEA.mq5
 
 # Root-cause investigation
 mql5-investigate --ea MyEA.mq5 --symptom "EA stops trading after 3 days"
@@ -1030,7 +1030,7 @@ mql5-install --target /path/to/other-ea/ --dry-run
 
 ---
 
-## 15. Danh sách đầy đủ 44 CLI Commands
+## 15. Danh sách đầy đủ 45 CLI Commands
 
 | # | Command | Phase | Mô tả |
 |---|---------|-------|--------|
@@ -1046,38 +1046,39 @@ mql5-install --target /path/to/other-ea/ --dry-run
 | 10 | `mql5-overfit-check` | B | IS vs OOS overfit analysis |
 | 11 | `mql5-fitness` | B | 5 fitness templates |
 | 12 | `mql5-mfe-mae` | B | MFE/MAE excursion analysis |
-| 13 | `mql5-rri-bt` | C | RRI back-testing questions |
-| 14 | `mql5-rri-rr` | C | RRI risk-reward questions |
-| 15 | `mql5-rri-chart` | C | RRI chart analysis |
-| 16 | `mql5-matrix` | C | 8×8 quality matrix |
-| 17 | `mql5-permission` | C | 7-layer permission pipeline |
-| 18 | `mql5-review` | C | 7-specialist code review |
-| 19 | `mql5-cso` | C | CSO security audit |
-| 20 | `mql5-eng-review` | C | Engineering invariants review |
-| 21 | `mql5-ceo-review` | C | CEO-mode review (4 modes) |
-| 22 | `mql5-investigate` | C | Root-cause investigation |
-| 23 | `mql5-onnx-export` | D | ONNX model export + validate |
-| 24 | `mql5-onnx-embed` | D | Tạo ONNX embed directive |
-| 25 | `mql5-async-build` | D | HFT scaffold + CAsyncTradeManager |
-| 26 | `mql5-cloud-optimize` | D | Cloud Network cost gate |
-| 27 | `mql5-method-hiding-check` | D | Method hiding detection |
-| 28 | `mql5-llm-context` | D | LLM bridge (3 variants) |
-| 29 | `mql5-forge-init` | D | Algo Forge workspace init |
-| 30 | `mql5-forge-pr` | D | Algo Forge evaluate + rank |
-| 31 | `mql5-scan` | E | Project scanner |
-| 32 | `mql5-vision` | E | Vision document generator |
-| 33 | `mql5-blueprint` | E | Blueprint generator |
-| 34 | `mql5-tip` | E | Task Instruction Pack |
-| 35 | `mql5-survey` | E | Preset survey |
-| 36 | `mql5-doctor` | E | Health check (18 checks) |
-| 37 | `mql5-audit` | E | 50-point conformance audit |
-| 38 | `mql5-canary` | E | Post-deploy canary monitor |
-| 39 | `mql5-ship` | E | Git tag + push release |
-| 40 | `mql5-refine` | E | Diff classifier |
-| 41 | `mql5-install` | E | Overlay installer |
-| 42 | `mql5-second-opinion` | E | AI review prompt generator |
-| 43 | `mql5-deploy-vps` | B | VPS deployment helper |
-| 44 | `mql5-broker-safety` | B | Broker safety check |
+| 13 | `mql5-deploy-vps` | B | VPS deployment helper |
+| 14 | `mql5-broker-safety` | B | Broker safety check |
+| 15 | `mql5-rri` | C | Reverse Requirements Interview workflow |
+| 16 | `mql5-rri-bt` | C | RRI back-testing questions + matrix summary |
+| 17 | `mql5-rri-rr` | C | RRI risk-reward questions |
+| 18 | `mql5-rri-chart` | C | RRI chart/indicator analysis |
+| 19 | `mql5-matrix` | C | 8×8 quality matrix |
+| 20 | `mql5-permission` | C | 7-layer permission pipeline |
+| 21 | `mql5-review` | C | 7-specialist code review |
+| 22 | `mql5-cso` | C | CSO security audit |
+| 23 | `mql5-eng-review` | C | Engineering invariants review |
+| 24 | `mql5-ceo-review` | C | CEO-mode review (4 modes) |
+| 25 | `mql5-investigate` | C | Root-cause investigation |
+| 26 | `mql5-onnx-export` | D | ONNX model export + validate |
+| 27 | `mql5-onnx-embed` | D | Tạo ONNX embed directive |
+| 28 | `mql5-async-build` | D | HFT scaffold + CAsyncTradeManager |
+| 29 | `mql5-cloud-optimize` | D | Cloud Network cost gate |
+| 30 | `mql5-method-hiding-check` | D | Method hiding detection |
+| 31 | `mql5-llm-context` | D | LLM bridge (3 variants) |
+| 32 | `mql5-forge-init` | D | Algo Forge workspace init |
+| 33 | `mql5-forge-pr` | D | Algo Forge evaluate + rank |
+| 34 | `mql5-scan` | E | Project scanner |
+| 35 | `mql5-vision` | E | Vision document generator |
+| 36 | `mql5-blueprint` | E | Blueprint generator |
+| 37 | `mql5-tip` | E | Task Instruction Pack |
+| 38 | `mql5-survey` | E | Preset survey |
+| 39 | `mql5-doctor` | E | Health check (18 checks) |
+| 40 | `mql5-audit` | E | 50-point conformance audit |
+| 41 | `mql5-canary` | E | Post-deploy canary monitor |
+| 42 | `mql5-ship` | E | Git tag + push release |
+| 43 | `mql5-refine` | E | Diff classifier |
+| 44 | `mql5-install` | E | Overlay installer |
+| 45 | `mql5-second-opinion` | E | AI review prompt generator |
 
 ---
 

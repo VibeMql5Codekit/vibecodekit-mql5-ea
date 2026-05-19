@@ -50,7 +50,6 @@ def run_permission_pipeline(ea_path: str, mode: str = "TEAM") -> dict:
 def main() -> int:
     import argparse
     import json
-    import sys
     parser = argparse.ArgumentParser(description="7-layer permission pipeline")
     parser.add_argument("--ea", required=True, help=".mq5 file to check")
     parser.add_argument("--mode", default="TEAM", choices=list(MODE_LAYERS.keys()))

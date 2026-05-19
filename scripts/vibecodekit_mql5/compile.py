@@ -13,7 +13,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -65,8 +64,8 @@ def compile_mq5(source: Path, include_dir: Path | None = None,
         cmd_parts.append(f"/include:{include_dir}")
     cmd_parts.append(f"/log:{log_path}")
 
-    result = subprocess.run(cmd_parts, capture_output=True, text=True,
-                            timeout=timeout)
+    subprocess.run(cmd_parts, capture_output=True, text=True,
+                   timeout=timeout)
 
     log_text = ""
     if log_path.exists():
