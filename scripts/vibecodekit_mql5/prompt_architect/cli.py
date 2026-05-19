@@ -10,6 +10,12 @@ from typing import Callable
 
 from vibecodekit_mql5.prompt_architect.bridge import render_rri_plan
 from vibecodekit_mql5.prompt_architect.pipeline import render_pipeline_plan
+from vibecodekit_mql5.prompt_architect.pipeline_runner import (
+    load_pipeline_plan,
+    render_pipeline_run,
+    run_pipeline_plan,
+    validate_pipeline_plan,
+)
 from vibecodekit_mql5.prompt_architect.recommend import recommend_preset
 from vibecodekit_mql5.prompt_architect.render import (
     render_blueprint,
@@ -57,7 +63,7 @@ def build_result(config_path: Path) -> tuple[dict, dict]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Prompt Architect deterministic CLI")
-    parser.add_argument("--config", type=Path, required=True, help="EA settings JSON/YAML")
+    parser.add_argument("--config", type=Path, default=None, help="EA settings JSON/YAML")
     parser.add_argument("--validate", action="store_true", help="Validate config and print summary")
     parser.add_argument("--recommend-preset", action="store_true", help="Print preset recommendation")
     parser.add_argument("--render-prompt", type=Path, default=None, help="Write implementation prompt")
@@ -66,8 +72,36 @@ def main() -> int:
     parser.add_argument("--requirements", type=Path, default=None, help="Write requirements JSON")
     parser.add_argument("--blueprint", type=Path, default=None, help="Write blueprint document")
     parser.add_argument("--pipeline", type=Path, default=None, help="Write next-step pipeline JSON")
+    parser.add_argument("--run-pipeline", type=Path, default=None, help="Validate or run pipeline JSON")
+    parser.add_argument("--execute", action="store_true", help="Execute --run-pipeline commands")
+    parser.add_argument("--workdir", type=Path, default=Path("."), help="Pipeline working directory")
+    parser.add_argument("--from-step", type=int, default=1, help="First pipeline step to run")
+    parser.add_argument("--to-step", type=int, default=None, help="Last pipeline step to run")
     parser.add_argument("--json", action="store_true", help="Print machine-readable summary")
     args = parser.parse_args()
+
+    if args.run_pipeline is not None:
+        try:
+            plan = load_pipeline_plan(args.run_pipeline)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            return 1
+        if not args.execute:
+            errors = validate_pipeline_plan(plan)
+            summary = {"valid": not errors, "execute": False, "all_pass": not errors,
+                       "errors": errors, "steps": []}
+            if not errors:
+                summary = run_pipeline_plan(plan, args.workdir, False, args.from_step, args.to_step)
+        else:
+            summary = run_pipeline_plan(plan, args.workdir, True, args.from_step, args.to_step)
+        if args.json:
+            print(json.dumps(summary, indent=2))
+        else:
+            print(render_pipeline_run(summary))
+        return 0 if summary["valid"] and summary["all_pass"] else 1
+
+    if args.config is None:
+        parser.error("--config required unless --run-pipeline is used")
 
     try:
         config, result = build_result(args.config)
