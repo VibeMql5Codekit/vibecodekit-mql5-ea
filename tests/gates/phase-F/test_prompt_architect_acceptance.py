@@ -16,6 +16,10 @@ sys.path.insert(0, str(SCRIPTS))
 from vibecodekit_mql5.prompt_architect.recommend import recommend_preset  # noqa: E402
 from vibecodekit_mql5.prompt_architect.bridge import build_rri_bridge  # noqa: E402
 from vibecodekit_mql5.prompt_architect.pipeline import build_pipeline_plan  # noqa: E402
+from vibecodekit_mql5.prompt_architect.pipeline_runner import (  # noqa: E402
+    run_pipeline_plan,
+    validate_pipeline_plan,
+)
 from vibecodekit_mql5.prompt_architect.render import (  # noqa: E402
     render_blueprint,
     render_prompt,
@@ -193,6 +197,53 @@ def test_prompt_architect_cli_writes_outputs(tmp_path):
     assert yaml.safe_load(requirements.read_text())["ea"] == "OnnxTrendFilterEA"
     assert "CSpreadGuard" in blueprint.read_text()
     assert json.loads(pipeline.read_text())["recommended"]["stack"] == "python-bridge"
+
+
+def test_prompt_architect_pipeline_runner_dry_run_and_validates_allowlist():
+    config = load_config(EXAMPLES / "dca-grid-propfirm.yaml")
+    plan = build_pipeline_plan(config, "examples/prompt-architect/dca-grid-propfirm.yaml")
+    assert validate_pipeline_plan(plan) == []
+
+    summary = run_pipeline_plan(plan, REPO_ROOT, execute=False, from_step=3, to_step=4)
+    assert summary["valid"] is True
+    assert summary["all_pass"] is True
+    assert summary["steps_run"] == 2
+    assert summary["steps"][0]["status"] == "DRY-RUN"
+    assert summary["steps"][0]["name"] == "build_scaffold"
+
+    plan["commands"][0]["command"] = "rm -rf ./work"
+    errors = validate_pipeline_plan(plan)
+    assert errors == ["commands[0].command must start with mql5-prompt-architect"]
+
+
+def test_prompt_architect_cli_run_pipeline_dry_run(tmp_path):
+    config = load_config(EXAMPLES / "dca-grid-propfirm.yaml")
+    pipeline = tmp_path / "pipeline.json"
+    pipeline.write_text(json.dumps(build_pipeline_plan(config), indent=2), encoding="utf-8")
+    cmd = [
+        sys.executable,
+        "-m",
+        "vibecodekit_mql5.prompt_architect.cli",
+        "--run-pipeline",
+        str(pipeline),
+        "--from-step",
+        "3",
+        "--to-step",
+        "4",
+        "--json",
+    ]
+    result = subprocess.run(
+        cmd,
+        cwd=REPO_ROOT,
+        env={"PYTHONPATH": str(SCRIPTS)},
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    payload = json.loads(result.stdout)
+    assert payload["execute"] is False
+    assert payload["all_pass"] is True
+    assert [item["name"] for item in payload["steps"]] == ["build_scaffold", "lint"]
 
 
 def test_prompt_architect_cli_invalid_config_exits_one(tmp_path):
