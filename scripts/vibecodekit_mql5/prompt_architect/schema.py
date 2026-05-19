@@ -23,12 +23,13 @@ ALLOWED_BROKER_MODES = {"netting", "hedging", "unknown"}
 ALLOWED_ACCOUNT_TYPES = {"demo", "live", "personal", "prop_firm"}
 ALLOWED_LOT_MODES = {"fixed", "percent_risk"}
 ALLOWED_SLTP_MODES = {"fixed_points", "atr", "candle", "virtual", "none"}
+ALLOWED_INDICATOR_TYPES = {"ma", "rsi", "macd", "bollinger_bands", "stochastic",
+                           "atr", "cci", "custom", "onnx"}
 
 SECRET_NEEDLES = ("api_key", "telegram_token", "license_key", "password", "broker_password")
 
 
 def load_yaml_or_json(path: Path) -> dict[str, Any]:
-    """Load a YAML or JSON object from disk."""
     text = path.read_text(encoding="utf-8")
     if path.suffix.lower() == ".json":
         data = json.loads(text)
@@ -40,17 +41,14 @@ def load_yaml_or_json(path: Path) -> dict[str, Any]:
 
 
 def load_config(path: Path) -> dict[str, Any]:
-    """Load a Prompt Architect config file."""
     return load_yaml_or_json(path)
 
 
 def load_schema() -> dict[str, Any]:
-    """Load the canonical Prompt Architect schema."""
     return json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
 
 
 def load_conflict_rules() -> dict[str, Any]:
-    """Load declarative conflict-rule metadata for reporting."""
     return yaml.safe_load(CONFLICT_RULES_PATH.read_text(encoding="utf-8"))
 
 
@@ -78,10 +76,9 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
 
-    required = [
-        "schema_version", "name", "symbol", "timeframe", "direction", "trading_method",
-        "broker_mode", "account_type", "strategy", "risk", "execution", "sltp", "features",
-    ]
+    required = ["schema_version", "name", "symbol", "timeframe", "direction", "trading_method",
+                "broker_mode", "account_type", "strategy", "risk", "execution", "sltp",
+                "features"]
     for key in required:
         if key not in config:
             _append(errors, f"missing required field: {key}")
@@ -114,8 +111,18 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
             _append(errors, f"strategy.{key} is required")
     if len(str(strategy.get("description", ""))) < 10:
         _append(errors, "strategy.description must be at least 10 characters")
-    if not isinstance(strategy.get("indicators", []), list):
+    indicators = strategy.get("indicators", [])
+    if not isinstance(indicators, list):
         _append(errors, "strategy.indicators must be a list")
+        indicators = []
+    for index, indicator in enumerate(indicators):
+        if not isinstance(indicator, dict):
+            _append(errors, f"strategy.indicators[{index}] must be an object")
+            continue
+        if indicator.get("type") not in ALLOWED_INDICATOR_TYPES:
+            _append(errors, f"strategy.indicators[{index}].type must be recognized")
+        if _missing(indicator, "condition"):
+            _append(errors, f"strategy.indicators[{index}].condition is required")
 
     risk = config.get("risk", {})
     if not isinstance(risk, dict):
@@ -160,8 +167,7 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
     integrations = config.get("integrations", {})
     if isinstance(filters, dict) and filters.get("avoid_news"):
         has_webrequest = isinstance(integrations, dict) and bool(integrations.get("webrequest"))
-        has_manual_policy = "manual news calendar" in str(config.get("notes", "")).lower()
-        if not has_webrequest and not has_manual_policy:
+        if not has_webrequest and "manual news calendar" not in str(config.get("notes", "")).lower():
             _append(errors, "PA-004: avoid_news requires WebRequest or a manual news policy")
 
     if config.get("account_type") == "prop_firm":

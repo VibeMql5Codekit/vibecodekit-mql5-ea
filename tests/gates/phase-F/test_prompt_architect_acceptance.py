@@ -14,6 +14,8 @@ EXAMPLES = REPO_ROOT / "examples" / "prompt-architect"
 sys.path.insert(0, str(SCRIPTS))
 
 from vibecodekit_mql5.prompt_architect.recommend import recommend_preset  # noqa: E402
+from vibecodekit_mql5.prompt_architect.bridge import build_rri_bridge  # noqa: E402
+from vibecodekit_mql5.prompt_architect.pipeline import build_pipeline_plan  # noqa: E402
 from vibecodekit_mql5.prompt_architect.render import (  # noqa: E402
     render_blueprint,
     render_prompt,
@@ -61,6 +63,15 @@ def test_validation_rejects_propfirm_without_stop_policy():
     assert any("stop policy" in error for error in result["errors"])
 
 
+def test_validation_rejects_non_object_indicator_items():
+    config = load_config(EXAMPLES / "xauusd-rsi-bb-scalper.json")
+    config["strategy"]["indicators"] = ["rsi"]
+    result = validate_config(config)
+    assert result["valid"] is False
+    assert "strategy.indicators[0] must be an object" in result["errors"]
+    assert "- rsi" in render_prompt(config)
+
+
 def test_preset_recommendations_match_examples():
     cases = {
         "xauusd-rsi-bb-scalper.json": ("scalping", "hedging"),
@@ -87,6 +98,34 @@ def test_renderers_emit_traceable_vibecodekit_outputs():
     assert requirements["requirements"][3]["gate"] == "layer3_ap_lint"
     assert "CPipNormalizer" in blueprint
     assert "CRiskGuard" in blueprint
+    assert "## RRI bridge" in blueprint
+    assert "mql5-permission --ea ./work/XauRsiBbScalper/XauRsiBbScalper.mq5 --mode TEAM --json" in blueprint
+
+
+def test_prompt_architect_bridge_maps_propfirm_grid_to_enterprise_rri_and_pipeline():
+    config = load_config(EXAMPLES / "dca-grid-propfirm.yaml")
+    bridge = build_rri_bridge(config)
+    pipeline = build_pipeline_plan(config, "examples/prompt-architect/dca-grid-propfirm.yaml")
+
+    assert bridge["mode"] == "ENTERPRISE"
+    assert bridge["personas"] == [
+        "trader",
+        "risk-auditor",
+        "broker-engineer",
+        "strategy-architect",
+        "devops",
+        "perf-analyst",
+    ]
+    assert bridge["total_questions"] == 150
+    assert pipeline["recommended"]["preset"] == "dca"
+    assert pipeline["recommended"]["stack"] == "hedging"
+    assert pipeline["commands"][2]["command"] == (
+        "mql5-build --preset dca --stack hedging --name PropFirmDcaGridGuard --output ./work"
+    )
+    assert pipeline["commands"][5]["command"] == (
+        "mql5-permission --ea ./work/PropFirmDcaGridGuard/PropFirmDcaGridGuard.mq5 "
+        "--mode ENTERPRISE --json"
+    )
 
 
 def test_prompt_architect_cli_validate_and_json_summary():
@@ -116,9 +155,11 @@ def test_prompt_architect_cli_validate_and_json_summary():
 
 def test_prompt_architect_cli_writes_outputs(tmp_path):
     prompt = tmp_path / "prompt.md"
+    rri_plan = tmp_path / "rri-plan.md"
     vision = tmp_path / "vision.md"
     requirements = tmp_path / "requirements.json"
     blueprint = tmp_path / "blueprint.md"
+    pipeline = tmp_path / "pipeline.json"
     cmd = [
         sys.executable,
         "-m",
@@ -127,12 +168,16 @@ def test_prompt_architect_cli_writes_outputs(tmp_path):
         str(EXAMPLES / "onnx-trend-filter.yaml"),
         "--render-prompt",
         str(prompt),
+        "--rri-plan",
+        str(rri_plan),
         "--vision",
         str(vision),
         "--requirements",
         str(requirements),
         "--blueprint",
         str(blueprint),
+        "--pipeline",
+        str(pipeline),
     ]
     subprocess.run(
         cmd,
@@ -143,9 +188,11 @@ def test_prompt_architect_cli_writes_outputs(tmp_path):
         check=True,
     )
     assert "ml-onnx" in prompt.read_text()
+    assert "Mode: `TEAM`" in rri_plan.read_text()
     assert "OnnxTrendFilterEA" in vision.read_text()
     assert yaml.safe_load(requirements.read_text())["ea"] == "OnnxTrendFilterEA"
     assert "CSpreadGuard" in blueprint.read_text()
+    assert json.loads(pipeline.read_text())["recommended"]["stack"] == "python-bridge"
 
 
 def test_prompt_architect_cli_invalid_config_exits_one(tmp_path):

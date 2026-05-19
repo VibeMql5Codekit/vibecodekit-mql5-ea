@@ -49,6 +49,7 @@ A valid Prompt Architect run should be able to produce:
 - `vision.md`
 - `requirements.yaml` with `REQ-*` traceability
 - `blueprint.md`
+- `pipeline.json` with recommended next CLI commands
 - recommended `mql5-build` preset/stack
 - next verification commands
 
@@ -71,7 +72,7 @@ The planned CLI is:
 mql5-prompt-architect --config ea-settings.json --validate --json
 mql5-prompt-architect --config ea-settings.json --render-prompt prompt.md
 mql5-prompt-architect --config ea-settings.json --recommend-preset --json
-mql5-prompt-architect --config ea-settings.json --vision vision.md --requirements requirements.yaml --blueprint blueprint.md
+mql5-prompt-architect --config ea-settings.json --rri-plan rri-plan.md --vision vision.md --requirements requirements.yaml --blueprint blueprint.md --pipeline pipeline.json
 ```
 
 Provider-backed generation is out of scope for the initial deterministic implementation.

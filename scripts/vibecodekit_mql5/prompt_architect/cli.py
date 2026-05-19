@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 from typing import Callable
 
+from vibecodekit_mql5.prompt_architect.bridge import render_rri_plan
+from vibecodekit_mql5.prompt_architect.pipeline import render_pipeline_plan
 from vibecodekit_mql5.prompt_architect.recommend import recommend_preset
 from vibecodekit_mql5.prompt_architect.render import (
     render_blueprint,
@@ -59,9 +61,11 @@ def main() -> int:
     parser.add_argument("--validate", action="store_true", help="Validate config and print summary")
     parser.add_argument("--recommend-preset", action="store_true", help="Print preset recommendation")
     parser.add_argument("--render-prompt", type=Path, default=None, help="Write implementation prompt")
+    parser.add_argument("--rri-plan", type=Path, default=None, help="Write RRI bridge plan")
     parser.add_argument("--vision", type=Path, default=None, help="Write vision document")
     parser.add_argument("--requirements", type=Path, default=None, help="Write requirements JSON")
     parser.add_argument("--blueprint", type=Path, default=None, help="Write blueprint document")
+    parser.add_argument("--pipeline", type=Path, default=None, help="Write next-step pipeline JSON")
     parser.add_argument("--json", action="store_true", help="Print machine-readable summary")
     args = parser.parse_args()
 
@@ -101,12 +105,20 @@ def main() -> int:
         printed = True
 
     printed = _render_if_requested(config, args.render_prompt, render_prompt, printed)
+    printed = _render_if_requested(config, args.rri_plan, render_rri_plan, printed)
     printed = _render_if_requested(config, args.vision, render_vision, printed)
     printed = _render_if_requested(config, args.requirements, render_requirements, printed)
     printed = _render_if_requested(config, args.blueprint, render_blueprint, printed)
+    printed = _render_if_requested(
+        config,
+        args.pipeline,
+        lambda item: render_pipeline_plan(item, str(args.config)),
+        printed,
+    )
 
     if not printed and not any([args.recommend_preset, args.render_prompt, args.vision,
-                               args.requirements, args.blueprint]):
+                               args.rri_plan, args.requirements, args.blueprint,
+                               args.pipeline]):
         print(f"Prompt Architect config valid: {args.config}")
 
     return 0
