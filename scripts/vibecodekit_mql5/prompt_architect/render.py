@@ -4,6 +4,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from vibecodekit_mql5.prompt_architect.bridge import build_rri_bridge
+from vibecodekit_mql5.prompt_architect.pipeline import build_pipeline_plan
 from vibecodekit_mql5.prompt_architect.recommend import recommend_preset
 
 
@@ -11,7 +13,10 @@ def _indicator_summary(config: dict[str, Any]) -> str:
     indicators = config.get("strategy", {}).get("indicators", [])
     lines = []
     for indicator in indicators:
-        params = indicator.get("params", {}) if isinstance(indicator, dict) else {}
+        if not isinstance(indicator, dict):
+            lines.append(f"- {indicator}")
+            continue
+        params = indicator.get("params", {})
         params_text = ", ".join(f"{key}={value}" for key, value in params.items()) or "default"
         lines.append(f"- {indicator.get('type')}: {indicator.get('condition')} ({params_text})")
     return "\n".join(lines) if lines else "- none"
@@ -151,11 +156,20 @@ def render_requirements(config: dict[str, Any]) -> str:
 def render_blueprint(config: dict[str, Any]) -> str:
     """Render a deterministic blueprint document."""
     recommendation = recommend_preset(config)
+    bridge = build_rri_bridge(config)
+    pipeline = build_pipeline_plan(config)
+    verification = "\n".join(command["command"] for command in pipeline["commands"][3:])
     return f"""# Blueprint: {config['name']}
 
 ## Architecture
 
 Use `mql5-build --preset {recommendation['preset']} --stack {recommendation['stack']} --name {config['name']}`.
+
+## RRI bridge
+
+- Mode: `{bridge['mode']}`
+- Personas: `{', '.join(bridge['personas'])}`
+- Total questions: `{bridge['total_questions']}`
 
 ## Data flow
 
@@ -181,9 +195,6 @@ Use `mql5-build --preset {recommendation['preset']} --stack {recommendation['sta
 ## Verification
 
 ```bash
-mql5-lint <ea.mq5>
-mql5-compile <ea.mq5>
-mql5-permission --ea <ea.mq5> --mode <mode>
-mql5-matrix --mode <mode> --html matrix.html
+{verification}
 ```
 """
