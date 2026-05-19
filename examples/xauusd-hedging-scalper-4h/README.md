@@ -148,4 +148,4 @@ Pipeline hoạt động đúng — phát hiện EA **chưa đạt** Trader-17 ch
 5. Trailing stop implementation
 6. Max positions check enhancements
 
-**Tổng cộng 44 CLI tools đã chạy thành công trong demo này.**
+**Tổng cộng 45 CLI tools đã chạy thành công trong demo này.**

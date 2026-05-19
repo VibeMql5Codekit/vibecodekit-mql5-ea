@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""rri — Phase E final command."""
+"""Compatibility wrapper for the package-based RRI CLI."""
 from __future__ import annotations
 
-import argparse
 import sys
 
-def main() -> int:
-    print("rri: Phase E command — implementation pending")
-    return 0
+from vibecodekit_mql5.rri.cli import main
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -7,7 +7,7 @@ Usage: mql5-doctor [--json]
 from __future__ import annotations
 
 import argparse
-import importlib
+import importlib.util
 import json
 import shutil
 import sys
@@ -28,11 +28,12 @@ def check_health() -> dict:
     checks.append({"name": "project_root", "pass": root is not None,
                     "detail": str(root) if root else "Not found"})
 
-    try:
-        import vibecodekit_mql5
-        checks.append({"name": "package_importable", "pass": True, "detail": "OK"})
-    except ImportError:
-        checks.append({"name": "package_importable", "pass": False, "detail": "pip install -e '.[dev]'"})
+    package_found = importlib.util.find_spec("vibecodekit_mql5") is not None
+    checks.append({
+        "name": "package_importable",
+        "pass": package_found,
+        "detail": "OK" if package_found else "pip install -e '.[dev]'",
+    })
 
     for cmd in ["mql5-build", "mql5-lint", "mql5-compile", "mql5-pip-normalize"]:
         found = shutil.which(cmd) is not None

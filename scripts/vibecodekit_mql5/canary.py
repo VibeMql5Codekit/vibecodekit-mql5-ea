@@ -31,7 +31,7 @@ def analyze_log(log_path: Path, ea_name: str = "", duration_min: int = 30) -> di
 
     findings = []
     for check_name, pattern, severity in HEALTH_CHECKS:
-        matches = [l for l in lines if re.search(pattern, l, re.IGNORECASE)]
+        matches = [line for line in lines if re.search(pattern, line, re.IGNORECASE)]
         if matches:
             findings.append({
                 "check": check_name, "severity": severity,

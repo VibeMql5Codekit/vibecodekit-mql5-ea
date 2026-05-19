@@ -38,7 +38,7 @@
 
 **Phần V — Dev Team Workflow**
 22. [Quy trình cho team](#22-quy-trình-cho-dev-team)
-23. [Danh sách đầy đủ 44 CLI Commands](#23-danh-sách-đầy-đủ-44-cli-commands)
+23. [Danh sách đầy đủ 45 CLI Commands](#23-danh-sách-đầy-đủ-45-cli-commands)
 24. [Troubleshooting](#24-troubleshooting)
 25. [Tham khảo & Links](#25-tham-khảo--links)
 
@@ -52,14 +52,14 @@
 
 | Thành phần | Số lượng | Mô tả |
 |-----------|---------|-------|
-| CLI Tools | 44 | Build, lint, compile, backtest, review, deploy |
+| CLI Tools | 45 | Build, lint, compile, backtest, review, deploy |
 | Scaffold Presets | 17 | stdlib, scalping, trend, grid, ml-onnx, hft-async, ... |
 | MQL5 Libraries | 7 | CPipNormalizer, CRiskGuard, CMagicRegistry, CSpreadGuard, CMfeMaeLogger, COnnxLoader, CAsyncTradeManager |
-| Tests | 150 | Phase 0-E acceptance tests (150 pass, 0 skip) |
+| Tests | 150 collected | Phase 0-E acceptance tests (150 pass, 2 Wine/MetaEditor skips in local Linux smoke) |
 | MCP Servers | 3 | metaeditor-bridge, mt5-bridge (10 tools), algo-forge (6 tools) |
 | Review Scripts | 5 | Multi-specialist, CSO, engineering, CEO, investigation |
 | RRI Personas | 6 | trader, risk-auditor, broker-engineer, strategy-architect, devops, perf-analyst |
-| Reference Docs | 28 | Cheat sheets, best practices, methodology guides |
+| Reference Docs | 45 | Cheat sheets, best practices, methodology guides |
 
 **Dành cho ai:**
 - **Trader** muốn build EA theo quy trình chuyên nghiệp
@@ -246,7 +246,7 @@ output/TrendMasterEA/
 | Loại strategy | Preset gợi ý | Stack |
 |--------------|-------------|-------|
 | EMA/MACD crossover | `trend` | netting |
-| RSI/Bollinger bands | `mean-reversion` | netting |
+| RSI/Bollinger bands | `mean-reversion` | hedging |
 | Breakout highs/lows | `breakout` | netting |
 | Grid trading (XAUUSD) | `grid` | hedging |
 | DCA (mua dần) | `dca` | hedging |
@@ -924,7 +924,7 @@ mql5-permission --ea output/MyEA/MyEA.mq5 --mode ENTERPRISE --json
 ### 16.1 Multi-specialist Review (7 perspectives)
 
 ```bash
-mql5-review --ea MyEA.mq5 --mode FULL
+mql5-review --ea MyEA.mq5 --mode TEAM
 ```
 
 7 specialists: architect, security, performance, accessibility, UX, DX, risk.
@@ -948,7 +948,7 @@ mql5-eng-review --ea MyEA.mq5
 ### 16.4 CEO Review (4 modes)
 
 ```bash
-mql5-ceo-review --ea MyEA.mq5 --mode HOLD
+mql5-ceo-review --ea MyEA.mq5
 ```
 
 | Mode | Khi nào | Mục đích |
@@ -1108,7 +1108,7 @@ mql5-doctor      # Health check → 18/18 checks pass
 
 ```bash
 mql5-audit                                      # 50-point conformance audit
-mql5-canary --log terminal.log --ea MyEA --duration 30  # Post-deploy monitoring
+mql5-canary --terminal-log terminal.log --ea MyEA --duration 30  # Post-deploy monitoring
 ```
 
 ### 21.3 Ship & Refine
@@ -1200,7 +1200,7 @@ Trước khi approve PR:
 
 ---
 
-## 23. Danh sách đầy đủ 44 CLI Commands
+## 23. Danh sách đầy đủ 45 CLI Commands
 
 ### Phase A — Core Foundation (4 tools)
 
@@ -1221,56 +1221,56 @@ Trước khi approve PR:
 | 8 | `mql5-multibroker` | Multi-broker stability | `mql5-multibroker b1.xml b2.xml b3.xml` |
 | 9 | `mql5-trader-check` | Trader-17 checklist | `mql5-trader-check --ea MyEA.mq5` |
 | 10 | `mql5-overfit-check` | IS vs OOS overfit | `mql5-overfit-check is.xml oos.xml` |
-| 11 | `mql5-fitness` | 5 fitness templates | `mql5-fitness --ea MyEA.mq5` |
+| 11 | `mql5-fitness` | 5 fitness templates | `mql5-fitness --template profit_factor --report report.xml` |
 | 12 | `mql5-mfe-mae` | MFE/MAE excursion | `mql5-mfe-mae report.xml` |
 | 13 | `mql5-deploy-vps` | VPS deployment helper | `mql5-deploy-vps --ea MyEA.ex5` |
 | 14 | `mql5-broker-safety` | Broker safety check | `mql5-broker-safety --ea MyEA.mq5` |
 
-### Phase C — Methodology (10 tools)
+### Phase C — Methodology (11 tools)
 
 | # | Command | Mô tả | Ví dụ |
 |---|---------|--------|-------|
-| 15 | `mql5-rri-bt` | RRI backtest questions | `mql5-rri-bt` |
-| 16 | `mql5-rri-rr` | RRI risk-reward questions | `mql5-rri-rr` |
-| 17 | `mql5-rri-chart` | RRI chart analysis | `mql5-rri-chart` |
-| 18 | `mql5-matrix` | 8×8 quality matrix | `mql5-matrix --ea MyEA.mq5` |
-| 19 | `mql5-permission` | 7-layer permission pipeline | `mql5-permission --ea MyEA.mq5 --mode TEAM --json` |
-| 20 | `mql5-review` | 7-specialist review | `mql5-review --ea MyEA.mq5 --mode FULL` |
-| 21 | `mql5-eng-review` | Engineering invariants | `mql5-eng-review --ea MyEA.mq5` |
-| 22 | `mql5-ceo-review` | CEO review (4 modes) | `mql5-ceo-review --ea MyEA.mq5 --mode HOLD` |
-| 23 | `mql5-cso` | CSO security audit | `mql5-cso --ea MyEA.mq5` |
-| 24 | `mql5-investigate` | Root-cause investigation | `mql5-investigate --ea MyEA.mq5 --symptom "..."` |
+| 15 | `mql5-rri` | Reverse Requirements Interview workflow | `mql5-rri --mode TEAM` |
+| 16 | `mql5-rri-bt` | RRI backtest questions + matrix summary | `mql5-rri-bt --personas all` |
+| 17 | `mql5-rri-rr` | RRI risk-reward questions | `mql5-rri-rr --persona all` |
+| 18 | `mql5-rri-chart` | RRI chart/indicator analysis | `mql5-rri-chart --persona all` |
+| 19 | `mql5-matrix` | 8×8 quality matrix | `mql5-matrix --html matrix.html` |
+| 20 | `mql5-permission` | 7-layer permission pipeline | `mql5-permission --ea MyEA.mq5 --mode TEAM --json` |
+| 21 | `mql5-review` | 7-specialist review | `mql5-review --ea MyEA.mq5 --mode TEAM` |
+| 22 | `mql5-eng-review` | Engineering invariants | `mql5-eng-review --ea MyEA.mq5` |
+| 23 | `mql5-ceo-review` | CEO review (4 modes) | `mql5-ceo-review --ea MyEA.mq5` |
+| 24 | `mql5-cso` | CSO security audit | `mql5-cso --ea MyEA.mq5` |
+| 25 | `mql5-investigate` | Root-cause investigation | `mql5-investigate --ea MyEA.mq5 --symptom "..."` |
 
 ### Phase D — Tech 2024-2025 (8 tools)
 
 | # | Command | Mô tả | Ví dụ |
 |---|---------|--------|-------|
-| 25 | `mql5-onnx-export` | ONNX export + validate | `mql5-onnx-export --model model.pt` |
-| 26 | `mql5-onnx-embed` | ONNX embed directive | `mql5-onnx-embed --onnx model.onnx --ea MyEA.mq5` |
-| 27 | `mql5-async-build` | HFT scaffold | `mql5-async-build --name HFTBot --output ./out` |
-| 28 | `mql5-cloud-optimize` | Cloud cost gate | `mql5-cloud-optimize --ea MyEA.mq5 --mode TEAM --budget 30` |
-| 29 | `mql5-method-hiding-check` | Method hiding detection | `mql5-method-hiding-check --ea MyEA.mq5` |
-| 30 | `mql5-llm-context` | LLM bridge (3 variants) | `mql5-llm-context --variant cloud-api --prompt "..."` |
-| 31 | `mql5-forge-init` | Algo Forge init | `mql5-forge-init --ea MyEA.mq5 --workspace .forge/` |
-| 32 | `mql5-forge-pr` | Algo Forge evaluate | `mql5-forge-pr --workspace .forge/ --json` |
+| 26 | `mql5-onnx-export` | ONNX export + validate | `mql5-onnx-export --model model.pt` |
+| 27 | `mql5-onnx-embed` | ONNX embed directive | `mql5-onnx-embed --onnx model.onnx --ea MyEA.mq5` |
+| 28 | `mql5-async-build` | HFT scaffold | `mql5-async-build --name HFTBot --output ./out` |
+| 29 | `mql5-cloud-optimize` | Cloud cost gate | `mql5-cloud-optimize --ea MyEA.mq5 --mode TEAM --budget 30` |
+| 30 | `mql5-method-hiding-check` | Method hiding detection | `mql5-method-hiding-check --ea MyEA.mq5` |
+| 31 | `mql5-llm-context` | LLM bridge (3 variants) | `mql5-llm-context --variant cloud-api --prompt "..."` |
+| 32 | `mql5-forge-init` | Algo Forge init | `mql5-forge-init --ea MyEA.mq5 --workspace .forge/` |
+| 33 | `mql5-forge-pr` | Algo Forge evaluate | `mql5-forge-pr --workspace .forge/ --json` |
 
 ### Phase E — Polish & Ship (12 tools)
 
 | # | Command | Mô tả | Ví dụ |
 |---|---------|--------|-------|
-| 33 | `mql5-scan` | Project scanner | `mql5-scan` |
-| 34 | `mql5-vision` | Vision document | `mql5-vision` |
-| 35 | `mql5-blueprint` | Blueprint generator | `mql5-blueprint` |
-| 36 | `mql5-tip` | Task Instruction Pack | `mql5-tip` |
-| 37 | `mql5-survey` | Preset survey | `mql5-survey` |
-| 38 | `mql5-doctor` | Health check (18 items) | `mql5-doctor` |
-| 39 | `mql5-audit` | 50-point conformance | `mql5-audit` |
-| 40 | `mql5-canary` | Post-deploy monitor | `mql5-canary --log log.txt --ea MyEA --duration 30` |
-| 41 | `mql5-ship` | Git tag + push | `mql5-ship --version 1.0.0` |
-| 42 | `mql5-refine` | Diff classifier | `mql5-refine --diff "$(git diff)"` |
-| 43 | `mql5-install` | Overlay installer | `mql5-install --target /other/ --dry-run` |
-| 44 | `mql5-second-opinion` | AI review prompt | `mql5-second-opinion --ea MyEA.mq5 --focus risk` |
-
+| 34 | `mql5-scan` | Project scanner | `mql5-scan` |
+| 35 | `mql5-vision` | Vision document | `mql5-vision --name MyEA --goal "..."` |
+| 36 | `mql5-blueprint` | Blueprint generator | `mql5-blueprint --vision vision.md` |
+| 37 | `mql5-tip` | Task Instruction Pack | `mql5-tip --blueprint blueprint.md` |
+| 38 | `mql5-survey` | Preset survey | `mql5-survey` |
+| 39 | `mql5-doctor` | Health check (18 items) | `mql5-doctor` |
+| 40 | `mql5-audit` | 50-point conformance | `mql5-audit` |
+| 41 | `mql5-canary` | Post-deploy monitor | `mql5-canary --terminal-log log.txt --ea MyEA --duration 30` |
+| 42 | `mql5-ship` | Git tag + push | `mql5-ship --version 1.0.0 --dry-run` |
+| 43 | `mql5-refine` | Diff classifier | `mql5-refine --diff changes.diff` |
+| 44 | `mql5-install` | Overlay installer | `mql5-install --target /other/ --dry-run` |
+| 45 | `mql5-second-opinion` | AI review prompt | `mql5-second-opinion --ea MyEA.mq5 --focus risk` |
 ---
 
 ## 24. Troubleshooting
@@ -1347,4 +1347,4 @@ A: CLI tools chạy trên mọi OS (Python). MetaEditor compile cần Wine trên
 ---
 
 *Tài liệu thuộc dự án [vibecodekit-mql5-ea](https://github.com/VibeMql5Codekit/vibecodekit-mql5-ea) v1.0.0*
-*Cập nhật: 150 tests pass · 44 CLI tools · 17 scaffold presets · 3 MCP servers*
+*Cập nhật: 152 tests collected (150 pass, 2 local Wine/MetaEditor skips) · 45 CLI tools · 17 scaffold presets · 3 MCP servers*
