@@ -4,6 +4,8 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 import yaml
@@ -322,6 +324,56 @@ def test_prompt_architect_llm_provider_requires_env_secret_without_leaking(tmp_p
     }
     assert not output.exists()
     assert "OPENAI_API_KEY" in result.stdout
+    assert "Traceback" not in result.stderr
+
+
+def test_prompt_architect_llm_provider_rejects_non_json_provider_response(tmp_path):
+    class NonJsonHandler(BaseHTTPRequestHandler):
+        def do_POST(self) -> None:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"not json")
+
+        def log_message(self, format: str, *args: object) -> None:
+            return
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), NonJsonHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        output = tmp_path / "draft.md"
+        cmd = [
+            sys.executable,
+            "-m",
+            "vibecodekit_mql5.prompt_architect.cli",
+            "--config",
+            str(EXAMPLES / "dca-grid-propfirm.yaml"),
+            "--llm-provider",
+            "openai",
+            "--llm-endpoint",
+            f"http://127.0.0.1:{server.server_port}/bad-json",
+            "--llm-output",
+            str(output),
+            "--json",
+        ]
+        result = subprocess.run(
+            cmd,
+            cwd=REPO_ROOT,
+            env={"PYTHONPATH": str(SCRIPTS), "OPENAI_API_KEY": "sk-test-nonsecret"},
+            capture_output=True,
+            text=True,
+        )
+    finally:
+        server.shutdown()
+        server.server_close()
+
+    assert result.returncode == 1
+    payload = json.loads(result.stdout)
+    assert payload["llm"]["provider"] == "openai"
+    assert payload["llm"]["status"] == "error"
+    assert "Expecting value" in payload["llm"]["error"]
+    assert not output.exists()
     assert "Traceback" not in result.stderr
 
 

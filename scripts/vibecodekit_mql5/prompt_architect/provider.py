@@ -163,7 +163,7 @@ def run_llm_codegen(
             content = _openai_codegen(prompt, selected_model, endpoint, timeout)
         else:
             content = _gemini_codegen(prompt, selected_model, endpoint, timeout)
-    except (RuntimeError, OSError, urllib.error.URLError, KeyError, IndexError) as exc:
+    except (RuntimeError, OSError, ValueError, urllib.error.URLError, KeyError, IndexError) as exc:
         return {
             "provider": provider,
             "model": selected_model,
