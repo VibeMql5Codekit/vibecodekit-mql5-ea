@@ -122,6 +122,17 @@ def test_matrix_html_output():
     assert "<table" in html
     assert "</table>" in html
     assert result["total_cells"] == 64
+    assert result["passed"] == 0
+    assert result["na"] == 64
+    assert result["gate_pass"] is False
+
+
+def test_matrix_passes_with_explicit_results():
+    from vibecodekit_mql5.rri.matrix import AXES, DIMENSIONS, evaluate_matrix
+    results = {(dim, axis): "PASS" for dim in DIMENSIONS for axis in AXES}
+    result = evaluate_matrix(results, mode="ENTERPRISE")
+    assert result["total_cells"] == 64
+    assert result["passed"] == 64
     assert result["gate_pass"] is True
 
 
@@ -144,8 +155,20 @@ def test_rri_specialized_reviews_return_questions():
 
     assert bt["reviews"][0]["questions"]
     assert bt["matrix"]["gate_pass"] is True
+    assert bt["matrix"]["failed"] == 0
     assert rr["total_questions"] > 0
     assert chart["total_questions"] > 0
+
+
+def test_rri_backtest_counts_failed_report_cells(tmp_path):
+    from vibecodekit_mql5.rri.rri_bt import build_backtest_review
+    report = tmp_path / "report.txt"
+    report.write_text("FAIL: backtest robustness issue", encoding="utf-8")
+    bt = build_backtest_review(mode="TEAM", personas="trader", report=report)
+    assert bt["matrix"]["passed"] == 0
+    assert bt["matrix"]["warned"] == 8
+    assert bt["matrix"]["failed"] == 56
+    assert bt["matrix"]["gate_pass"] is False
 
 
 def test_persona_enterprise_has_25_questions():
