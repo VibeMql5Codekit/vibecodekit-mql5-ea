@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>vibecodekit-mql5-ea v5 — MQL5 EA Development Kit</title>
+<title>vibecodekit-mql5-ea v5 + Prompt Architect — MQL5 EA Development Kit</title>
 <style>
 :root {
   --bg: #0d1117; --surface: #161b22; --border: #30363d;
@@ -148,7 +148,13 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
   header h1 { font-size: 1.4rem; }
 
   /* Nav */
-  nav .container { padding: 8px 12px; gap: 4px; }
+  nav .container {
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow-x: visible;
+    padding: 8px 12px;
+    gap: 4px;
+  }
   nav button { padding: 6px 10px; font-size: 0.78rem; }
 
   /* Tables */
@@ -226,8 +232,8 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
        data-en="Methodology-driven toolkit for building, testing, and shipping MQL5 Expert Advisors on MetaTrader 5."></p>
 
     <div class="stats">
-      <div class="stat"><div class="num">150</div><div class="label i18n" data-vi="Tests đạt" data-en="Tests Passing"></div></div>
-      <div class="stat"><div class="num">44</div><div class="label i18n" data-vi="Lệnh CLI" data-en="CLI Commands"></div></div>
+      <div class="stat"><div class="num">169</div><div class="label i18n" data-vi="Tests đạt" data-en="Tests Passing"></div></div>
+      <div class="stat"><div class="num">46</div><div class="label i18n" data-vi="Lệnh CLI" data-en="CLI Commands"></div></div>
       <div class="stat"><div class="num">17</div><div class="label i18n" data-vi="EA Scaffolds" data-en="EA Scaffolds"></div></div>
       <div class="stat"><div class="num">7</div><div class="label i18n" data-vi="Thư viện MQL5" data-en="MQL5 Libraries"></div></div>
       <div class="stat"><div class="num">3</div><div class="label i18n" data-vi="MCP Servers" data-en="MCP Servers"></div></div>
@@ -256,14 +262,20 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
       <div class="card">
         <h3 class="i18n" data-vi="17 EA Scaffolds &times; 3 Stacks" data-en="17 EA Scaffolds &times; 3 Stacks"></h3>
         <p class="i18n"
-           data-vi="Từ stdlib đến ML/ONNX. Mỗi scaffold tự động kèm CPipNormalizer + CRiskGuard. Stacks: netting, hedging, python-bridge."
-           data-en="From stdlib to ML/ONNX. Each scaffold includes CPipNormalizer + CRiskGuard by default. Stacks: netting, hedging, python-bridge."></p>
+           data-vi="Từ stdlib đến ML/ONNX và Prompt Architect. Mỗi scaffold tự động kèm CPipNormalizer + CRiskGuard. 17 preset / 22 preset×stack."
+           data-en="From stdlib to ML/ONNX and Prompt Architect. Each scaffold includes CPipNormalizer + CRiskGuard by default. 17 presets / 22 preset×stack combos."></p>
       </div>
       <div class="card">
         <h3 class="i18n" data-vi="Pipeline quyền hạn 7 lớp" data-en="7-Layer Permission Pipeline"></h3>
         <p class="i18n"
            data-vi="Source lint &rarr; Compile &rarr; AP lint &rarr; Checklist &rarr; Methodology &rarr; Quality matrix &rarr; Broker safety. Tùy mode (PERSONAL/TEAM/ENTERPRISE)."
            data-en="Source lint &rarr; Compile &rarr; AP lint &rarr; Checklist &rarr; Methodology &rarr; Quality matrix &rarr; Broker safety. Mode-dependent (PERSONAL/TEAM/ENTERPRISE)."></p>
+      </div>
+      <div class="card">
+        <h3>Prompt Architect <span class="badge badge-purple">NEW</span></h3>
+        <p class="i18n"
+           data-vi="Intake EA settings → prompt/SRS/requirements/blueprint/RRI plan/pipeline. Optional LLM provider adapter fail-closed, chỉ đọc key từ server env."
+           data-en="EA settings intake → prompt/SRS/requirements/blueprint/RRI plan/pipeline. Optional fail-closed LLM provider adapter reads keys only from server env."></p>
       </div>
       <div class="card">
         <h3>3 MCP Servers</h3>
@@ -316,8 +328,14 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
       <div class="timeline-item done">
         <h4>Phase E: Polish &amp; Ship <span class="badge badge-green">v1.0.0</span></h4>
         <p class="i18n"
-           data-vi="3 MCP servers (19 tools tổng cộng). 28 tài liệu tham khảo. Worked example (MACD+SAR EURUSD H1 portfolio). 150 tests (100% pass). Tài liệu đầy đủ song ngữ. 12 CLI scripts (scan, audit, doctor, canary, ship, refine, etc.)."
-           data-en="3 MCP servers (19 tools total). 28 reference documents. Worked example (MACD+SAR EURUSD H1 portfolio). 150 tests (100% pass). Full bilingual documentation. 12 CLI scripts (scan, audit, doctor, canary, ship, refine, etc.)."></p>
+           data-vi="3 MCP servers (19 tools tổng cộng). 28 tài liệu tham khảo. Worked example. 169 tests pass, 2 local Wine/MetaEditor skips. Tài liệu song ngữ. 12 CLI scripts."
+           data-en="3 MCP servers (19 tools total). 28 reference documents. Worked example. 169 tests pass, 2 local Wine/MetaEditor skips. Bilingual documentation. 12 CLI scripts."></p>
+      </div>
+      <div class="timeline-item done">
+        <h4>Phase F: Prompt Architect <span class="badge badge-purple">v1.1.0</span></h4>
+        <p class="i18n"
+           data-vi="EASettings schema, deterministic prompt/SRS/requirements/blueprint renderer, RRI bridge, 7-step pipeline runner, optional OpenAI/Gemini/prompt-only provider adapter."
+           data-en="EASettings schema, deterministic prompt/SRS/requirements/blueprint renderer, RRI bridge, 7-step pipeline runner, optional OpenAI/Gemini/prompt-only provider adapter."></p>
       </div>
     </div>
   </div>
@@ -399,8 +417,8 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
   <div class="container">
     <h2 class="i18n" data-vi="Công cụ CLI" data-en="CLI Tools"></h2>
     <p class="i18n"
-       data-vi="44 công cụ Python CLI, mỗi tool &le; 200 LOC. Trong <code>scripts/vibecodekit_mql5/</code>."
-       data-en="44 Python CLI tools, each &le; 200 LOC. All under <code>scripts/vibecodekit_mql5/</code>."></p>
+       data-vi="46 công cụ Python CLI. Prompt Architect thêm intake/schema/prompt/RRI/pipeline/LLM-adapter an toàn."
+       data-en="46 Python CLI tools. Prompt Architect adds safe intake/schema/prompt/RRI/pipeline/LLM-adapter workflows."></p>
 
     <div class="card-grid">
       <div class="card">
@@ -474,6 +492,13 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
         <pre><code>mql5-cloud-optimize --mode TEAM --budget 30</code></pre>
       </div>
       <div class="card">
+        <h3>mql5-prompt-architect <span class="badge badge-purple">NEW</span></h3>
+        <p class="i18n"
+           data-vi="Validate EASettings, render prompt/SRS/requirements/blueprint/RRI plan, chạy pipeline deterministic, chuẩn bị LLM prompt an toàn."
+           data-en="Validate EASettings, render prompt/SRS/requirements/blueprint/RRI plan, run deterministic pipeline, prepare safe LLM prompts."></p>
+        <pre><code>mql5-prompt-architect --config ea-settings.yaml --rri-plan rri.md --pipeline pipeline.json</code></pre>
+      </div>
+      <div class="card">
         <h3>mql5-scan</h3>
         <p class="i18n"
            data-vi="Quét toàn bộ project: đếm files, scaffolds, cấu hình."
@@ -489,7 +514,7 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
       </div>
     </div>
 
-    <h3 style="margin-top: 32px;" class="i18n" data-vi="Tất cả 44 lệnh CLI theo Phase" data-en="All 44 CLI Commands by Phase"></h3>
+    <h3 style="margin-top: 32px;" class="i18n" data-vi="Tất cả 46 lệnh CLI theo Phase" data-en="All 46 CLI Commands by Phase"></h3>
     <div class="table-wrap"><table>
       <tr>
         <th>Phase</th>
@@ -497,10 +522,11 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
         <th class="i18n" data-vi="Số lượng" data-en="Count"></th>
       </tr>
       <tr><td>A (Core)</td><td><code>lint</code> <code>build</code> <code>compile</code> <code>pip-normalize</code></td><td>4</td></tr>
-      <tr><td>B (Test)</td><td><code>backtest</code> <code>walkforward</code> <code>monte-carlo</code> <code>multibroker</code> <code>trader-check</code> <code>overfit-check</code> <code>fitness</code> <code>mfe-mae</code></td><td>8</td></tr>
+      <tr><td>B (Test)</td><td><code>backtest</code> <code>walkforward</code> <code>monte-carlo</code> <code>multibroker</code> <code>trader-check</code> <code>overfit-check</code> <code>fitness</code> <code>mfe-mae</code> <code>deploy-vps</code> <code>broker-safety</code></td><td>10</td></tr>
       <tr><td>C (Methodology)</td><td><code>rri-bt</code> <code>rri-rr</code> <code>rri-chart</code> <code>matrix</code> <code>permission</code> <code>review</code> <code>cso</code> <code>eng-review</code> <code>ceo-review</code> <code>investigate</code></td><td>10</td></tr>
       <tr><td>D (Tech 2024)</td><td><code>onnx-export</code> <code>onnx-embed</code> <code>async-build</code> <code>cloud-optimize</code> <code>method-hiding</code> <code>llm-context</code> <code>forge-init</code> <code>forge-pr</code></td><td>8</td></tr>
       <tr><td>E (Polish)</td><td><code>scan</code> <code>vision</code> <code>blueprint</code> <code>tip</code> <code>survey</code> <code>doctor</code> <code>audit</code> <code>canary</code> <code>ship</code> <code>refine</code> <code>install</code> <code>second-opinion</code></td><td>12</td></tr>
+      <tr><td>F (Prompt Architect)</td><td><code>prompt-architect</code></td><td>1</td></tr>
     </table></div>
   </div>
 </section>
@@ -595,15 +621,15 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
   <div class="container">
     <h2 class="i18n" data-vi="Kết quả kiểm thử" data-en="Test Results"></h2>
     <p class="i18n"
-       data-vi="152 đạt, 2 bỏ qua, 0 thất bại. Tất cả 6 phase: PASS."
-       data-en="152 passed, 2 skipped, 0 failed. All 6 phases: PASS."></p>
+       data-vi="169 đạt, 2 bỏ qua, 0 thất bại. Phase 0-F: PASS."
+       data-en="169 passed, 2 skipped, 0 failed. Phase 0-F: PASS."></p>
 
     <div class="test-bar" style="width: 100%;">
       <div class="pass" style="width: 100%;"></div>
     </div>
     <p style="color: var(--muted); font-size: 0.85rem;" class="i18n"
-       data-vi="100% tỷ lệ đạt (150/150 — Wine + MetaEditor CI stub đã cài)"
-       data-en="100% pass rate (150/150 — Wine + MetaEditor CI stub installed)"></p>
+       data-vi="100% tỷ lệ đạt trên test chạy được (169/169; 2 local Wine/MetaEditor smoke skip)"
+       data-en="100% pass rate for runnable tests (169/169; 2 local Wine/MetaEditor smoke skips)"></p>
 
     <div class="table-wrap"><table>
       <tr>
@@ -618,12 +644,14 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
           <td class="i18n" data-vi="PipNorm, RiskGuard, Magic, lint 8 AP, build, pip-normalize, LOC" data-en="PipNorm, RiskGuard, Magic, lint 8 AP, build, pip-normalize, LOC"></td></tr>
       <tr><td>Phase B: Acceptance</td><td>31</td><td><span class="badge badge-green">31 pass</span></td>
           <td class="i18n" data-vi="Backtest, Monte Carlo, multibroker, trader-17, overfit, fitness, includes, LOC" data-en="Backtest, Monte Carlo, multibroker, trader-17, overfit, fitness, includes, LOC"></td></tr>
-      <tr><td>Phase C: Acceptance</td><td>21</td><td><span class="badge badge-green">21 pass</span></td>
+      <tr><td>Phase C: Acceptance</td><td>25</td><td><span class="badge badge-green">25 pass</span></td>
           <td class="i18n" data-vi="6 personas (25 câu), 8 templates, 5 review scripts, permission 7 lớp, matrix 8x8" data-en="6 personas (25 q), 8 templates, 5 review scripts, 7-layer permission, 8x8 matrix"></td></tr>
       <tr><td>Phase D: Acceptance</td><td>23</td><td><span class="badge badge-green">23 pass</span></td>
           <td class="i18n" data-vi="ONNX export/embed, async build, cloud cost gate, method hiding, LLM bridge, forge" data-en="ONNX export/embed, async build, cloud cost gate, method hiding, LLM bridge, forge"></td></tr>
       <tr><td>Phase E: Acceptance</td><td>33</td><td><span class="badge badge-green">33 pass</span></td>
-          <td class="i18n" data-vi="12 scripts, scan, audit 50-point, mt5-bridge 10 tools, algo-forge 6 tools, 44 CLI entries" data-en="12 scripts, scan, 50-point audit, mt5-bridge 10 tools, algo-forge 6 tools, 44 CLI entries"></td></tr>
+          <td class="i18n" data-vi="12 scripts, scan, audit 50-point, mt5-bridge 10 tools, algo-forge 6 tools" data-en="12 scripts, scan, 50-point audit, mt5-bridge 10 tools, algo-forge 6 tools"></td></tr>
+      <tr><td>Phase F: Prompt Architect</td><td>17</td><td><span class="badge badge-green">17 pass</span></td>
+          <td class="i18n" data-vi="schema/config, prompt/SRS/requirements/blueprint, RRI plan, pipeline runner, LLM provider adapter" data-en="schema/config, prompt/SRS/requirements/blueprint, RRI plan, pipeline runner, LLM provider adapter"></td></tr>
     </table></div>
   </div>
 </section>
@@ -632,7 +660,7 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
 <section id="try">
   <div class="container">
     <h2 class="i18n" data-vi="Thử ngay &mdash; Demo tương tác" data-en="Try It &mdash; Interactive Demo"></h2>
-    <p class="i18n" data-vi="Mô phỏng tạo scaffold và kiểm tra lint." data-en="Simulate scaffold generation and lint checking."></p>
+    <p class="i18n" data-vi="Mô phỏng tạo scaffold, kiểm tra lint và Prompt Architect intake." data-en="Simulate scaffold generation, lint checking, and Prompt Architect intake."></p>
 
     <div class="try-box">
       <h3 class="i18n" data-vi="Tạo Scaffold" data-en="Scaffold Generator"></h3>
@@ -675,6 +703,15 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
       <button onclick="runLint()" class="i18n" data-vi="Chạy Lint" data-en="Run Lint Check">Chạy Lint</button>
       <pre id="lintOutput"><code class="i18n" data-vi="// Bấm &quot;Chạy Lint&quot; để xem kết quả..." data-en="// Click &quot;Run Lint Check&quot; to see findings..."></code></pre>
     </div>
+
+    <div class="try-box" style="margin-top: 24px;">
+      <h3>Prompt Architect</h3>
+      <p class="i18n"
+         data-vi="Demo deterministic: EA settings → recommendation + pipeline 7 bước. Không gọi provider, không cần API key."
+         data-en="Deterministic demo: EA settings → recommendation + 7-step pipeline. No provider call, no API key needed."></p>
+      <button onclick="runPromptArchitectDemo()" class="i18n" data-vi="Chạy Prompt Architect Demo" data-en="Run Prompt Architect Demo">Chạy Prompt Architect Demo</button>
+      <pre id="promptArchitectOutput"><code class="i18n" data-vi="// Bấm demo để xem pipeline..." data-en="// Click demo to preview the pipeline..."></code></pre>
+    </div>
   </div>
 </section>
 
@@ -698,6 +735,9 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
    |                                        |
    v                                        v
 7-Layer Permission Pipeline  ---------->  /mql5-ship
+   ^
+   |
+/mql5-prompt-architect -> prompt/SRS/REQ/blueprint/RRI/pipeline
    |
    +-- L1: Source lint (syntax)
    +-- L2: Compile (MetaEditor)
@@ -722,7 +762,7 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
   CAsyncTradeManager (standalone, uses CTrade)
     </code></pre>
 
-    <h3 style="margin-top: 24px;" class="i18n" data-vi="Ma trận yêu cầu (18 REQ-*)" data-en="Requirements Matrix (18 REQ-*)"></h3>
+    <h3 style="margin-top: 24px;" class="i18n" data-vi="Ma trận yêu cầu (22 REQ-*)" data-en="Requirements Matrix (22 REQ-*)"></h3>
     <div class="table-wrap"><table>
       <tr>
         <th>REQ</th>
@@ -748,16 +788,20 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
       <tr><td>REQ-HFT</td><td>Async trade manager</td><td>D</td><td><span class="badge badge-green">DONE</span></td></tr>
       <tr><td>REQ-MCP</td><td class="i18n" data-vi="3 MCP servers (19 tools)" data-en="3 MCP servers (19 tools)"></td><td>E</td><td><span class="badge badge-green">DONE</span></td></tr>
       <tr><td>REQ-DOCS</td><td class="i18n" data-vi="28 tài liệu tham khảo" data-en="28 reference documents"></td><td>E</td><td><span class="badge badge-green">DONE</span></td></tr>
+      <tr><td>REQ-PA-SCHEMA</td><td class="i18n" data-vi="EASettings schema + ví dụ YAML/JSON" data-en="EASettings schema + YAML/JSON examples"></td><td>F</td><td><span class="badge badge-green">DONE</span></td></tr>
+      <tr><td>REQ-PA-RENDER</td><td class="i18n" data-vi="Prompt/SRS/requirements/blueprint deterministic" data-en="Deterministic prompt/SRS/requirements/blueprint"></td><td>F</td><td><span class="badge badge-green">DONE</span></td></tr>
+      <tr><td>REQ-PA-RRI</td><td class="i18n" data-vi="RRI bridge + pipeline 7 bước" data-en="RRI bridge + 7-step pipeline"></td><td>F</td><td><span class="badge badge-green">DONE</span></td></tr>
+      <tr><td>REQ-PA-LLM</td><td class="i18n" data-vi="Optional LLM provider adapter fail-closed" data-en="Optional fail-closed LLM provider adapter"></td><td>F</td><td><span class="badge badge-green">DONE</span></td></tr>
     </table></div>
   </div>
 </section>
 
 <footer>
   <div class="container">
-    <p>vibecodekit-mql5-ea v5 &mdash; Built with VibecodeKit Hybrid Ultra v0.26.0</p>
+    <p>vibecodekit-mql5-ea v5 + Prompt Architect &mdash; Built with VibecodeKit Hybrid Ultra v0.26.0</p>
     <p style="margin-top: 4px;" class="i18n"
-       data-vi="150/150 tests đạt &bull; 44 CLI commands &bull; 6/6 phases hoàn thành &bull; Mọi module &le; 200 LOC"
-       data-en="150/150 tests passing &bull; 44 CLI commands &bull; 6/6 phases complete &bull; All modules &le; 200 LOC"></p>
+       data-vi="169 tests đạt, 2 skip &bull; 46 CLI commands &bull; Phase 0-F hoàn thành &bull; Prompt Architect integrated"
+       data-en="169 tests passing, 2 skipped &bull; 46 CLI commands &bull; Phase 0-F complete &bull; Prompt Architect integrated"></p>
   </div>
 </footer>
 
@@ -849,6 +893,26 @@ void OnTick()
 
   document.getElementById('scaffoldOutput').innerHTML = '<code>' +
     code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</code>';
+}
+
+function runPromptArchitectDemo() {
+  const result = {
+    recommendation: "dca/hedging",
+    mode: "ENTERPRISE",
+    outputs: ["prompt.md", "vision.md", "requirements.json", "blueprint.md", "rri-plan.md", "pipeline.json"],
+    pipeline: [
+      "validate config",
+      "render requirements + blueprint",
+      "generate scaffold",
+      "lint scaffold",
+      "run permission gate",
+      "optional prompt-only LLM review",
+      "human approval before deploy"
+    ],
+    provider_safety: "OpenAI/Gemini keys read only from server-side env; prompt-only requires no key"
+  };
+  document.getElementById("promptArchitectOutput").innerHTML = "<code>" +
+    JSON.stringify(result, null, 2).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") + "</code>";
 }
 
 function runLint() {

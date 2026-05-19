@@ -3,7 +3,7 @@
 Vibecode methodology kit for MQL5 Expert Advisor development on MetaTrader 5.
 
 > **Status:** Phase 0-F in progress. Current verified local gate: 169 passed, 2 skipped
-> (Wine/MetaEditor-dependent smoke tests), 45 CLI tools, 17 scaffold presets / 22 preset×stack combinations.
+> (Wine/MetaEditor-dependent smoke tests), 46 CLI tools, 17 scaffold presets / 22 preset×stack combinations.
 
 ## Quick start
 
@@ -33,7 +33,7 @@ mql5-permission --ea output/MyEA/MyEA.mq5 --mode PERSONAL --json
 
 | Category | Count | Description |
 |----------|-------|-------------|
-| CLI Tools | 45 | Build, lint, compile, backtest, walk-forward, Monte Carlo, permissions, reviews, deploy |
+| CLI Tools | 46 | Build, lint, compile, backtest, walk-forward, Monte Carlo, permissions, reviews, deploy |
 | Scaffold Presets | 17 / 22 stacks | stdlib, scalping, trend, dca, grid, ml-onnx, hft-async, news-trading, etc. |
 | MQL5 Libraries | 7 | CPipNormalizer, CRiskGuard, CMagicRegistry, CSpreadGuard, COnnxLoader, CAsyncTradeManager, CMfeMaeLogger |
 | Tests | 171 collected | Phase 0-F acceptance tests (169 pass, 2 Wine/MetaEditor skips in local Linux smoke) |
