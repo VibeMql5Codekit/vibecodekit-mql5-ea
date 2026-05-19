@@ -81,6 +81,8 @@ mql5-ship = "vibecodekit_mql5.ship:main"
 mql5-refine = "vibecodekit_mql5.refine:main"
 mql5-install = "vibecodekit_mql5.install:main"
 mql5-second-opinion = "vibecodekit_mql5.second_opinion:main"
+# Prompt Architect — deterministic EA intake
+mql5-prompt-architect = "vibecodekit_mql5.prompt_architect.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["scripts"]

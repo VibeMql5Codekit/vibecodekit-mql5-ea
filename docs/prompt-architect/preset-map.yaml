@@ -14,14 +14,14 @@ rules:
       trading_method: mean_reversion
     recommend:
       preset: mean-reversion
-      stack: netting
+      stack: hedging
       confidence: 0.82
   - id: preset-scalping
     when:
       trading_method: scalping
     recommend:
       preset: scalping
-      stack: netting
+      stack: hedging
       confidence: 0.85
   - id: preset-grid
     when:
