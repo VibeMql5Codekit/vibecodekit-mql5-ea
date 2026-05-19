@@ -1,0 +1,92 @@
+schema_version: "1.0"
+purpose: Recommend existing mql5-build presets from normalized Prompt Architect settings.
+
+rules:
+  - id: preset-trend
+    when:
+      trading_method: trend
+    recommend:
+      preset: trend
+      stack: netting
+      confidence: 0.82
+  - id: preset-mean-reversion
+    when:
+      trading_method: mean_reversion
+    recommend:
+      preset: mean-reversion
+      stack: netting
+      confidence: 0.82
+  - id: preset-scalping
+    when:
+      trading_method: scalping
+    recommend:
+      preset: scalping
+      stack: netting
+      confidence: 0.85
+  - id: preset-grid
+    when:
+      trading_method: grid
+      grid.enabled: true
+    recommend:
+      preset: grid
+      stack: hedging
+      confidence: 0.86
+  - id: preset-dca
+    when:
+      trading_method: dca
+      grid.enabled: true
+    recommend:
+      preset: dca
+      stack: hedging
+      confidence: 0.84
+  - id: preset-martingale
+    when:
+      trading_method: martingale
+      grid.enabled: true
+    recommend:
+      preset: grid
+      stack: hedging
+      confidence: 0.78
+      warning: Martingale requires strict drawdown and max-order caps.
+  - id: preset-breakout
+    when:
+      trading_method: breakout
+    recommend:
+      preset: breakout
+      stack: netting
+      confidence: 0.84
+  - id: preset-news
+    when:
+      trading_method: news
+    recommend:
+      preset: news-trading
+      stack: netting
+      confidence: 0.8
+  - id: preset-portfolio
+    when:
+      trading_method: portfolio
+    recommend:
+      preset: portfolio-basket
+      stack: hedging
+      confidence: 0.82
+  - id: preset-onnx
+    when:
+      integrations.onnx: true
+    recommend:
+      preset: ml-onnx
+      stack: python-bridge
+      confidence: 0.88
+  - id: preset-llm-bridge
+    when:
+      integrations.webrequest: true
+      notes_contains: llm
+    recommend:
+      preset: service-llm-bridge
+      stack: cloud-api
+      confidence: 0.74
+
+fallback:
+  preset: stdlib
+  stack: netting
+  confidence: 0.5
+  reason: No high-confidence strategy-specific preset matched.

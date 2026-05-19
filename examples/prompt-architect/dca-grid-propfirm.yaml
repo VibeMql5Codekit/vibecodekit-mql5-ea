@@ -1,0 +1,70 @@
+schema_version: "1.0"
+name: PropFirmDcaGridGuard
+symbol: EURUSD
+timeframe: M15
+direction: both
+trading_method: dca
+broker_mode: hedging
+account_type: prop_firm
+strategy:
+  description: Conservative EURUSD DCA grid for prop-firm accounts with strict daily loss and drawdown caps.
+  entry_logic: Enter the first position only after MA trend filter and RSI pullback align; add DCA orders at fixed distance only while drawdown is within limits.
+  exit_logic: Close the basket at basket take profit, daily loss guard, max drawdown guard, or session end.
+  non_goals:
+    - Do not use unlimited martingale.
+    - Do not trade around high-impact news.
+  indicators:
+    - type: ma
+      condition: EMA 50 and EMA 200 define trend direction.
+      params:
+        fast_period: 50
+        slow_period: 200
+    - type: rsi
+      condition: RSI pullback confirms entry within the trend.
+      params:
+        period: 14
+risk:
+  lot_mode: percent_risk
+  risk_percent: 0.5
+  max_daily_loss_percent: 2.5
+  max_drawdown_percent: 6.0
+  max_open_positions: 5
+execution:
+  max_spread_points: 20
+  slippage_points: 5
+  filling_mode: auto
+sltp:
+  mode: fixed_points
+  stop_loss_points: 350
+  take_profit_points: 250
+  use_trailing: false
+grid:
+  enabled: true
+  distance_points: 250
+  max_orders: 5
+  lot_multiplier: 1.0
+  basket_tp_points: 200
+  drawdown_reducer: true
+filters:
+  sessions:
+    - london
+    - new_york
+  avoid_news: true
+  avoid_weekend: true
+  gap_protection: true
+integrations:
+  telegram: true
+  webrequest: true
+  custom_indicator: false
+  onnx: false
+  license: false
+features:
+  propFirm.useDailyLossReset: true
+  propFirm.useConsistency: true
+  propFirm.useHardNewsBlock: true
+  grid.enabled: true
+  grid.useMaxOrders: true
+  grid.useDistance: true
+  protection.useMaxDrawdown: true
+  remote.useTelegram: true
+notes: "Candidate preset: dca/hedging. Telegram token and news-provider credentials must be supplied through secrets, never source files."

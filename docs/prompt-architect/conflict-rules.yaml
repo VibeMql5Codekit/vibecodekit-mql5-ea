@@ -1,0 +1,82 @@
+schema_version: "1.0"
+purpose: Fail-closed checks for Prompt Architect configurations before blueprint or scaffold generation.
+
+rules:
+  - id: PA-001
+    severity: critical
+    title: Percent-risk lot mode requires risk_percent.
+    when:
+      risk.lot_mode: percent_risk
+    require:
+      - risk.risk_percent
+  - id: PA-002
+    severity: critical
+    title: Fixed lot mode requires fixed_lot.
+    when:
+      risk.lot_mode: fixed
+    require:
+      - risk.fixed_lot
+  - id: PA-003
+    severity: critical
+    title: Grid/DCA/Martingale requires hard position and distance caps.
+    when:
+      grid.enabled: true
+    require:
+      - grid.max_orders
+      - grid.distance_points
+      - risk.max_drawdown_percent
+  - id: PA-004
+    severity: critical
+    title: Non-news strategies with avoid_news require a news source policy.
+    when:
+      filters.avoid_news: true
+    require_any:
+      - integrations.webrequest
+      - notes_contains: manual news calendar
+  - id: PA-005
+    severity: warning
+    title: Prop-firm accounts should specify daily loss and drawdown limits.
+    when:
+      account_type: prop_firm
+    require:
+      - risk.max_daily_loss_percent
+      - risk.max_drawdown_percent
+  - id: PA-006
+    severity: critical
+    title: Custom indicator buffer logic requires explicit indicator conditions.
+    when:
+      integrations.custom_indicator: true
+    require:
+      - strategy.indicators
+  - id: PA-007
+    severity: warning
+    title: ONNX strategies should define confidence threshold and fallback behavior.
+    when:
+      integrations.onnx: true
+    require_any:
+      - notes_contains: confidence threshold
+      - notes_contains: fallback
+  - id: PA-008
+    severity: critical
+    title: Any live or prop-firm EA requires a stop policy.
+    when_any:
+      - account_type: live
+      - account_type: prop_firm
+    disallow:
+      - sltp.mode: none
+  - id: PA-009
+    severity: critical
+    title: Telegram and license secrets must not be hardcoded in config.
+    disallow_secret_fields:
+      - telegram_token
+      - license_key
+      - api_key
+      - password
+      - broker_password
+  - id: PA-010
+    severity: warning
+    title: Unknown broker mode reduces preset confidence and requires broker-engineer RRI review.
+    when:
+      broker_mode: unknown
+    add_rri_persona:
+      - broker-engineer

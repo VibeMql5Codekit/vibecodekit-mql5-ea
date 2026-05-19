@@ -1,0 +1,59 @@
+schema_version: "1.0"
+name: ArrowBufferSignalEA
+symbol: USDJPY
+timeframe: M15
+direction: both
+trading_method: custom
+broker_mode: netting
+account_type: personal
+strategy:
+  description: EA trades a custom EX5 arrow indicator by reading explicit buy and sell buffers, protected by spread and session filters.
+  entry_logic: Buy when the custom indicator buy buffer emits a non-empty value on the closed candle; sell when the sell buffer emits a non-empty value.
+  exit_logic: Exit by fixed stop loss, fixed take profit, or opposite arrow signal.
+  non_goals:
+    - Do not infer signals from chart objects.
+    - Do not trade on the still-forming candle.
+  indicators:
+    - type: custom
+      condition: Read buy buffer 0 and sell buffer 1 on shift 1; EMPTY_VALUE means no signal.
+      params:
+        indicator_path: "Examples/ArrowSignal.ex5"
+        buy_buffer: 0
+        sell_buffer: 1
+        signal_shift: 1
+risk:
+  lot_mode: fixed
+  fixed_lot: 0.02
+  max_daily_loss_percent: 3.0
+  max_drawdown_percent: 8.0
+  max_open_positions: 1
+execution:
+  max_spread_points: 15
+  slippage_points: 5
+  filling_mode: auto
+sltp:
+  mode: fixed_points
+  stop_loss_points: 250
+  take_profit_points: 400
+  use_trailing: false
+filters:
+  sessions:
+    - asian
+    - london
+  avoid_news: false
+  avoid_weekend: true
+  gap_protection: true
+integrations:
+  telegram: false
+  webrequest: false
+  custom_indicator: true
+  onnx: false
+  license: false
+features:
+  customIndi.useCustomIndicator: true
+  customIndi.useBufferLogic: true
+  general.useMaxSpread: true
+  time.useTimeFilter: true
+  sltp.useStopLoss: true
+  sltp.useTakeProfit: true
+notes: "Candidate preset: stdlib/netting unless a dedicated custom-indicator scaffold is added. Buffer index, shift, and EMPTY_VALUE behavior are explicit."

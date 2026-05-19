@@ -1,0 +1,35 @@
+# Blueprint: {{name}}
+
+## Architecture
+
+Use `mql5-build --preset {{recommended.preset}} --stack {{recommended.stack}} --name {{name}}`.
+
+## Data flow
+
+1. OnTick guard checks risk, spread, session, and news constraints.
+2. Indicator layer calculates signals from normalized strategy settings.
+3. Execution layer opens/closes positions according to broker mode.
+4. Protection layer enforces drawdown, daily loss, and max-position caps.
+
+## Includes
+
+- CPipNormalizer for point/pip safety
+- CRiskGuard for risk and drawdown checks
+- CMagicRegistry for isolated order management
+- CSpreadGuard when spread filtering is enabled
+
+## Invariants
+
+- No hardcoded secrets.
+- No unbounded martingale/grid loops.
+- No live/proprietary account deployment without permission pipeline pass.
+- Missing evidence must fail closed in quality matrix.
+
+## Verification
+
+```bash
+mql5-lint <ea.mq5>
+mql5-compile <ea.mq5>
+mql5-permission --ea <ea.mq5> --mode <mode>
+mql5-matrix --mode <mode> --html matrix.html
+```

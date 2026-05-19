@@ -1,0 +1,19 @@
+# Optional LLM codegen prompt
+
+You are assisting with MQL5 implementation, but generated code is not accepted until vibecodekit gates pass.
+
+## Inputs
+
+- Normalized EA settings: `{{config_path}}`
+- Requirements: `{{requirements_path}}`
+- Blueprint: `{{blueprint_path}}`
+- Scaffold preset: `{{recommended.preset}}`
+- Scaffold stack: `{{recommended.stack}}`
+
+## Rules
+
+1. Do not invent broker constraints, API keys, Telegram tokens, or license secrets.
+2. Use existing scaffold structure and vibecodekit libraries.
+3. Do not remove risk, spread, stop-loss, or max-position guards.
+4. Return code changes only; tests/gates must run separately.
+5. If requirements conflict, stop and report the conflict instead of guessing.
