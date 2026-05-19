@@ -35,7 +35,7 @@ và chạy test suite để xác nhận tool hoạt động:
 
 **Expected output:**
 ```
-150 passed, 2 skipped locally when Wine/MetaEditor are unavailable
+152 passed, 2 skipped locally when Wine/MetaEditor are unavailable
 17 presets available
 ```
 
@@ -254,7 +254,7 @@ pip install -e ".[dev]"
 
 # 2. Test suite
 PYTHONPATH=scripts pytest tests/ -q
-# ✓ Expected locally: 150 passed, 2 skipped when Wine/MetaEditor are unavailable
+# ✓ Expected locally: 152 passed, 2 skipped when Wine/MetaEditor are unavailable
 
 # 3. List presets
 mql5-build --list

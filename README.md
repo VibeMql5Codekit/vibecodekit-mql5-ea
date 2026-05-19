@@ -2,7 +2,7 @@
 
 Vibecode methodology kit for MQL5 Expert Advisor development on MetaTrader 5.
 
-> **Status:** Phase 0-E complete. Current verified local gate: 150 passed, 2 skipped
+> **Status:** Phase 0-E complete. Current verified local gate: 152 passed, 2 skipped
 > (Wine/MetaEditor-dependent smoke tests), 45 CLI tools, 17 scaffold presets / 22 preset×stack combinations.
 
 ## Quick start
@@ -13,7 +13,7 @@ pip install -e ".[dev]"
 
 # Run tests
 pytest tests/ -q
-# → 150 passed, 2 skipped locally when Wine/MetaEditor are unavailable
+# → 152 passed, 2 skipped locally when Wine/MetaEditor are unavailable
 
 # List all scaffold presets
 mql5-build --list
@@ -36,7 +36,7 @@ mql5-permission --ea output/MyEA/MyEA.mq5 --mode PERSONAL --json
 | CLI Tools | 45 | Build, lint, compile, backtest, walk-forward, Monte Carlo, permissions, reviews, deploy |
 | Scaffold Presets | 17 / 22 stacks | stdlib, scalping, trend, dca, grid, ml-onnx, hft-async, news-trading, etc. |
 | MQL5 Libraries | 7 | CPipNormalizer, CRiskGuard, CMagicRegistry, CSpreadGuard, COnnxLoader, CAsyncTradeManager, CMfeMaeLogger |
-| Tests | 152 collected | Phase 0-E acceptance tests (150 pass, 2 Wine/MetaEditor skips in local Linux smoke) |
+| Tests | 154 collected | Phase 0-E acceptance tests (152 pass, 2 Wine/MetaEditor skips in local Linux smoke) |
 | MCP Servers | 3 | metaeditor-bridge, mt5-bridge (10 tools), algo-forge (6 tools) |
 | Review Scripts | 5 | 7-perspective review, CSO audit, eng review, CEO review, investigate |
 | RRI Personas | 6 | trader, risk-auditor, broker-engineer, strategy-architect, devops, perf-analyst (25 questions each) |

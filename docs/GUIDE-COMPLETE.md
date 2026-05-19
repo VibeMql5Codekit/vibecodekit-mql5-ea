@@ -55,7 +55,7 @@
 | CLI Tools | 45 | Build, lint, compile, backtest, review, deploy |
 | Scaffold Presets | 17 | stdlib, scalping, trend, grid, ml-onnx, hft-async, ... |
 | MQL5 Libraries | 7 | CPipNormalizer, CRiskGuard, CMagicRegistry, CSpreadGuard, CMfeMaeLogger, COnnxLoader, CAsyncTradeManager |
-| Tests | 150 collected | Phase 0-E acceptance tests (150 pass, 2 Wine/MetaEditor skips in local Linux smoke) |
+| Tests | 154 collected | Phase 0-E acceptance tests (152 pass, 2 Wine/MetaEditor skips in local Linux smoke) |
 | MCP Servers | 3 | metaeditor-bridge, mt5-bridge (10 tools), algo-forge (6 tools) |
 | Review Scripts | 5 | Multi-specialist, CSO, engineering, CEO, investigation |
 | RRI Personas | 6 | trader, risk-auditor, broker-engineer, strategy-architect, devops, perf-analyst |
@@ -101,7 +101,7 @@ pyenv rehash
 
 # Bước 4: Verify
 mql5-build --list           # → 17 presets
-pytest tests/ -q            # → 150 passed full env; 148 passed, 2 skipped nếu thiếu MetaEditor/Wine
+pytest tests/ -q            # → 154 passed full env; 152 passed, 2 skipped nếu thiếu MetaEditor/Wine
 ```
 
 ### 2.3 Cài Wine + MetaEditor (tùy chọn — cho compile thật)
@@ -544,7 +544,7 @@ mql5-build --list
 Báo kết quả.
 ```
 
-**Expected:** 17 presets; test suite `150 passed` trên full env hoặc `148 passed, 2 skipped` nếu thiếu MetaEditor/Wine.
+**Expected:** 17 presets; test suite `154 passed` trên full env hoặc `152 passed, 2 skipped` nếu thiếu MetaEditor/Wine.
 
 ### 10.2 Build EA hoàn chỉnh
 
@@ -743,7 +743,7 @@ Tạo file `CLAUDE.md` ở root project để Claude Code tự hiểu context:
 
 ## Quick Start
 pip install -e ".[dev]"
-pytest tests/ -q  # → 150 passed full env; 148 passed, 2 skipped nếu thiếu MetaEditor/Wine
+pytest tests/ -q  # → 154 passed full env; 152 passed, 2 skipped nếu thiếu MetaEditor/Wine
 
 ## CLI Tools (top 10 dùng nhiều nhất)
 - `mql5-build --preset <name> --stack <stack> --name <ea> --output <dir>`
@@ -860,7 +860,7 @@ Dự án MQL5 EA development. Khi viết code MQL5:
 - Dùng PrintFormat(), KHÔNG dùng Print() + string concat
 - Max 6 input parameters, mỗi file ≤ 200 LOC
 - Có CLI tools: mql5-build, mql5-lint, mql5-compile, mql5-permission
-- Test suite: pytest tests/ -q → 150 passed full env; 148 passed, 2 skipped nếu thiếu MetaEditor/Wine
+- Test suite: pytest tests/ -q → 154 passed full env; 152 passed, 2 skipped nếu thiếu MetaEditor/Wine
 ```
 
 ---
@@ -1347,4 +1347,4 @@ A: CLI tools chạy trên mọi OS (Python). MetaEditor compile cần Wine trên
 ---
 
 *Tài liệu thuộc dự án [vibecodekit-mql5-ea](https://github.com/VibeMql5Codekit/vibecodekit-mql5-ea) v1.0.0*
-*Cập nhật: 152 tests collected (150 pass, 2 local Wine/MetaEditor skips) · 45 CLI tools · 17 scaffold presets · 3 MCP servers*
+*Cập nhật: 154 tests collected (152 pass, 2 local Wine/MetaEditor skips) · 45 CLI tools · 17 scaffold presets · 3 MCP servers*

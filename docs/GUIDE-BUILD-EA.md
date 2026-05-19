@@ -108,8 +108,8 @@ mql5-lint --help
 
 # Chạy test suite
 pytest tests/ -q
-# Expected full env: 150 passed
-# Nếu chưa cài MetaEditor/Wine: 148 passed, 2 skipped
+# Expected full env: 154 passed
+# Nếu chưa cài MetaEditor/Wine: 152 passed, 2 skipped
 ```
 
 ### 3.4 Cài Wine + MetaEditor (tùy chọn, cho compile thật)
