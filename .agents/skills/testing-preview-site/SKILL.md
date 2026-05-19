@@ -1,217 +1,118 @@
 ---
-name: testing-vibecodekit-mql5-ea
-description: Test the vibecodekit-mql5-ea preview site and CLI tools end-to-end. Use when verifying preview site UI, scaffold generator, lint checker, or CLI tool changes.
+name: testing-preview-site
+description: Test the vibecodekit-mql5-ea preview site and CLI tools end-to-end. Use when verifying preview site UI, scaffold generator, lint checker, Prompt Architect demo, mobile layout, or CLI count changes.
 ---
 
-# Testing vibecodekit-mql5-ea
+# Testing vibecodekit-mql5-ea Preview Site
 
 ## Prerequisites
 
-- Python 3 with pytest installed
-- Preview site deployed to devinapps.com (static HTML, no backend)
-- Repo cloned at `/home/ubuntu/repos/vibecodekit-mql5-ea`
-- Install: `pip install -e ".[dev]"`
-- For mobile testing: `pip install playwright && python -m playwright install chromium`
+- Repo cloned at `/home/ubuntu/repos/vibecodekit-mql5-ea`.
+- Install local CLI dependencies if needed: `pip install -e ".[dev]"`.
+- Preview site deployed as static HTML with `deploy frontend` from the `preview/` directory.
+- For browser testing, use the existing Chrome session; for scripted checks, connect Playwright to CDP at `http://localhost:29229`.
 
 ## Devin Secrets Needed
 
-None — no secrets required for testing. The preview site is public and CLI tools run locally.
+None. The preview site is public static HTML and deterministic Prompt Architect demo does not call external providers.
 
-## Preview Site URL
+## Preview URL and cache
 
-The preview site is deployed as a static frontend. Check for the deployment URL in PR comments or use the `deploy` tool with `command="frontend"` pointing to the preview directory.
+Use the current deployed preview URL from the deployment output or PR comments. Append `?nocache=<unique-label>` after preview deploys to avoid stale CDN content.
 
-**CDN Cache Workaround:** After deploying, the CDN may serve stale content. Append `?nocache=<unique-param>` to the URL to force fresh content (e.g. `?nocache=fix1`). Verify with curl that your CSS changes are present before testing.
-
-## Test Procedure
-
-### 1. CLI Tools (Shell — No Recording Needed)
-
-Run these from the repo root:
+Before browser testing, verify the deployed HTML contains current markers:
 
 ```bash
-cd /home/ubuntu/repos/vibecodekit-mql5-ea
-
-# Full test suite
-pytest tests/ -q
-# Expected: 148 passed, 2 skipped (Wine/MetaEditor deps), 0 failed
-
-# Lint CLI on fixture
-mql5-lint tests/fixtures/ap_01_no_sl.mq5
-# Expected: AP-01 detected, exit code 1
-
-# Build presets count
-mql5-build --list
-# Expected: 17 presets listed
+python - <<'PY'
+from urllib.request import urlopen
+url = '<PREVIEW_URL>?nocache=<unique>'
+body = urlopen(url, timeout=20).read().decode('utf-8', errors='replace')
+for token in ['169', '46 Python CLI tools', 'Prompt Architect', 'runPromptArchitectDemo', 'flex-wrap']:
+    print(token, token in body)
+PY
 ```
 
-### 2. Scaffold Stack Validation
-
-Test that `--stack` is validated per-preset (not just accepted blindly):
-
-```bash
-# Single-stack preset with wrong default — should reject with helpful error
-mql5-build --preset dca --name Test --output /tmp/test-stack 2>&1
-# Expected: exit 2, "Invalid stack 'netting' for preset 'dca'. Available: hedging"
-
-# Single-stack preset with correct stack — should succeed
-mql5-build --preset dca --stack hedging --name Test --output /tmp/test-stack
-# Expected: exit 0, "Rendered dca/hedging"
-
-# Multi-stack preset with invalid stack — lists all valid options
-mql5-build --preset stdlib --stack nonexistent --name Bad --output /tmp/test-stack 2>&1
-# Expected: exit 2, "Available: hedging, netting, python-bridge"
-
-# Non-standard stacks (service-llm-bridge has cloud-api, embedded-onnx-llm, self-hosted-ollama)
-mql5-build --preset service-llm-bridge --stack netting --name Bad --output /tmp/test-stack 2>&1
-# Expected: exit 2, "Available: cloud-api, embedded-onnx-llm, self-hosted-ollama"
-```
-
-### 3. Permission Pipeline Testing
-
-```bash
-python -c "
-import sys; sys.path.insert(0, 'scripts')
-from vibecodekit_mql5.permission.orchestrator import run_permission_pipeline
-import json
-r = run_permission_pipeline('scaffolds/stdlib/netting/EAName.mq5', mode='PERSONAL')
-print(json.dumps(r, indent=2))
-"
-# Note: layer4 requires >= 15/17 PASS (not 10). Scaffold gets ~12 so layer4 will fail.
-```
-
-### 4. Phase C — Methodology Validation
-
-```bash
-# RRI Personas: verify 25 questions each (was 12 before)
-python -c "
-import yaml
-for p in ['trader','risk-auditor','broker-engineer','strategy-architect','devops','perf-analyst']:
-    d = yaml.safe_load(open(f'docs/rri-personas/{p}.yaml'))
-    print(f'{p}: {len(d["questions"])} questions')
-"
-# Expected: all 6 show 25
-
-# RRI Templates: verify 8 files
-ls docs/rri-templates/step-*.md.tmpl | wc -l
-# Expected: 8
-
-# Review scripts: verify not stubs
-for f in review eng_review ceo_review cso investigate; do
-  wc -l scripts/vibecodekit_mql5/review/${f}.py
-done
-# Expected: all > 30 LOC (was 13 LOC stubs)
-```
-
-### 5. Phase D — Tech 2024 Adversarial Tests
-
-```bash
-python -c "
-from vibecodekit_mql5.onnx_export import detect_framework, validate_opset
-from pathlib import Path
-# Framework detection
-for ext, expected in [('.pt','pytorch'),('.h5','tensorflow'),('.pkl','sklearn'),('.xyz','unknown')]:
-    print(f'{ext} -> {detect_framework(Path(f\"m{ext}\"))} (expected {expected})')
-# Opset validation
-for opset in [17, 5, 99]:
-    ok, msg = validate_opset(opset)
-    print(f'opset {opset}: valid={ok}, msg={msg}')
-"
-# Expected: .pt=pytorch, .h5=tensorflow, .pkl=sklearn, .xyz=unknown
-# opset 17 valid, 5 rejected 'too low', 99 rejected 'too high'
-
-# Cost gate
-python -c "
-from vibecodekit_mql5.cloud_optimize import check_cost_gate
-for mode, cost, expected in [('PERSONAL',10,False),('TEAM',30,True),('TEAM',100,False),('ENTERPRISE',200,True),('ENTERPRISE',600,False)]:
-    r = check_cost_gate(mode, cost)
-    print(f'{mode} \${cost}: allowed={r[\"allowed\"]} (expected {expected})')
-"
-# Expected: PERSONAL always blocked, TEAM <=$50 ok, ENTERPRISE <=$500 ok
-```
-
-### 6. Phase E — Polish & Ship
-
-```bash
-# scan.py on real repo
-python -c "
-from vibecodekit_mql5.scan import scan_project
-from pathlib import Path
-r = scan_project(Path('.'))
-print(f'mq5={r[\"mq5_count\"]}, pyproject={r[\"has_pyproject\"]}, scaffolds={len(r[\"scaffolds\"])}')
-"
-# Expected: mq5_count > 0, has_pyproject=True, scaffolds >= 17
-
-# audit.py conformance
-python -c "
-from vibecodekit_mql5.audit import run_audit
-from pathlib import Path
-r = run_audit(Path('.'))
-print(f'total={r[\"total\"]}, passed={r[\"passed\"]}')
-"
-# Expected: total >= 40, passed > 30
-
-# MCP tools count
-python -c "
-import importlib.util
-for name, path, min_count in [('mt5','mcp/mt5-bridge/tools.py',10),('forge','mcp/algo-forge-bridge/tools.py',6)]:
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    print(f'{name}: {len(mod.TOOLS)} tools (min {min_count})')
-"
-# Expected: mt5 >= 10, forge >= 6
-
-# CLI entries
-python -c "
-import tomllib
-with open('pyproject.toml', 'rb') as f:
-    cfg = tomllib.load(f)
-print(f'CLI entries: {len(cfg[\"project\"][\"scripts\"])}')
-"
-# Expected: >= 40 (was 4 before Phase E)
-```
-
-### 7. Forge Fitness Evaluation
-
-```bash
-python -c "
-import sys; sys.path.insert(0, 'scripts')
-from vibecodekit_mql5.forge_pr import evaluate_fitness
-cfg = {'primary': 'profit_factor', 'secondary': 'sharpe_ratio',
-       'constraints': {'max_drawdown_pct': 30, 'min_trades': 100}}
-metrics = {'profit_factor': 1.52, 'sharpe_ratio': 1.34,
-           'maximal_drawdown_pct': 10.23, 'total_trades': 728}
-print(evaluate_fitness(metrics, cfg))
-"
-# Expected: positive score (e.g. 1.448), NOT -1.0
-```
-
-### 8. Preview Site (Browser — Record This)
+## Browser Recording Setup
 
 Maximize browser before recording:
+
 ```bash
 sudo apt-get install -y wmctrl 2>/dev/null
 wmctrl -r :ACTIVE: -b add,maximized_vert,maximized_horz
 ```
 
-#### Navigation Test
-- Click each of the 9 tabs: Overview, 6 Phases, MQL5 Libraries, CLI Tools, 19 Scaffolds, Anti-Patterns, Tests, Try It, Architecture
-- Verify each tab switches content correctly
+Record UI testing and annotate major assertions.
 
-#### Scaffold Generator ("Try It" tab)
-1. Select preset, stack, type EA name
-2. Click "Generate Scaffold"
-3. Verify output contains EA name, 3 includes, strategy placeholder
+## Core Preview Assertions
 
-#### Lint Checker ("Try It" tab)
-1. Default code has 3 violations
-2. Click "Run Lint Check"
-3. Verify: AP-01, AP-15, AP-20 detected, "3 critical, 0 warnings"
+### Overview tab
 
-### 9. Mobile Responsive Testing (Playwright CDP)
+1. Open `<PREVIEW_URL>?nocache=<unique>`.
+2. Verify stats show exactly:
+   - `169` under Tests Passing / Tests đạt.
+   - `46` under CLI Commands / Lệnh CLI.
+3. Verify Prompt Architect appears as a card and is marked `NEW`.
+4. Fail if stale values such as `150`, `44`, or `45 CLI tools` appear in the primary current-count areas.
 
-Use Playwright to simulate mobile viewport and programmatically verify no overflow:
+### CLI tab
+
+1. Click `CLI Tools` / `Công cụ CLI`.
+2. Verify intro text contains `46 Python CLI tools`.
+3. Verify card `mql5-prompt-architect` is visible and marked `NEW`.
+
+### Tests tab
+
+1. Click `Tests` / `Kiểm thử`.
+2. Verify summary contains `169 passed, 2 skipped, 0 failed` or the Vietnamese equivalent.
+3. Verify table contains `Phase F: Prompt Architect`, `17 pass`, and coverage including `pipeline runner` and `LLM provider adapter`.
+
+## Try It Demo Assertions
+
+### Scaffold Generator
+
+1. Click `Try It` / `Thử ngay`.
+2. Type an EA name such as `DevinPhaseFProbe`.
+3. Click `Generate Scaffold` / `Tạo Scaffold`.
+4. Verify output contains:
+   - `<EAName>.mq5`
+   - `#include "CPipNormalizer.mqh"`
+   - `#include "CRiskGuard.mqh"`
+
+### Lint Checker
+
+1. Use the default violation sample.
+2. Click `Run Lint Check` / `Chạy Lint`.
+3. Verify output contains:
+   - `[X] AP-01`
+   - `[X] AP-15`
+   - `[X] AP-20`
+   - `3 critical, 0 warnings`
+
+### Prompt Architect Demo
+
+1. Click `Run Prompt Architect Demo` / `Chạy Prompt Architect Demo`.
+2. Verify JSON output contains:
+   - `"recommendation": "dca/hedging"`
+   - `"mode": "ENTERPRISE"`
+   - Six artifacts: `prompt.md`, `vision.md`, `requirements.json`, `blueprint.md`, `rri-plan.md`, `pipeline.json`
+   - Seven pipeline labels, including `validate config`, `generate scaffold`, `lint scaffold`, and `human approval before deploy`
+   - `OpenAI/Gemini keys read only from server-side env; prompt-only requires no key`
+
+## Bilingual (VI/EN) Testing
+
+- Click `EN`; verify header/nav and Try It labels switch to English.
+- Click `VI`; verify labels switch back to Vietnamese.
+- Pay attention to nav buttons because missing `i18n` class on nav items is a common regression.
+
+## Mobile Responsive Testing
+
+### UI check
+
+1. Resize Chrome to a narrow mobile-like size, around 375×812.
+2. Verify nav buttons wrap onto multiple rows instead of clipping or requiring horizontal page scroll.
+3. Verify `Try It` remains reachable by clicking the wrapped button.
+
+### Programmatic overflow check
 
 ```python
 import asyncio
@@ -220,63 +121,50 @@ from playwright.async_api import async_playwright
 async def main():
     async with async_playwright() as p:
         browser = await p.chromium.connect_over_cdp("http://localhost:29229")
-        context = browser.contexts[0]
-        page = context.pages[0]
-        
+        page = browser.contexts[0].pages[0]
         await page.goto("<PREVIEW_URL>?nocache=<unique>")
-        await page.wait_for_load_state("networkidle")
         await page.set_viewport_size({"width": 375, "height": 812})
-        await asyncio.sleep(1)
-        
-        # Click target tab (e.g. CLI)
-        await page.locator("nav button", has_text="Công cụ CLI").click()
-        await asyncio.sleep(1)
-        
-        # Programmatic overflow check
-        result = await page.evaluate("""() => {
-            const body = document.body;
-            const html = document.documentElement;
-            return {
-                hasHorizontalScroll: body.scrollWidth > body.clientWidth || html.scrollWidth > html.clientWidth,
-                bodyWidth: body.scrollWidth,
-                viewportWidth: window.innerWidth
-            };
-        }""")
+        await page.wait_for_timeout(500)
+        result = await page.evaluate("""() => ({
+            innerWidth: window.innerWidth,
+            bodyScrollWidth: document.body.scrollWidth,
+            htmlScrollWidth: document.documentElement.scrollWidth,
+            hasHorizontalScroll: document.body.scrollWidth > document.body.clientWidth ||
+                document.documentElement.scrollWidth > document.documentElement.clientWidth,
+            activeSection: document.querySelector('section.active')?.id,
+            navButtons: [...document.querySelectorAll('nav button')].map(b => b.textContent.trim())
+        })""")
         print(result)
-        # Expected: hasHorizontalScroll = false, bodyWidth <= viewportWidth
+        # Expected: hasHorizontalScroll is false and navButtons includes Try It / Thử ngay.
 
 asyncio.run(main())
 ```
 
-**Key tabs to test at 375px:**
-- CLI tab: 12 cards with `<pre><code>` blocks — longest is `mql5-build --preset stdlib --stack netting --name MyEA`
-- Architecture tab: 2 large ASCII diagrams in `<pre>` blocks
-- Any tab with tables: should be wrapped in `<div class="table-wrap">` for horizontal scroll
+If the browser chrome prevents exactly 375px `window.innerWidth`, still verify the effective width and `hasHorizontalScroll=false` in the result.
 
-**Desktop regression check (1280px):** Verify card grid shows multi-column layout (not forced single-column).
+## CLI Regression Checks for Preview Claims
 
-## Bilingual (VI/EN) Testing
+Run shell tests when preview copy advertises runtime counts:
 
-- Click VI/EN toggle buttons in header
-- All elements with class `i18n` should switch language (including nav buttons)
-- Verify scaffold generator and lint checker output text switches language
+```bash
+cd /home/ubuntu/repos/vibecodekit-mql5-ea
+pytest tests/ -q
+# Expected locally: 169 passed, 2 skipped when Wine/MetaEditor smoke deps are unavailable
+
+python - <<'PY'
+import tomllib
+with open('pyproject.toml', 'rb') as f:
+    cfg = tomllib.load(f)
+print(len(cfg['project']['scripts']))
+PY
+# Expected: 46
+```
 
 ## Common Issues
 
-- The 2 skipped tests require Wine + MetaEditor — expected on Linux
-- Scaffold AP-05 warnings (> 6 inputs) are expected for templates
-- The preview site is purely client-side JS — no API calls, no backend
-- `PYTHONPATH=scripts` or `pip install -e .` required for CLI module imports
-- No CI runners may be configured on new repos — check Settings > Actions
-- Backtest JSON output uses `maximal_drawdown_pct` key, but internal BacktestMetrics dataclass uses `max_drawdown_pct` — evaluate_fitness handles both
-- Layer4 permission threshold is >= 15/17 PASS (matching trader_check.py standalone CLI)
-- CAsyncTradeManager uses CTrade::Result() to get MqlTradeResult.request_id for async tracking (not ResultOrder())
-- Phase C: RRI personas have 25 questions each (expanded from 12)
-- Phase D: onnx_export validates opset 11-20, rejects outside range
-- Phase D: cloud_optimize cost gates: PERSONAL=blocked, TEAM<=$50, ENTERPRISE<=$500
-- Phase E: 12 scripts (scan, vision, blueprint, tip, survey, doctor, audit, canary, ship, refine, install, second_opinion) all 51-100 LOC
-- Phase E: mt5-bridge has 10 tools (4 original + 6 new), algo-forge has 6 tools (3 original + 3 new)
-- 44 CLI entry points registered in pyproject.toml
-- CDN caching: After deploying preview site updates, append `?nocache=<unique>` to URL to bypass edge cache. Verify CSS changes are present with `curl -s <URL> | grep '<css-property>'` before testing.
-- Mobile overflow: CSS grid items default to `min-width: auto` — cards with long `<pre>` content need `min-width: 0; overflow: hidden` to prevent expanding beyond viewport.
-- Playwright CDP: Connect to `http://localhost:29229` for programmatic browser control. Use `set_viewport_size` for mobile simulation rather than Chrome DevTools device toolbar.
+- The 2 skipped tests require Wine + MetaEditor and are expected on Linux when smoke deps are unavailable.
+- The preview site is purely client-side JS — no backend or API calls.
+- Use `?nocache=<unique>` after every static preview deployment.
+- If mobile nav overflows, check the media query for `nav .container` includes `flex-wrap: wrap`, `justify-content: center`, and `overflow-x: visible`.
+- Long `<pre>` blocks can create horizontal overflow; containers should have `min-width: 0`/overflow handling and tables should use `.table-wrap`.
+- New repos may have no GitHub Actions; Devin Review can still report as an optional check.
