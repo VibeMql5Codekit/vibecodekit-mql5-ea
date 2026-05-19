@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/VibeMql5Codekit/vibecodekit-mql5-ea/docs/prompt-architect/ea-settings.schema.json",
+  "title": "Vibecodekit MQL5 EA Prompt Architect Settings",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "name",
+    "symbol",
+    "timeframe",
+    "direction",
+    "trading_method",
+    "broker_mode",
+    "account_type",
+    "strategy",
+    "risk",
+    "execution",
+    "sltp",
+    "features"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]{2,63}$"
+    },
+    "symbol": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32
+    },
+    "timeframe": {
+      "type": "string",
+      "enum": ["M1", "M5", "M15", "M30", "H1", "H4", "D1", "W1", "MN1"]
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["buy", "sell", "both"]
+    },
+    "trading_method": {
+      "type": "string",
+      "enum": ["one_shot", "trend", "mean_reversion", "scalping", "grid", "dca", "martingale", "hedging", "breakout", "news", "portfolio", "onnx", "custom"]
+    },
+    "broker_mode": {
+      "type": "string",
+      "enum": ["netting", "hedging", "unknown"]
+    },
+    "account_type": {
+      "type": "string",
+      "enum": ["demo", "live", "personal", "prop_firm"]
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "entry_logic", "exit_logic", "indicators"],
+      "properties": {
+        "description": {"type": "string", "minLength": 10},
+        "entry_logic": {"type": "string", "minLength": 1},
+        "exit_logic": {"type": "string", "minLength": 1},
+        "non_goals": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "indicators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "condition"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["ma", "rsi", "macd", "bollinger_bands", "stochastic", "atr", "cci", "custom", "onnx"]
+              },
+              "condition": {"type": "string", "minLength": 1},
+              "params": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": ["string", "number", "integer", "boolean"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lot_mode", "max_open_positions"],
+      "properties": {
+        "lot_mode": {"type": "string", "enum": ["fixed", "percent_risk"]},
+        "fixed_lot": {"type": "number", "exclusiveMinimum": 0},
+        "risk_percent": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
+        "max_daily_loss_percent": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
+        "max_drawdown_percent": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
+        "max_open_positions": {"type": "integer", "minimum": 1}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_spread_points", "slippage_points", "filling_mode"],
+      "properties": {
+        "max_spread_points": {"type": "integer", "minimum": 0},
+        "slippage_points": {"type": "integer", "minimum": 0},
+        "filling_mode": {"type": "string", "enum": ["auto", "fok", "ioc", "return"]}
+      }
+    },
+    "sltp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": {"type": "string", "enum": ["fixed_points", "atr", "candle", "virtual", "none"]},
+        "stop_loss_points": {"type": "integer", "exclusiveMinimum": 0},
+        "take_profit_points": {"type": "integer", "exclusiveMinimum": 0},
+        "atr_period": {"type": "integer", "minimum": 1},
+        "atr_multiplier": {"type": "number", "exclusiveMinimum": 0},
+        "use_trailing": {"type": "boolean"},
+        "breakeven_points": {"type": "integer", "minimum": 0},
+        "trailing_distance_points": {"type": "integer", "minimum": 0}
+      }
+    },
+    "grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "distance_points": {"type": "integer", "exclusiveMinimum": 0},
+        "max_orders": {"type": "integer", "minimum": 1},
+        "lot_multiplier": {"type": "number", "minimum": 1},
+        "basket_tp_points": {"type": "integer", "minimum": 0},
+        "drawdown_reducer": {"type": "boolean"}
+      }
+    },
+    "filters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sessions": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["asian", "london", "new_york", "custom"]}
+        },
+        "avoid_news": {"type": "boolean"},
+        "avoid_weekend": {"type": "boolean"},
+        "min_candle_points": {"type": "integer", "minimum": 0},
+        "max_candle_points": {"type": "integer", "minimum": 0},
+        "gap_protection": {"type": "boolean"}
+      }
+    },
+    "integrations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "telegram": {"type": "boolean"},
+        "webrequest": {"type": "boolean"},
+        "custom_indicator": {"type": "boolean"},
+        "onnx": {"type": "boolean"},
+        "license": {"type": "boolean"}
+      }
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": {"type": "boolean"}
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

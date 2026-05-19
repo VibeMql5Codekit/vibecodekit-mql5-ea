@@ -1,0 +1,23 @@
+schema_version: "1.0"
+ea: "{{name}}"
+requirements:
+  - id: REQ-001
+    source: symbol
+    statement: "EA must trade {{symbol}} on {{timeframe}}."
+    gate: layer1_source_lint
+  - id: REQ-002
+    source: risk
+    statement: "EA must enforce configured lot mode and risk caps."
+    gate: layer4_checklist
+  - id: REQ-003
+    source: execution
+    statement: "EA must block entries when spread or execution constraints fail."
+    gate: layer7_broker_safety
+  - id: REQ-004
+    source: sltp
+    statement: "EA must implement explicit stop/exit policy."
+    gate: layer3_ap_lint
+  - id: REQ-005
+    source: strategy
+    statement: "EA entry and exit logic must match the normalized strategy."
+    gate: layer5_methodology

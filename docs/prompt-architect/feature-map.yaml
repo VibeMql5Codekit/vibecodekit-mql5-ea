@@ -1,0 +1,77 @@
+schema_version: "1.0"
+purpose: Map Prompt Architect UI signals and user vocabulary to normalized EA settings.
+
+keywords:
+  martingale:
+    aliases: ["martingale", "gấp thếp", "gap thep", "nhân lot"]
+    flags: ["grid.enabled", "grid.useLotMultiplier"]
+    normalized:
+      trading_method: martingale
+      grid.enabled: true
+  dca:
+    aliases: ["dca", "trung bình giá", "rải lệnh"]
+    flags: ["grid.enabled", "grid.useDistance"]
+    normalized:
+      trading_method: dca
+      grid.enabled: true
+  grid:
+    aliases: ["grid", "lưới", "luoi"]
+    flags: ["grid.enabled", "grid.useMaxOrders", "grid.useDistance"]
+    normalized:
+      trading_method: grid
+      grid.enabled: true
+  scalping:
+    aliases: ["scalping", "lướt sóng", "m1", "m5"]
+    flags: ["time.useTimeFilter", "general.useMaxSpread"]
+    normalized:
+      trading_method: scalping
+  prop_firm:
+    aliases: ["prop firm", "quỹ", "funded", "ftmo"]
+    flags: ["propFirm.useDailyLossReset", "propFirm.useConsistency", "propFirm.useHardNewsBlock"]
+    normalized:
+      account_type: prop_firm
+  news_filter:
+    aliases: ["news", "tin tức", "tránh tin", "nfp", "cpi", "fomc"]
+    flags: ["time.useNewsFilter", "advNews.useWebRequest", "propFirm.useHardNewsBlock"]
+    normalized:
+      filters.avoid_news: true
+  custom_indicator:
+    aliases: ["custom indicator", "ex5", "buffer", "arrow", "mũi tên"]
+    flags: ["customIndi.useCustomIndicator", "customIndi.useBufferLogic"]
+    normalized:
+      integrations.custom_indicator: true
+  onnx:
+    aliases: ["onnx", "ai model", "machine learning", "ml"]
+    flags: ["aiml.useOnnxModel", "aiml.useConfidenceThreshold"]
+    normalized:
+      integrations.onnx: true
+      trading_method: onnx
+  telegram:
+    aliases: ["telegram", "bot", "remote control", "điều khiển từ xa"]
+    flags: ["remote.useTelegram", "remote.useCommands"]
+    normalized:
+      integrations.telegram: true
+
+indicator_keywords:
+  ma:
+    aliases: ["ma", "moving average", "ema", "sma"]
+  rsi:
+    aliases: ["rsi", "quá mua", "quá bán", "overbought", "oversold"]
+  macd:
+    aliases: ["macd"]
+  bollinger_bands:
+    aliases: ["bollinger", "bands", "band ngoài"]
+  stochastic:
+    aliases: ["stochastic", "stoch"]
+  atr:
+    aliases: ["atr", "volatility stop", "sl theo biến động"]
+  cci:
+    aliases: ["cci"]
+
+direction_keywords:
+  buy:
+    aliases: ["buy only", "chỉ buy", "long only"]
+  sell:
+    aliases: ["sell only", "chỉ sell", "short only"]
+  both:
+    aliases: ["buy sell", "2 chiều", "hai chiều", "both"]

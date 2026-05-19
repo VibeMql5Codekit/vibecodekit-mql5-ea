@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "name": "XauRsiBbScalper",
+  "symbol": "XAUUSD",
+  "timeframe": "M5",
+  "direction": "both",
+  "trading_method": "scalping",
+  "broker_mode": "netting",
+  "account_type": "personal",
+  "strategy": {
+    "description": "Scalp XAUUSD on M5 when price stretches outside Bollinger Bands and RSI confirms overbought or oversold conditions.",
+    "entry_logic": "Buy when price closes below the lower Bollinger Band and RSI is below 30; sell when price closes above the upper band and RSI is above 70.",
+    "exit_logic": "Exit at fixed take profit, stop loss, or when price returns to the middle Bollinger Band.",
+    "non_goals": [
+      "Do not trade during high-impact news.",
+      "Do not use martingale or grid recovery."
+    ],
+    "indicators": [
+      {
+        "type": "bollinger_bands",
+        "condition": "Price closes outside the outer band then reverts.",
+        "params": {
+          "period": 20,
+          "deviation": 2.0
+        }
+      },
+      {
+        "type": "rsi",
+        "condition": "RSI overbought above 70 or oversold below 30.",
+        "params": {
+          "period": 14
+        }
+      }
+    ]
+  },
+  "risk": {
+    "lot_mode": "percent_risk",
+    "risk_percent": 1.0,
+    "max_daily_loss_percent": 3.0,
+    "max_drawdown_percent": 10.0,
+    "max_open_positions": 1
+  },
+  "execution": {
+    "max_spread_points": 30,
+    "slippage_points": 10,
+    "filling_mode": "auto"
+  },
+  "sltp": {
+    "mode": "fixed_points",
+    "stop_loss_points": 500,
+    "take_profit_points": 750,
+    "use_trailing": true,
+    "breakeven_points": 300,
+    "trailing_distance_points": 250
+  },
+  "filters": {
+    "sessions": ["london", "new_york"],
+    "avoid_news": true,
+    "avoid_weekend": true,
+    "gap_protection": true
+  },
+  "integrations": {
+    "telegram": false,
+    "webrequest": true,
+    "custom_indicator": false,
+    "onnx": false,
+    "license": false
+  },
+  "features": {
+    "general.useMagicNumber": true,
+    "general.useMaxSpread": true,
+    "money.useAutoLot": true,
+    "sltp.useStopLoss": true,
+    "sltp.useTakeProfit": true,
+    "trailing.useTrailingStop": true,
+    "time.useNewsFilter": true,
+    "protection.useDailyLossLimit": true
+  },
+  "notes": "Candidate preset: scalping/netting. Use WebRequest only for a configured news provider; do not hardcode provider keys."
+}

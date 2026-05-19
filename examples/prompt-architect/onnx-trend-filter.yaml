@@ -1,0 +1,67 @@
+schema_version: "1.0"
+name: OnnxTrendFilterEA
+symbol: GBPUSD
+timeframe: H1
+direction: both
+trading_method: onnx
+broker_mode: netting
+account_type: demo
+strategy:
+  description: Trend-following EA that uses classic MA signals filtered by an ONNX confidence model.
+  entry_logic: Buy on fast EMA crossing above slow EMA when ONNX confidence exceeds the configured threshold; sell on the opposite cross with model confirmation.
+  exit_logic: Exit on opposite cross, ATR stop, trailing stop, or model confidence falling below threshold.
+  non_goals:
+    - Do not open trades when ONNX inference fails.
+    - Do not bypass ATR stop protection.
+  indicators:
+    - type: ma
+      condition: Fast and slow EMA cross defines the directional signal.
+      params:
+        fast_period: 20
+        slow_period: 50
+    - type: atr
+      condition: ATR defines adaptive stop distance.
+      params:
+        period: 14
+    - type: onnx
+      condition: Model confidence must be above threshold; fallback is no-trade.
+      params:
+        confidence_threshold: 0.65
+risk:
+  lot_mode: percent_risk
+  risk_percent: 1.0
+  max_daily_loss_percent: 4.0
+  max_drawdown_percent: 12.0
+  max_open_positions: 1
+execution:
+  max_spread_points: 18
+  slippage_points: 5
+  filling_mode: auto
+sltp:
+  mode: atr
+  atr_period: 14
+  atr_multiplier: 2.0
+  use_trailing: true
+  breakeven_points: 250
+  trailing_distance_points: 300
+filters:
+  sessions:
+    - london
+    - new_york
+  avoid_news: false
+  avoid_weekend: true
+  gap_protection: true
+integrations:
+  telegram: false
+  webrequest: false
+  custom_indicator: false
+  onnx: true
+  license: false
+features:
+  aiml.useOnnxModel: true
+  aiml.useConfidenceThreshold: true
+  aiml.useFallbackRules: true
+  sltp.useAtr: true
+  trailing.useTrailingStop: true
+  money.useAutoLot: true
+notes: "Candidate preset: ml-onnx/python-bridge. ONNX confidence threshold and no-trade fallback are mandatory."
