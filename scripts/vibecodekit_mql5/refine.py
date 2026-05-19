@@ -24,7 +24,7 @@ CATEGORIES = {
 def classify_diff(diff_text: str) -> dict:
     scores: dict[str, int] = {cat: 0 for cat in CATEGORIES}
     lines = diff_text.splitlines()
-    changed_lines = [l for l in lines if l.startswith("+") or l.startswith("-")]
+    changed_lines = [line for line in lines if line.startswith("+") or line.startswith("-")]
 
     for cat, patterns in CATEGORIES.items():
         for line in changed_lines:

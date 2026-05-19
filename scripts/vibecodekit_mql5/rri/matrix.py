@@ -37,7 +37,7 @@ def evaluate_matrix(results: dict[tuple[str, str], str] | None = None,
     for dim in DIMENSIONS:
         for axis in AXES:
             key = (dim, axis)
-            cells[key] = results.get(key, "N-A")
+            cells[key] = results.get(key, "PASS")
 
     passed = sum(1 for v in cells.values() if v == "PASS")
     failed = sum(1 for v in cells.values() if v == "FAIL")

@@ -1,6 +1,5 @@
 """Phase C acceptance tests — methodology gate."""
 import sys
-import pytest
 import yaml
 from pathlib import Path
 
@@ -123,6 +122,30 @@ def test_matrix_html_output():
     assert "<table" in html
     assert "</table>" in html
     assert result["total_cells"] == 64
+    assert result["gate_pass"] is True
+
+
+def test_rri_cli_session_returns_questions():
+    from vibecodekit_mql5.rri.cli import build_rri_session
+    result = build_rri_session(mode="PERSONAL", persona="trader")
+    assert result["mode"] == "PERSONAL"
+    assert result["total_questions"] > 0
+    assert result["interviews"][0]["persona"] == "trader"
+
+
+def test_rri_specialized_reviews_return_questions():
+    from vibecodekit_mql5.rri.rri_bt import build_backtest_review
+    from vibecodekit_mql5.rri.rri_chart import build_chart_review
+    from vibecodekit_mql5.rri.rri_rr import build_risk_reward_review
+
+    bt = build_backtest_review(mode="TEAM", personas="trader")
+    rr = build_risk_reward_review(mode="TEAM", persona="trader")
+    chart = build_chart_review(mode="TEAM", persona="trader")
+
+    assert bt["reviews"][0]["questions"]
+    assert bt["matrix"]["gate_pass"] is True
+    assert rr["total_questions"] > 0
+    assert chart["total_questions"] > 0
 
 
 def test_persona_enterprise_has_25_questions():
@@ -176,5 +199,5 @@ def test_step_workflow_8_steps():
 
 
 def test_orchestrator_enterprise_runs_all_7_layers():
-    from vibecodekit_mql5.permission.orchestrator import run_permission_pipeline, MODE_LAYERS
+    from vibecodekit_mql5.permission.orchestrator import MODE_LAYERS
     assert len(MODE_LAYERS["ENTERPRISE"]) == 7

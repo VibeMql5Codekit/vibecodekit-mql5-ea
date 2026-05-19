@@ -47,6 +47,7 @@ mql5-mfe-mae = "vibecodekit_mql5.mfe_mae:main"
 mql5-fitness = "vibecodekit_mql5.fitness:main"
 mql5-broker-safety = "vibecodekit_mql5.broker_safety:main"
 # Phase C — Methodology
+mql5-rri = "vibecodekit_mql5.rri.cli:main"
 mql5-rri-bt = "vibecodekit_mql5.rri.rri_bt:main"
 mql5-rri-rr = "vibecodekit_mql5.rri.rri_rr:main"
 mql5-rri-chart = "vibecodekit_mql5.rri.rri_chart:main"

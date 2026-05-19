@@ -96,8 +96,6 @@ def lint_file(path: Path) -> list[Finding]:
     except (OSError, PermissionError):
         return findings
 
-    lines = content.splitlines()
-
     for ap_id, message, pattern in CRITICAL_DETECTORS:
         if ap_id == "AP-05":
             count = len(pattern.findall(content))
