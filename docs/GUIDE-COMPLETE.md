@@ -96,9 +96,12 @@ source .venv/bin/activate   # Linux/Mac
 # Bước 3: Cài package + dev dependencies
 pip install -e ".[dev]"
 
+# Nếu dùng pyenv và CLI chưa xuất hiện ngay
+pyenv rehash
+
 # Bước 4: Verify
 mql5-build --list           # → 17 presets
-pytest tests/ -q            # → 152 passed, 2 skipped locally without Wine/MetaEditor
+pytest tests/ -q            # → 154 passed full env; 152 passed, 2 skipped nếu thiếu MetaEditor/Wine
 ```
 
 ### 2.3 Cài Wine + MetaEditor (tùy chọn — cho compile thật)
@@ -177,23 +180,23 @@ mql5-build --list
 Output:
 ```
 Available presets:
-  stdlib: netting, hedging, python-bridge
-  wizard-composable: netting
-  portfolio-basket: hedging, netting
-  ml-onnx: python-bridge
-  hft-async: netting
-  trend: netting, hedging
-  mean-reversion: netting
+  arbitrage-stat: python-bridge
   breakout: netting
-  grid: hedging
   dca: hedging
-  scalping: netting
+  grid: hedging
   hedging-multi: hedging
+  hft-async: netting
+  indicator-only: netting
+  library: netting
+  mean-reversion: hedging
+  ml-onnx: python-bridge
   news-trading: netting
-  arbitrage-stat: netting
-  indicator-only: (no stack)
-  library: (no stack)
+  portfolio-basket: hedging, netting
+  scalping: hedging
   service-llm-bridge: cloud-api, embedded-onnx-llm, self-hosted-ollama
+  stdlib: hedging, netting, python-bridge
+  trend: netting
+  wizard-composable: netting
 ```
 
 ### 4.2 Tạo EA mới
@@ -225,17 +228,17 @@ output/TrendMasterEA/
 | 3 | `portfolio-basket` | Multi-symbol portfolio/basket | hedging, netting |
 | 4 | `ml-onnx` | Machine learning với ONNX inference | python-bridge |
 | 5 | `hft-async` | High-frequency async trading | netting |
-| 6 | `trend` | Trend-following strategy | netting, hedging |
-| 7 | `mean-reversion` | Mean-reversion strategy | netting |
+| 6 | `trend` | Trend-following strategy | netting |
+| 7 | `mean-reversion` | Mean-reversion strategy | hedging |
 | 8 | `breakout` | Breakout strategy | netting |
 | 9 | `grid` | Grid trading | hedging |
 | 10 | `dca` | Dollar-cost averaging | hedging |
-| 11 | `scalping` | Scalping strategy | netting |
+| 11 | `scalping` | Scalping strategy | hedging |
 | 12 | `hedging-multi` | Multi-pair hedging | hedging |
 | 13 | `news-trading` | News event trading | netting |
-| 14 | `arbitrage-stat` | Statistical arbitrage | netting |
-| 15 | `indicator-only` | Custom indicator (không phải EA) | — |
-| 16 | `library` | MQL5 library module | — |
+| 14 | `arbitrage-stat` | Statistical arbitrage | python-bridge |
+| 15 | `indicator-only` | Custom indicator (không phải EA) | netting |
+| 16 | `library` | MQL5 library module | netting |
 | 17 | `service-llm-bridge` | LLM bridge service | cloud-api, embedded-onnx-llm, self-hosted-ollama |
 
 ### 4.4 Chọn preset phù hợp
@@ -243,11 +246,11 @@ output/TrendMasterEA/
 | Loại strategy | Preset gợi ý | Stack |
 |--------------|-------------|-------|
 | EMA/MACD crossover | `trend` | netting |
-| RSI/Bollinger bands | `mean-reversion` | netting |
+| RSI/Bollinger bands | `mean-reversion` | hedging |
 | Breakout highs/lows | `breakout` | netting |
 | Grid trading (XAUUSD) | `grid` | hedging |
 | DCA (mua dần) | `dca` | hedging |
-| Scalping M1/M5 | `scalping` | netting |
+| Scalping M1/M5 | `scalping` | hedging |
 | Multi-pair hedge | `hedging-multi` | hedging |
 | ML/AI strategy | `ml-onnx` | python-bridge |
 | HFT sub-second | `hft-async` | netting |
@@ -474,7 +477,7 @@ Multi-broker gate: PASS (CV=0.023 ≤ 0.30)
 
 ```bash
 # Qua CLI tool
-mql5-permission output/TrendMasterEA/TrendMasterEA.mq5 --mode PERSONAL
+mql5-permission --ea output/TrendMasterEA/TrendMasterEA.mq5 --mode PERSONAL --json
 
 # Hoặc qua Python
 python -c "
@@ -541,7 +544,7 @@ mql5-build --list
 Báo kết quả.
 ```
 
-**Expected locally:** `152 passed, 2 skipped` when Wine/MetaEditor are unavailable; 17 presets.
+**Expected:** 17 presets; test suite `154 passed` trên full env hoặc `152 passed, 2 skipped` nếu thiếu MetaEditor/Wine.
 
 ### 10.2 Build EA hoàn chỉnh
 
@@ -585,7 +588,7 @@ Build EA mới theo quy trình:
 3. Viết strategy logic vào file {EA_NAME}.mq5
 4. `mql5-lint output/{EA_NAME}/{EA_NAME}.mq5` → fix ALL CRITICAL
 5. `mql5-pip-normalize output/{EA_NAME}/{EA_NAME}.mq5`
-6. Chạy `mql5-permission output/{EA_NAME}/{EA_NAME}.mq5 --mode PERSONAL`
+6. Chạy `mql5-permission --ea output/{EA_NAME}/{EA_NAME}.mq5 --mode PERSONAL --json`
 7. Báo kết quả
 ```
 
@@ -615,7 +618,7 @@ pip install -e ".[dev]"
 ### 11.2 Scaffold EA
 
 ```bash
-codex "Chạy mql5-build --preset scalping --stack netting --name FastScalper --output ./output
+codex "Chạy mql5-build --preset scalping --stack hedging --name FastScalper --output ./output
 Rồi mql5-lint output/FastScalper/FastScalper.mq5
 Báo kết quả."
 ```
@@ -678,7 +681,7 @@ Dùng vibecodekit-mql5-ea tool trong workspace:
 1. Scaffold: mql5-build --preset stdlib --stack netting --name DemoEA --output ./output
 2. Viết strategy: Bollinger Bands (20,2) — buy lower band, sell upper band
 3. Lint: mql5-lint output/DemoEA/DemoEA.mq5
-4. Permission: chạy mql5-permission output/DemoEA/DemoEA.mq5 --mode PERSONAL
+4. Permission: chạy mql5-permission --ea output/DemoEA/DemoEA.mq5 --mode PERSONAL --json
 5. Tổng hợp kết quả
 ```
 
@@ -716,7 +719,7 @@ Trong interactive session:
 > mql5-build --list
 > mql5-build --preset stdlib --stack netting --name TestEA --output /tmp/test
 > mql5-lint /tmp/test/TestEA/TestEA.mq5
-> mql5-permission /tmp/test/TestEA/TestEA.mq5 --mode PERSONAL
+> mql5-permission --ea /tmp/test/TestEA/TestEA.mq5 --mode PERSONAL --json
 ```
 
 ### 13.3 Batch mode (1 lệnh)
@@ -740,7 +743,7 @@ Tạo file `CLAUDE.md` ở root project để Claude Code tự hiểu context:
 
 ## Quick Start
 pip install -e ".[dev]"
-pytest tests/ -q  # → 152 passed, 2 skipped locally without Wine/MetaEditor
+pytest tests/ -q  # → 154 passed full env; 152 passed, 2 skipped nếu thiếu MetaEditor/Wine
 
 ## CLI Tools (top 10 dùng nhiều nhất)
 - `mql5-build --preset <name> --stack <stack> --name <ea> --output <dir>`
@@ -857,7 +860,7 @@ Dự án MQL5 EA development. Khi viết code MQL5:
 - Dùng PrintFormat(), KHÔNG dùng Print() + string concat
 - Max 6 input parameters, mỗi file ≤ 200 LOC
 - Có CLI tools: mql5-build, mql5-lint, mql5-compile, mql5-permission
-- Test suite: pytest tests/ -q → 152 passed, 2 skipped locally without Wine/MetaEditor
+- Test suite: pytest tests/ -q → 154 passed full env; 152 passed, 2 skipped nếu thiếu MetaEditor/Wine
 ```
 
 ---
@@ -885,7 +888,7 @@ mql5-lint output/MyEA/MyEA.mq5
 mql5-pip-normalize output/MyEA/MyEA.mq5
 
 # 6. Permission check
-mql5-permission output/MyEA/MyEA.mq5 --mode PERSONAL
+mql5-permission --ea output/MyEA/MyEA.mq5 --mode PERSONAL --json
 ```
 
 ### 15.2 Full pipeline với backtest data
@@ -909,7 +912,7 @@ mql5-multibroker fxpro.xml exness.xml icmarkets.xml
 mql5-trader-check --ea output/MyEA/MyEA.mq5
 
 # 11. Permission (final)
-mql5-permission output/MyEA/MyEA.mq5 --mode ENTERPRISE
+mql5-permission --ea output/MyEA/MyEA.mq5 --mode ENTERPRISE --json
 ```
 
 ---
@@ -1232,7 +1235,7 @@ Trước khi approve PR:
 | 17 | `mql5-rri-rr` | RRI risk-reward questions | `mql5-rri-rr --persona all` |
 | 18 | `mql5-rri-chart` | RRI chart/indicator analysis | `mql5-rri-chart --persona all` |
 | 19 | `mql5-matrix` | 8×8 quality matrix | `mql5-matrix --html matrix.html` |
-| 20 | `mql5-permission` | 7-layer permission pipeline | `mql5-permission --ea MyEA.mq5 --mode TEAM` |
+| 20 | `mql5-permission` | 7-layer permission pipeline | `mql5-permission --ea MyEA.mq5 --mode TEAM --json` |
 | 21 | `mql5-review` | 7-specialist review | `mql5-review --ea MyEA.mq5 --mode TEAM` |
 | 22 | `mql5-eng-review` | Engineering invariants | `mql5-eng-review --ea MyEA.mq5` |
 | 23 | `mql5-ceo-review` | CEO review (4 modes) | `mql5-ceo-review --ea MyEA.mq5` |

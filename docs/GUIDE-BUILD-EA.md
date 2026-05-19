@@ -92,6 +92,9 @@ source .venv/bin/activate   # Linux/Mac
 # Cài package
 pip install -e ".[dev]"
 
+# Nếu dùng pyenv và CLI chưa xuất hiện ngay
+pyenv rehash
+
 # Hoặc dùng uv (nhanh hơn)
 uv pip install -e ".[dev]"
 ```
@@ -105,7 +108,8 @@ mql5-lint --help
 
 # Chạy test suite
 pytest tests/ -q
-# Expected locally: 152 passed, 2 Wine/MetaEditor skips when unavailable
+# Expected full env: 154 passed
+# Nếu chưa cài MetaEditor/Wine: 152 passed, 2 skipped
 ```
 
 ### 3.4 Cài Wine + MetaEditor (tùy chọn, cho compile thật)
@@ -136,18 +140,23 @@ mql5-build --list
 
 Output:
 ```
-  stdlib: netting, hedging, python-bridge
-  wizard-composable: netting
-  portfolio-basket: hedging, netting
-  ml-onnx: python-bridge
-  hft-async: netting
-  trend: netting, hedging
-  mean-reversion: netting
+  arbitrage-stat: python-bridge
   breakout: netting
-  grid: hedging
   dca: hedging
-  scalping: netting
-  ...
+  grid: hedging
+  hedging-multi: hedging
+  hft-async: netting
+  indicator-only: netting
+  library: netting
+  mean-reversion: hedging
+  ml-onnx: python-bridge
+  news-trading: netting
+  portfolio-basket: hedging, netting
+  scalping: hedging
+  service-llm-bridge: cloud-api, embedded-onnx-llm, self-hosted-ollama
+  stdlib: hedging, netting, python-bridge
+  trend: netting
+  wizard-composable: netting
 ```
 
 ```bash
@@ -171,17 +180,17 @@ mql5-build --preset stdlib --stack netting --name TrendMaster --output ./my-ea/
 | `portfolio-basket` | Multi-symbol portfolio/basket | hedging, netting |
 | `ml-onnx` | Machine learning với ONNX inference | python-bridge |
 | `hft-async` | High-frequency async trading | netting |
-| `trend` | Trend-following strategy | netting, hedging |
-| `mean-reversion` | Mean-reversion strategy | netting |
+| `trend` | Trend-following strategy | netting |
+| `mean-reversion` | Mean-reversion strategy | hedging |
 | `breakout` | Breakout strategy | netting |
 | `grid` | Grid trading | hedging |
 | `dca` | Dollar-cost averaging | hedging |
-| `scalping` | Scalping strategy | netting |
+| `scalping` | Scalping strategy | hedging |
 | `hedging-multi` | Multi-pair hedging | hedging |
 | `news-trading` | News event trading | netting |
-| `arbitrage-stat` | Statistical arbitrage | netting |
-| `indicator-only` | Custom indicator (không phải EA) | — |
-| `library` | MQL5 library module | — |
+| `arbitrage-stat` | Statistical arbitrage | python-bridge |
+| `indicator-only` | Custom indicator (không phải EA) | netting |
+| `library` | MQL5 library module | netting |
 | `service-llm-bridge` | LLM bridge service | cloud-api, embedded-onnx-llm, self-hosted-ollama |
 
 ### Bước 2: Code — Viết strategy logic
@@ -338,12 +347,10 @@ python -m vibecodekit_mql5.multibroker broker1.xml broker2.xml broker3.xml
 ### Bước 10: Permission Pipeline — Final quality gate
 
 ```bash
-python -c "
-import sys; sys.path.insert(0, 'scripts')
-from vibecodekit_mql5.permission.orchestrator import run_permission_pipeline
-result = run_permission_pipeline('my-ea/TrendMaster/TrendMaster.mq5', mode='TEAM')
-import json; print(json.dumps(result, indent=2))
-"
+mql5-permission --ea my-ea/TrendMaster/TrendMaster.mq5 --mode TEAM --json
+
+# Hoặc dùng Python API sau khi đã pip install -e ".[dev]":
+python -c "from vibecodekit_mql5.permission.orchestrator import run_permission_pipeline; import json; print(json.dumps(run_permission_pipeline('my-ea/TrendMaster/TrendMaster.mq5', 'TEAM'), indent=2))"
 ```
 
 **7 layers kiểm tra:**
@@ -385,7 +392,7 @@ Build EA mới tên "GoldScalper" cho XAU/USD M15 với strategy:
 - Max 2 positions
 
 Quy trình:
-1. mql5-build --preset scalping --stack netting --name GoldScalper
+1. mql5-build --preset scalping --stack hedging --name GoldScalper
 2. Viết strategy logic theo mô tả trên
 3. mql5-lint GoldScalper.mq5 (fix tất cả CRITICAL)
 4. mql5-pip-normalize GoldScalper.mq5
@@ -414,11 +421,7 @@ Quy trình:
 3. Viết strategy logic vào file {EA_NAME}.mq5
 4. `mql5-lint output/{EA_NAME}/{EA_NAME}.mq5` → fix ALL critical
 5. `mql5-pip-normalize output/{EA_NAME}/{EA_NAME}.mq5` → verify no hardcoded pip
-6. Chạy permission pipeline:
-   ```python
-   from vibecodekit_mql5.permission.orchestrator import run_permission_pipeline
-   result = run_permission_pipeline('output/{EA_NAME}/{EA_NAME}.mq5', mode='PERSONAL')
-   ```
+6. `mql5-permission --ea output/{EA_NAME}/{EA_NAME}.mq5 --mode PERSONAL --json`
 7. `pytest tests/ -q` → verify tất cả tests pass
 8. Push PR với kết quả lint + permission
 ```
@@ -561,6 +564,7 @@ Tạo file `CLAUDE.md` trong thư mục project:
 - `mql5-lint <file.mq5>` — 13 anti-pattern check
 - `mql5-pip-normalize <file.mq5>` — pip hardcode check
 - `mql5-compile <file.mq5> --include ./Include/` — MetaEditor compile
+- `mql5-permission --ea <file.mq5> --mode <PERSONAL|TEAM|ENTERPRISE> --json`
 
 ## Build workflow
 1. Scaffold → 2. Code → 3. Lint → 4. Permission → 5. Ship
@@ -818,7 +822,7 @@ Thêm vào `.claude/mcp.json` hoặc `.cursor/mcp.json`:
 
 | Lỗi | Nguyên nhân | Fix |
 |-----|-------------|-----|
-| `mql5-build: command not found` | Chưa install package | `pip install -e ".[dev]"` |
+| `mql5-build: command not found` | Chưa install package hoặc pyenv chưa rehash | `pip install -e ".[dev]" && pyenv rehash` |
 | `MetaEditor not found` | Chưa cài Wine/MetaEditor | Xem [mục 3.4](#34-cài-wine--metaeditor-tùy-chọn-cho-compile-thật) |
 | `AP-20 CRITICAL: Hardcoded pip` | Dùng `_Point * 10` | Thay bằng `pipNorm.Pips(N)` |
 | `AP-01 CRITICAL: No stop-loss` | `trade.Buy()` thiếu SL | Thêm SL parameter `!= 0` |
