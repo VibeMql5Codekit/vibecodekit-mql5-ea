@@ -47,6 +47,7 @@ def build_backtest_review(mode: str = "TEAM", personas: str = "all",
     cells = {}
     pass_count = 0
     warn_count = 0
+    fail_count = 0
     for dim in DIMENSIONS:
         for axis in AXES:
             key = f"{dim}_{axis}"
@@ -61,6 +62,8 @@ def build_backtest_review(mode: str = "TEAM", personas: str = "all",
                 pass_count += 1
             elif status == "WARN":
                 warn_count += 1
+            elif status == "FAIL":
+                fail_count += 1
 
     return {
         "mode": mode,
@@ -70,7 +73,7 @@ def build_backtest_review(mode: str = "TEAM", personas: str = "all",
             "total_cells": 64,
             "passed": pass_count,
             "warned": warn_count,
-            "failed": 0,
+            "failed": fail_count,
             "gate_pass": pass_count >= 56,
             "cells": cells,
         },

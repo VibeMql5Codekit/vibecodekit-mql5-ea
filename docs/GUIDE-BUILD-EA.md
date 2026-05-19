@@ -105,7 +105,7 @@ mql5-lint --help
 
 # Chạy test suite
 pytest tests/ -q
-# Expected locally: 150 passed, 2 Wine/MetaEditor skips when unavailable
+# Expected locally: 152 passed, 2 Wine/MetaEditor skips when unavailable
 ```
 
 ### 3.4 Cài Wine + MetaEditor (tùy chọn, cho compile thật)
