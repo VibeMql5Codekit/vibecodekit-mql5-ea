@@ -893,7 +893,7 @@ Trước khi ship EA, verify:
 
 ---
 
-## 13. Công cụ Phase D — Công nghệ 2024-2025
+## 13. Công cụ nâng cao — ONNX / async / cloud-cost / LLM
 
 ### 13.1 ONNX Export & Embed
 
@@ -965,7 +965,7 @@ mql5-llm-context --variant embedded-onnx --model model.onnx --prompt "Classify r
 
 ---
 
-## 14. Công cụ Phase E — Polish & Ship
+## 14. Công cụ polish & ship — audit / canary / release
 
 ### 14.1 Scan & Doctor
 

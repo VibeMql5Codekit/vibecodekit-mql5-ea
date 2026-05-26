@@ -1,3 +1,5 @@
+# Honest disclaimer: this persona and its question set are project-defined
+# heuristics designed by vibecodekit-mql5-ea, not industry standards.
 name: trader
 role: Retail/Prop Trader
 description: End-user running EAs on live accounts — focuses on risk, drawdown, and

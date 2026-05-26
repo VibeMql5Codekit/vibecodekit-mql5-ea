@@ -1,5 +1,9 @@
 # Deep Audit Report — vibecodekit-mql5-ea v1.0.0
 
+> ⚠️ **Internal / contributor document.** Historical audit notes for this kit's
+> own development. End users do **not** need to read this — see
+> [`README.md`](../README.md) and [`QUICKSTART.md`](QUICKSTART.md) instead.
+
 > Audit date: 2026-05-13 · Scope: All Devin Review comments (PR #3, #5, #7) + full codebase review
 
 ---

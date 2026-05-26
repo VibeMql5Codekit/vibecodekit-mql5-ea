@@ -1,5 +1,10 @@
 # Prompt Architect integration spec
 
+> **Honest disclaimer.** The PA-XXX conflict rules, RRI personas, and 7-step
+> pipeline below are **project-defined heuristics** designed by this kit. They
+> are opinionated intake guardrails — not industry standards, not
+> certifications, and not substitutes for trader judgement.
+
 Prompt Architect is the intake layer for `vibecodekit-mql5-ea`: it turns a trader's idea into a normalized EA configuration, then into RRI questions, requirements, blueprint, scaffold recommendation, and verification commands.
 
 The core tool remains CLI-first and gate-driven. Prompt Architect must not bypass `mql5-lint`, `mql5-compile`, `mql5-permission`, or the 8×8 quality matrix.

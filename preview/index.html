@@ -213,7 +213,7 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
 <nav>
   <div class="container">
     <button class="active i18n" onclick="show('overview')" data-vi="Tổng quan" data-en="Overview">Tổng quan</button>
-    <button class="i18n" onclick="show('phases')" data-vi="6 Giai đoạn" data-en="6 Phases">6 Giai đoạn</button>
+    <button class="i18n" onclick="show('phases')" data-vi="Năng lực" data-en="Capabilities">Năng lực</button>
     <button class="i18n" onclick="show('includes')" data-vi="Thư viện MQL5" data-en="MQL5 Libraries">Thư viện MQL5</button>
     <button class="i18n" onclick="show('cli')" data-vi="Công cụ CLI" data-en="CLI Tools">Công cụ CLI</button>
     <button class="i18n" onclick="show('scaffolds')" data-vi="17 Scaffolds" data-en="17 Scaffolds">17 Scaffolds</button>
@@ -287,55 +287,62 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
   </div>
 </section>
 
-<!-- ───── PHASES ───── -->
+<!-- ───── CAPABILITIES ───── -->
 <section id="phases">
   <div class="container">
-    <h2 class="i18n" data-vi="Lộ trình 6 giai đoạn" data-en="6-Phase Roadmap"></h2>
-    <p class="i18n" data-vi="Từ khởi tạo đến sẵn sàng production, 14-17 tuần tổng cộng. Tất cả 6 phase đã hoàn thành."
-       data-en="From bootstrap to production-ready, 14-17 weeks total. All 6 phases completed."></p>
+    <h2 class="i18n" data-vi="Bản đồ năng lực" data-en="Capability map"></h2>
+    <p class="i18n"
+       data-vi="Những việc kit hiện làm được. Trader-17, ma trận 8×8, AP-XX và RRI là heuristic do dự án tự định nghĩa — guardrail có chủ kiến, không phải chuẩn ngành."
+       data-en="What the kit actually does today. Trader-17, the 8×8 matrix, AP-XX rules and RRI personas are project-defined heuristics — opinionated guardrails, not industry standards."></p>
 
     <div class="timeline">
       <div class="timeline-item done">
-        <h4>Phase 0: Bootstrap <span class="badge badge-green">v0.0.1</span></h4>
+        <h4 class="i18n" data-vi="Kỹ thuật cross-broker (Include/)" data-en="Cross-broker engineering (Include/)"></h4>
         <p class="i18n"
-           data-vi="Wine + MetaEditor + xvfb CI setup. audit-plan-v5.py chống trôi. 5 smoke tests. GitHub Actions (Linux + Windows runners)."
-           data-en="Wine + MetaEditor + xvfb CI setup. audit-plan-v5.py anti-drift guard. 5 smoke tests. GitHub Actions (Linux + Windows runners)."></p>
+           data-vi="CPipNormalizer (truth table 5d/4d/3d/2d cho EURUSD, USDJPY, XAUUSD-Exness, XAUUSD-ICM). CRiskGuard (daily-loss + max-positions). CMagicRegistry (chống va đập magic). CSpreadGuard. CMfeMaeLogger."
+           data-en="CPipNormalizer (5d / 4d / 3d / 2d truth table for EURUSD, USDJPY, XAUUSD-Exness, XAUUSD-ICM). CRiskGuard (daily-loss + max-positions). CMagicRegistry (collision detection). CSpreadGuard. CMfeMaeLogger."></p>
       </div>
       <div class="timeline-item done">
-        <h4>Phase A: Core Foundation <span class="badge badge-green">v0.1.0</span></h4>
+        <h4 class="i18n" data-vi="Scaffolds và build" data-en="Scaffolds and build"></h4>
         <p class="i18n"
-           data-vi="CPipNormalizer (bảng truth 5d/4d/3d/2d). CRiskGuard (daily-loss + max-positions). CMagicRegistry (phát hiện trùng magic file-backed). 4 CLI tools: lint, build, compile, pip-normalize. 4 scaffold presets. 37 acceptance tests."
-           data-en="CPipNormalizer (5d/4d/3d/2d truth table). CRiskGuard (daily-loss + max-positions). CMagicRegistry (file-backed collision detection). 4 CLI tools: lint, build, compile, pip-normalize. 4 scaffold presets. 37 acceptance tests."></p>
+           data-vi="17 preset chiến lược × 22 stack combos: stdlib, scalping, trend, dca, grid, mean-reversion, breakout, ml-onnx, hft-async, news-trading, portfolio-basket, service-llm-bridge, wizard-composable. CLI: mql5-build, mql5-async-build."
+           data-en="17 strategy presets × 22 stack combos: stdlib, scalping, trend, dca, grid, mean-reversion, breakout, ml-onnx, hft-async, news-trading, portfolio-basket, service-llm-bridge, wizard-composable. CLI: mql5-build, mql5-async-build."></p>
       </div>
       <div class="timeline-item done">
-        <h4>Phase B: Test &amp; Validation <span class="badge badge-green">v0.2.0</span></h4>
+        <h4 class="i18n" data-vi="Lint định dạng AP-XX" data-en="AP-XX lint rules"></h4>
         <p class="i18n"
-           data-vi="Phân tích Backtest XML. Walk-forward IS/OOS. Mô phỏng Monte Carlo DD. Cổng ổn định đa broker. Checklist Trader-17 trước triển khai. Phân tích MFE/MAE. CSpreadGuard. CMfeMaeLogger."
-           data-en="Backtest XML parser. Walk-forward IS/OOS. Monte Carlo DD simulation. Multi-broker stability gate. Trader-17 pre-deployment checklist. MFE/MAE analysis. CSpreadGuard. CMfeMaeLogger."></p>
+           data-vi="8 anti-pattern critical (AP-01, 03, 05, 15, 17, 18, 20, 21) + 5 warning (AP-02, 04, 06, 07, 08). Regex-based, ngưỡng AP-05 “> 6 inputs” là mặc định có chủ kiến — grid/portfolio EA có thể cần sửa."
+           data-en="8 critical anti-patterns (AP-01, 03, 05, 15, 17, 18, 20, 21) plus 5 warnings (AP-02, 04, 06, 07, 08). Regex-based; the AP-05 “> 6 inputs” threshold is an opinionated default — grid / portfolio EAs may legitimately need more."></p>
       </div>
       <div class="timeline-item done">
-        <h4>Phase C: Methodology <span class="badge badge-green">v0.3.0</span></h4>
+        <h4 class="i18n" data-vi="Cross-broker validation" data-en="Validation gates"></h4>
         <p class="i18n"
-           data-vi="6 RRI personas (trader/risk-auditor/broker-engineer/strategy-architect/devops/perf-analyst). Ma trận chất lượng 8&times;8. Pipeline quyền hạn 7 lớp. 13 best-practice AP. 5 review scripts (7 góc nhìn, 10 kiểm tra bảo mật, 8 invariants, 4 chế độ CEO, 8 mẫu lỗi)."
-           data-en="6 RRI personas (trader/risk-auditor/broker-engineer/strategy-architect/devops/perf-analyst). 8&times;8 quality matrix. 7-layer permission pipeline. 13 best-practice AP. 5 review scripts (7 perspectives, 10 security checks, 8 invariants, 4 CEO modes, 8 bug patterns)."></p>
+           data-vi="mql5-backtest (parse MT5 XML). mql5-walkforward (IS/OOS). mql5-monte-carlo (DD95). mql5-multibroker (CV stability). mql5-overfit-check. mql5-mfe-mae. mql5-trader-check (Trader-17, cổng ≥ 15/17 PASS)."
+           data-en="mql5-backtest (MT5 XML parser). mql5-walkforward (IS/OOS). mql5-monte-carlo (DD95). mql5-multibroker (CV stability). mql5-overfit-check. mql5-mfe-mae. mql5-trader-check (Trader-17, gate ≥ 15 / 17 PASS)."></p>
       </div>
       <div class="timeline-item done">
-        <h4>Phase D: Tech 2024-2025 <span class="badge badge-green">v0.5.0</span></h4>
+        <h4 class="i18n" data-vi="Permission pipeline (7 layer)" data-en="7-layer permission pipeline"></h4>
         <p class="i18n"
-           data-vi="COnnxLoader (ONNX inference native). CAsyncTradeManager (HFT). LLM bridge (3 variants: cloud/ollama/onnx). Algo Forge (lặp chiến lược tự động). 13+ scaffold bổ sung. Cost gate cho cloud optimize."
-           data-en="COnnxLoader (native ONNX inference). CAsyncTradeManager (HFT). LLM bridge (3 variants: cloud/ollama/onnx). Algo Forge (automated strategy iteration). 13+ additional scaffolds. Cost gate for cloud optimize."></p>
+           data-vi="Fail-fast theo mode: PERSONAL = L1–4, 7 · TEAM = L1–5, 7 · ENTERPRISE = L1–7. Bao gồm ma trận chất lượng 8×8. Scaffold trắng được kỳ vọng FAIL tại L4 — cổng có răng, không phải theatre."
+           data-en="Fail-fast by mode: PERSONAL = L1–4, 7 · TEAM = L1–5, 7 · ENTERPRISE = L1–7. Includes the 8×8 quality matrix. A bare scaffold is expected to fail at L4 — the gate has teeth."></p>
       </div>
       <div class="timeline-item done">
-        <h4>Phase E: Polish &amp; Ship <span class="badge badge-green">v1.0.0</span></h4>
+        <h4 class="i18n" data-vi="Methodology và review" data-en="Methodology and review"></h4>
         <p class="i18n"
-           data-vi="3 MCP servers (19 tools tổng cộng). 28 tài liệu tham khảo. Worked example. 169 tests pass, 2 local Wine/MetaEditor skips. Tài liệu song ngữ. 12 CLI scripts."
-           data-en="3 MCP servers (19 tools total). 28 reference documents. Worked example. 169 tests pass, 2 local Wine/MetaEditor skips. Bilingual documentation. 12 CLI scripts."></p>
+           data-vi="6 RRI personas (trader / risk-auditor / broker-engineer / strategy-architect / devops / perf-analyst). 5 review CLI (mql5-review, eng-review, ceo-review, cso, investigate). Heuristic regex-based, không phải AST."
+           data-en="6 RRI personas (trader / risk-auditor / broker-engineer / strategy-architect / devops / perf-analyst). 5 review CLIs (mql5-review, eng-review, ceo-review, cso, investigate). Regex heuristics, not AST."></p>
       </div>
       <div class="timeline-item done">
-        <h4>Phase F: Prompt Architect <span class="badge badge-purple">v1.1.0</span></h4>
+        <h4 class="i18n" data-vi="Prompt Architect" data-en="Prompt Architect"></h4>
         <p class="i18n"
-           data-vi="EASettings schema, deterministic prompt/SRS/requirements/blueprint renderer, RRI bridge, 7-step pipeline runner, optional OpenAI/Gemini/prompt-only provider adapter."
-           data-en="EASettings schema, deterministic prompt/SRS/requirements/blueprint renderer, RRI bridge, 7-step pipeline runner, optional OpenAI/Gemini/prompt-only provider adapter."></p>
+           data-vi="ea-settings.schema.json + conflict-rules.yaml + preset-map.yaml. Biến ý tưởng tự do thành cấu hình chuẩn hóa, RRI plan, blueprint, và pipeline 7 bước (allow-list 6 CLI: prompt-architect, build, lint, compile, permission, matrix)."
+           data-en="ea-settings.schema.json + conflict-rules.yaml + preset-map.yaml. Turns free-form ideas into a normalized config, RRI plan, blueprint, and 7-step pipeline (allow-listed CLIs: prompt-architect, build, lint, compile, permission, matrix)."></p>
+      </div>
+      <div class="timeline-item done">
+        <h4 class="i18n" data-vi="Tích hợp ONNX / LLM / MCP" data-en="ONNX / LLM / MCP integration"></h4>
+        <p class="i18n"
+           data-vi="COnnxLoader (ONNX inference native). CAsyncTradeManager (HFT). 3 LLM bridge variants (cloud-api, embedded-onnx, self-hosted-ollama). 3 MCP server: metaeditor-bridge, mt5-bridge, algo-forge-bridge (read-only)."
+           data-en="COnnxLoader (native ONNX inference). CAsyncTradeManager (HFT). 3 LLM bridge variants (cloud-api, embedded-onnx, self-hosted-ollama). 3 MCP servers: metaeditor-bridge, mt5-bridge, algo-forge-bridge (read-only)."></p>
       </div>
     </div>
   </div>
@@ -621,8 +628,8 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
   <div class="container">
     <h2 class="i18n" data-vi="Kết quả kiểm thử" data-en="Test Results"></h2>
     <p class="i18n"
-       data-vi="169 đạt, 2 bỏ qua, 0 thất bại. Phase 0-F: PASS."
-       data-en="169 passed, 2 skipped, 0 failed. Phase 0-F: PASS."></p>
+       data-vi="Local baseline: 169 đạt, 2 bỏ qua (Wine/MetaEditor smoke), 0 thất bại."
+       data-en="Local baseline: 169 passed, 2 skipped (Wine/MetaEditor smoke), 0 failed."></p>
 
     <div class="test-bar" style="width: 100%;">
       <div class="pass" style="width: 100%;"></div>
@@ -638,19 +645,19 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
         <th>Status</th>
         <th class="i18n" data-vi="Phạm vi" data-en="Coverage"></th>
       </tr>
-      <tr><td>Phase 0: Smoke</td><td>5</td><td><span class="badge badge-green">5 pass</span></td>
+      <tr><td class="i18n" data-vi="Smoke" data-en="Smoke"></td><td>5</td><td><span class="badge badge-green">5 pass</span></td>
           <td class="i18n" data-vi="Wine setup, CI, xvfb, pytest, YAML" data-en="Wine setup, CI, xvfb, pytest, YAML"></td></tr>
-      <tr><td>Phase A: Acceptance</td><td>37</td><td><span class="badge badge-green">37 pass</span></td>
+      <tr><td class="i18n" data-vi="Cốt lõi" data-en="Core foundation"></td><td>37</td><td><span class="badge badge-green">37 pass</span></td>
           <td class="i18n" data-vi="PipNorm, RiskGuard, Magic, lint 8 AP, build, pip-normalize, LOC" data-en="PipNorm, RiskGuard, Magic, lint 8 AP, build, pip-normalize, LOC"></td></tr>
-      <tr><td>Phase B: Acceptance</td><td>31</td><td><span class="badge badge-green">31 pass</span></td>
+      <tr><td class="i18n" data-vi="Test &amp; validation" data-en="Test &amp; validation"></td><td>31</td><td><span class="badge badge-green">31 pass</span></td>
           <td class="i18n" data-vi="Backtest, Monte Carlo, multibroker, trader-17, overfit, fitness, includes, LOC" data-en="Backtest, Monte Carlo, multibroker, trader-17, overfit, fitness, includes, LOC"></td></tr>
-      <tr><td>Phase C: Acceptance</td><td>25</td><td><span class="badge badge-green">25 pass</span></td>
+      <tr><td class="i18n" data-vi="Methodology" data-en="Methodology"></td><td>25</td><td><span class="badge badge-green">25 pass</span></td>
           <td class="i18n" data-vi="6 personas (25 câu), 8 templates, 5 review scripts, permission 7 lớp, matrix 8x8" data-en="6 personas (25 q), 8 templates, 5 review scripts, 7-layer permission, 8x8 matrix"></td></tr>
-      <tr><td>Phase D: Acceptance</td><td>23</td><td><span class="badge badge-green">23 pass</span></td>
+      <tr><td class="i18n" data-vi="Nâng cao (ONNX/LLM/forge)" data-en="Advanced (ONNX/LLM/forge)"></td><td>23</td><td><span class="badge badge-green">23 pass</span></td>
           <td class="i18n" data-vi="ONNX export/embed, async build, cloud cost gate, method hiding, LLM bridge, forge" data-en="ONNX export/embed, async build, cloud cost gate, method hiding, LLM bridge, forge"></td></tr>
-      <tr><td>Phase E: Acceptance</td><td>33</td><td><span class="badge badge-green">33 pass</span></td>
+      <tr><td class="i18n" data-vi="Polish &amp; ship" data-en="Polish &amp; ship"></td><td>33</td><td><span class="badge badge-green">33 pass</span></td>
           <td class="i18n" data-vi="12 scripts, scan, audit 50-point, mt5-bridge 10 tools, algo-forge 6 tools" data-en="12 scripts, scan, 50-point audit, mt5-bridge 10 tools, algo-forge 6 tools"></td></tr>
-      <tr><td>Phase F: Prompt Architect</td><td>17</td><td><span class="badge badge-green">17 pass</span></td>
+      <tr><td class="i18n" data-vi="Prompt Architect" data-en="Prompt Architect"></td><td>17</td><td><span class="badge badge-green">17 pass</span></td>
           <td class="i18n" data-vi="schema/config, prompt/SRS/requirements/blueprint, RRI plan, pipeline runner, LLM provider adapter" data-en="schema/config, prompt/SRS/requirements/blueprint, RRI plan, pipeline runner, LLM provider adapter"></td></tr>
     </table></div>
   </div>
@@ -800,8 +807,8 @@ h2 + p { color: var(--muted); margin-bottom: 16px; }
   <div class="container">
     <p>vibecodekit-mql5-ea v5 + Prompt Architect &mdash; Built with VibecodeKit Hybrid Ultra v0.26.0</p>
     <p style="margin-top: 4px;" class="i18n"
-       data-vi="169 tests đạt, 2 skip &bull; 46 CLI commands &bull; Phase 0-F hoàn thành &bull; Prompt Architect integrated"
-       data-en="169 tests passing, 2 skipped &bull; 46 CLI commands &bull; Phase 0-F complete &bull; Prompt Architect integrated"></p>
+       data-vi="169 tests đạt, 2 skip &bull; 46 CLI commands &bull; 17 scaffold preset &bull; Prompt Architect integrated"
+       data-en="169 tests passing, 2 skipped &bull; 46 CLI commands &bull; 17 scaffold presets &bull; Prompt Architect integrated"></p>
   </div>
 </footer>
 

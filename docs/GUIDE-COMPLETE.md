@@ -34,7 +34,7 @@
 18. [LLM Bridge (3 variants)](#18-llm-bridge)
 19. [Algo Forge — Strategy iteration](#19-algo-forge--strategy-iteration)
 20. [MCP Server Integration](#20-mcp-server-integration)
-21. [Phase E — Polish & Ship](#21-phase-e--polish--ship)
+21. [Polish & Ship — release tooling](#21-polish--ship--release-tooling)
 
 **Phần V — Dev Team Workflow**
 22. [Quy trình cho team](#22-quy-trình-cho-dev-team)
@@ -55,7 +55,7 @@
 | CLI Tools | 45 | Build, lint, compile, backtest, review, deploy |
 | Scaffold Presets | 17 | stdlib, scalping, trend, grid, ml-onnx, hft-async, ... |
 | MQL5 Libraries | 7 | CPipNormalizer, CRiskGuard, CMagicRegistry, CSpreadGuard, CMfeMaeLogger, COnnxLoader, CAsyncTradeManager |
-| Tests | 154 collected | Phase 0-E acceptance tests (152 pass, 2 Wine/MetaEditor skips in local Linux smoke) |
+| Tests | 169 passing (2 skipped without Wine/MetaEditor) | Regression suite for the kit itself |
 | MCP Servers | 3 | metaeditor-bridge, mt5-bridge (10 tools), algo-forge (6 tools) |
 | Review Scripts | 5 | Multi-specialist, CSO, engineering, CEO, investigation |
 | RRI Personas | 6 | trader, risk-auditor, broker-engineer, strategy-architect, devops, perf-analyst |
@@ -101,7 +101,7 @@ pyenv rehash
 
 # Bước 4: Verify
 mql5-build --list           # → 17 presets
-pytest tests/ -q            # → 154 passed full env; 152 passed, 2 skipped nếu thiếu MetaEditor/Wine
+pytest tests/ -q            # → 169 passed; 2 skipped nếu thiếu MetaEditor/Wine
 ```
 
 ### 2.3 Cài Wine + MetaEditor (tùy chọn — cho compile thật)
@@ -544,7 +544,7 @@ mql5-build --list
 Báo kết quả.
 ```
 
-**Expected:** 17 presets; test suite `154 passed` trên full env hoặc `152 passed, 2 skipped` nếu thiếu MetaEditor/Wine.
+**Expected:** 17 presets; test suite `169 passed, 2 skipped` nếu thiếu MetaEditor/Wine.
 
 ### 10.2 Build EA hoàn chỉnh
 
@@ -743,7 +743,7 @@ Tạo file `CLAUDE.md` ở root project để Claude Code tự hiểu context:
 
 ## Quick Start
 pip install -e ".[dev]"
-pytest tests/ -q  # → 154 passed full env; 152 passed, 2 skipped nếu thiếu MetaEditor/Wine
+pytest tests/ -q  # → 169 passed, 2 skipped nếu thiếu MetaEditor/Wine
 
 ## CLI Tools (top 10 dùng nhiều nhất)
 - `mql5-build --preset <name> --stack <stack> --name <ea> --output <dir>`
@@ -860,7 +860,7 @@ Dự án MQL5 EA development. Khi viết code MQL5:
 - Dùng PrintFormat(), KHÔNG dùng Print() + string concat
 - Max 6 input parameters, mỗi file ≤ 200 LOC
 - Có CLI tools: mql5-build, mql5-lint, mql5-compile, mql5-permission
-- Test suite: pytest tests/ -q → 154 passed full env; 152 passed, 2 skipped nếu thiếu MetaEditor/Wine
+- Test suite: pytest tests/ -q → 169 passed, 2 skipped nếu thiếu MetaEditor/Wine
 ```
 
 ---
@@ -1095,7 +1095,7 @@ Tạo file `.claude/mcp.json` hoặc `.cursor/mcp.json`:
 
 ---
 
-## 21. Phase E — Polish & Ship
+## 21. Polish & Ship — release tooling
 
 ### 21.1 Scan & Doctor
 
@@ -1202,7 +1202,7 @@ Trước khi approve PR:
 
 ## 23. Danh sách đầy đủ 45 CLI Commands
 
-### Phase A — Core Foundation (4 tools)
+### Core foundation (4 tools)
 
 | # | Command | Mô tả | Ví dụ |
 |---|---------|--------|-------|
@@ -1211,7 +1211,7 @@ Trước khi approve PR:
 | 3 | `mql5-compile` | Compile qua MetaEditor | `mql5-compile MyEA.mq5 --include ./Include/` |
 | 4 | `mql5-pip-normalize` | Quét hardcoded pip | `mql5-pip-normalize MyEA.mq5` |
 
-### Phase B — Test & Validation (10 tools)
+### Test & validation (10 tools)
 
 | # | Command | Mô tả | Ví dụ |
 |---|---------|--------|-------|
@@ -1226,7 +1226,7 @@ Trước khi approve PR:
 | 13 | `mql5-deploy-vps` | VPS deployment helper | `mql5-deploy-vps --ea MyEA.ex5` |
 | 14 | `mql5-broker-safety` | Broker safety check | `mql5-broker-safety --ea MyEA.mq5` |
 
-### Phase C — Methodology (11 tools)
+### Methodology (11 tools)
 
 | # | Command | Mô tả | Ví dụ |
 |---|---------|--------|-------|
@@ -1242,7 +1242,7 @@ Trước khi approve PR:
 | 24 | `mql5-cso` | CSO security audit | `mql5-cso --ea MyEA.mq5` |
 | 25 | `mql5-investigate` | Root-cause investigation | `mql5-investigate --ea MyEA.mq5 --symptom "..."` |
 
-### Phase D — Tech 2024-2025 (8 tools)
+### Advanced tech (8 tools)
 
 | # | Command | Mô tả | Ví dụ |
 |---|---------|--------|-------|
@@ -1255,7 +1255,7 @@ Trước khi approve PR:
 | 32 | `mql5-forge-init` | Algo Forge init | `mql5-forge-init --ea MyEA.mq5 --workspace .forge/` |
 | 33 | `mql5-forge-pr` | Algo Forge evaluate | `mql5-forge-pr --workspace .forge/ --json` |
 
-### Phase E — Polish & Ship (12 tools)
+### Polish & ship (12 tools)
 
 | # | Command | Mô tả | Ví dụ |
 |---|---------|--------|-------|
@@ -1347,4 +1347,4 @@ A: CLI tools chạy trên mọi OS (Python). MetaEditor compile cần Wine trên
 ---
 
 *Tài liệu thuộc dự án [vibecodekit-mql5-ea](https://github.com/VibeMql5Codekit/vibecodekit-mql5-ea) v1.0.0*
-*Cập nhật: 154 tests collected (152 pass, 2 local Wine/MetaEditor skips) · 45 CLI tools · 17 scaffold presets · 3 MCP servers*
+*Cập nhật: 169 tests passing (2 local Wine/MetaEditor skips) · 46 CLI tools · 17 scaffold presets · 3 MCP servers*

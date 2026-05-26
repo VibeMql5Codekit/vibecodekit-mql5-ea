@@ -1,9 +1,18 @@
 # vibecodekit-mql5-ea
 
-Vibecode methodology kit for MQL5 Expert Advisor development on MetaTrader 5.
+A CLI-first, fail-closed methodology kit for MQL5 Expert Advisor development on
+MetaTrader 5.
 
-> **Status:** Phase 0-F in progress. Current verified local gate: 169 passed, 2 skipped
-> (Wine/MetaEditor-dependent smoke tests), 46 CLI tools, 17 scaffold presets / 22 preset×stack combinations.
+- **15-minute hands-on tour:** [`docs/QUICKSTART.md`](docs/QUICKSTART.md) (English) ·
+  [`docs/QUICKSTART.vi.md`](docs/QUICKSTART.vi.md) (Tiếng Việt)
+- **AI coding agents (Devin / Claude Code / Cursor / Codex):** read [`AGENTS.md`](AGENTS.md)
+- **What the gates actually report on a fresh scaffold:** [`docs/reference-ea/REPORT.md`](docs/reference-ea/REPORT.md)
+
+> **Honest disclaimer.** `Trader-17`, the `8×8 quality matrix`, the `AP-XX`
+> anti-pattern IDs, the `7-layer permission pipeline`, and the `RRI personas`
+> are **project-defined heuristics** designed by this kit. They are opinionated
+> guardrails — not industry standards, not certifications, and not substitutes
+> for live-account validation.
 
 ## Quick start
 
@@ -31,35 +40,47 @@ mql5-permission --ea output/MyEA/MyEA.mq5 --mode PERSONAL --json
 
 ## Features
 
-| Category | Count | Description |
-|----------|-------|-------------|
-| CLI Tools | 46 | Build, lint, compile, backtest, walk-forward, Monte Carlo, permissions, reviews, deploy |
-| Scaffold Presets | 17 / 22 stacks | stdlib, scalping, trend, dca, grid, ml-onnx, hft-async, news-trading, etc. |
-| MQL5 Libraries | 7 | CPipNormalizer, CRiskGuard, CMagicRegistry, CSpreadGuard, COnnxLoader, CAsyncTradeManager, CMfeMaeLogger |
-| Tests | 171 collected | Phase 0-F acceptance tests (169 pass, 2 Wine/MetaEditor skips in local Linux smoke) |
-| MCP Servers | 3 | metaeditor-bridge, mt5-bridge (10 tools), algo-forge (6 tools) |
-| Review Scripts | 5 | 7-perspective review, CSO audit, eng review, CEO review, investigate |
-| RRI Personas | 6 | trader, risk-auditor, broker-engineer, strategy-architect, devops, perf-analyst (25 questions each) |
-| Reference Docs | 28 | Cheatsheets, methodology guides, best practices |
+| Category | What you get | Notes |
+|----------|--------------|-------|
+| Scaffold presets | 17 strategy templates (22 preset × stack combos): stdlib, scalping, trend, dca, grid, ml-onnx, hft-async, news-trading, etc. | `mql5-build --list` |
+| MQL5 libraries | `CPipNormalizer` (cross-broker pip math), `CRiskGuard`, `CMagicRegistry`, `CSpreadGuard`, `CMfeMaeLogger`, `COnnxLoader`, `CAsyncTradeManager` | shipped in [`Include/`](Include/) |
+| CLI tools | Build, lint, compile, backtest, walk-forward, Monte Carlo, multi-broker, permission gate, RRI / Prompt Architect, review utilities | run any with `--help`; the five you'll use most: `mql5-build`, `mql5-lint`, `mql5-trader-check`, `mql5-permission`, `mql5-compile` |
+| Test suite | Local baseline `pytest tests/ -q` → **169 passed, 2 skipped** when Wine/MetaEditor smoke deps are unavailable | regression harness, not user surface |
+| MCP servers | `metaeditor-bridge`, `mt5-bridge` (read-only market/account info), `algo-forge-bridge` | thin JSON-RPC adapters |
+| Reference docs | Methodology, broker engineering, ONNX, anti-pattern catalogue | [`docs/`](docs/) |
 
-## Phases
+## Empirical reference numbers
 
-| Phase | Status | Tests | Description |
-|-------|--------|-------|-------------|
-| 0: Smoke | DONE | 5 | Wine setup, CI, xvfb, pytest, YAML |
-| A: Core Foundation | DONE | 37 | CPipNormalizer, CRiskGuard, CMagicRegistry, lint (13 AP), build, pip-normalize |
-| B: Test & Validation | DONE | 31 | Backtest, Monte Carlo, multibroker, trader-17, walk-forward, overfit, MFE/MAE |
-| C: Methodology | DONE | 21 | 6 RRI personas, 8 templates, 5 review scripts, 7-layer permission, 8×8 matrix |
-| D: Tech 2024-2025 | DONE | 23 | ONNX export/embed, async build, cloud cost gate, method hiding, LLM bridge, forge |
-| E: Polish & Ship | DONE | 33 | 12 scripts, scan, 50-point audit, MCP servers, worked example, canary |
+When the kit's gates run against a **freshly scaffolded EA with no strategy
+written yet**:
+
+| Gate | Result on bare scaffold |
+|---|---|
+| `mql5-lint` | 0 critical, 4 warnings (placeholder template artefacts) |
+| `mql5-trader-check` | 11 / 17 PASS, 6 N-A → **FAIL** (gate requires ≥ 15) |
+| `mql5-permission --mode PERSONAL` | **FAIL** at layer 4 (Trader-17 fail-fast) |
+| `mql5-matrix` (standalone, no evidence) | 0 / 64 PASS — CLI floor, not a measurement |
+| `mql5-rri-bt` (no `--report`) | 56 / 64 PASS — structural maximum, not a measurement |
+
+The full machine-readable snapshot lives at
+[`docs/reference-ea/REPORT.md`](docs/reference-ea/REPORT.md). Regenerate with
+`bash scripts/tools/build_reference_report.sh`. A bare scaffold is **expected
+to fail** the permission gate — the gate has teeth and demands real evidence
+(working strategy + walk-forward + multi-broker + Monte Carlo + overfit
+check) before passing.
 
 ## Documentation
 
-- [Build EA Guide](docs/GUIDE-BUILD-EA.md) — Step-by-step pipeline (Vietnamese)
-- [Complete Guide](docs/GUIDE-COMPLETE.md) — Full user/team workflow and command reference
-- [New Session Guide](docs/GUIDE-NEW-SESSION.md) — Demo on Devin/Codex/Claude Code
-- [Audit Report](docs/AUDIT-REVIEW.md) — Bug fixes and review history
-- [Plan v5](docs/PLAN-v5.md) — Original 1089-line spec
+- **For users:**
+  - [Quickstart (English)](docs/QUICKSTART.md) / [Quickstart (Tiếng Việt)](docs/QUICKSTART.vi.md) — 15-minute hands-on tour with screenshots
+  - [Build EA Guide](docs/GUIDE-BUILD-EA.md) — Step-by-step pipeline (Vietnamese)
+  - [Complete Guide](docs/GUIDE-COMPLETE.md) — Full workflow and command reference
+  - [New Session Guide](docs/GUIDE-NEW-SESSION.md) — Demo on Devin/Codex/Claude Code
+  - [Reference-EA report](docs/reference-ea/REPORT.md) — Honest empirical gate numbers
+- **For AI agents:**
+  - [`AGENTS.md`](AGENTS.md) — CLI surface, output schema, gate semantics, rule_id → doc anchor table
+- **For contributors (internal sprint docs):**
+  - [Audit Report](docs/AUDIT-REVIEW.md), [Plan v5](docs/PLAN-v5.md), and `docs/phase-*-spec.md` — these record the kit's own development milestones; users do not need them
 
 ## CLI command groups
 
